@@ -1,0 +1,65 @@
+import React, { useState } from 'react'
+import ModalWrapper from '../Wrappers/ModalWrapper'
+
+const SettingsModal = ({ isVisible, onClose, onSave }) => {
+  const [slippageTolerance, setSlippageTolerance] = useState(0.5)
+  const [transactionDeadline, setTransactionDeadline] = useState()
+
+  const handleSave = () => {
+    if (slippageTolerance > 100) {
+      alert('Slippage tolerance cannot be more than 100%')
+      return
+    }
+    onSave({ slippageTolerance, transactionDeadline })
+    onClose()
+  }
+
+  return (
+    <ModalWrapper isVisible={isVisible} onClose={onClose}>
+      <h3 className='label text-lg mb-4'>Transaction Settings</h3>
+      <div className='mb-4'>
+        <label className='label block mb-2 text-sm'>Slippage tolerance</label>
+        <div className='flex space-x-2'>
+          {[0.1, 0.5, 1].map((tolerance) => (
+            <button
+              key={tolerance}
+              onClick={() => setSlippageTolerance(tolerance)}
+              className={`btn text-white px-3 py-1 rounded-md ${slippageTolerance === tolerance ? 'bg-secondary' : 'bg-gray-700'}`}>
+              {tolerance}%
+            </button>
+          ))}
+          <div className='relative flex items-center'>
+            <input
+              type='number'
+              placeholder='0.50'
+              value={slippageTolerance}
+              onChange={(e) => setSlippageTolerance(parseFloat(e.target.value))}
+              className={`input input-bordered bg-gray-700 text-white px-3 py-1 rounded-md w-20 pr-6 ${
+                slippageTolerance > 100 ? 'text-red-500' : ''
+              }`}
+            />
+            <span className='absolute right-2 text-white'>%</span>
+          </div>
+        </div>
+      </div>
+      <div className='mb-4'>
+        <label className='label block mb-2 text-sm'>Transaction deadline</label>
+        <div className='flex items-center'>
+          <input
+            type='number'
+            value={transactionDeadline}
+            placeholder='20'
+            onChange={(e) => setTransactionDeadline(parseInt(e.target.value))}
+            className='input input-bordered bg-gray-700 text-white px-3 py-1 rounded-md w-20'
+          />
+          <span className='ml-2'>minutes</span>
+        </div>
+      </div>
+      <button onClick={handleSave} className='btn bg-secondary rounded-2xl w-full text-white'>
+        Save
+      </button>
+    </ModalWrapper>
+  )
+}
+
+export default SettingsModal
