@@ -1,50 +1,68 @@
 import { NextResponse } from 'next/server'
 import { ethers } from 'ethers'
 
-const encodeSwapData = (sellToken, buyToken, sellAmount, buyAmount, recipientAddress) => {
-  const abiCoder = new ethers.utils.AbiCoder()
-  return abiCoder.encode(
-    ['address', 'address', 'uint256', 'uint256', 'address'],
-    [sellToken, buyToken, sellAmount, buyAmount, recipientAddress]
-  )
-}
+// const encodeSwapData = (sellToken, buyToken, sellAmount, buyAmount, recipientAddress) => {
+//   const abiCoder = new ethers.utils.AbiCoder()
+//   return abiCoder.encode(
+//     ['address', 'address', 'uint256', 'uint256', 'address'],
+//     [sellToken, buyToken, sellAmount, buyAmount, recipientAddress]
+//   )
+// }
 
 export async function POST(req) {
-  // const body = await req.json()
-  // const { sellToken, buyToken, sellAmount, buyAmount, slippageTolerance, recipientAddress, chainId } = body
-
-  // const atlasSdk = new AtlasSdk(provider, chainId, operationsRelay)
-
   try {
-    return NextResponse.json({ msg: 'post success' })
-    console.log('swap attempted!')
+    // Parse the request body
+    const body = await req.json()
 
-    // const signer = provider.getSigner()
+    // Extract the parameters from the request body
+    const {
+      sellToken,
+      buyToken,
+      sellAmount,
+      slippageTolerance,
+      transactionDeadline,
+      address,
+      chainId,
+      provider,
+      operationsRelayUrl,
+      dapp,
+      control,
+    } = body
 
-    // const transactionData = encodeSwapData(sellToken, buyToken, sellAmount, buyAmount, recipientAddress)
+    // init atlas operation relay
+    // todo:
+    // replace FastlaneOperationsRelay with import {fastlaneBackend} from atlas-sdk
+    const operationsRelay = new FastlaneOperationsRelay({
+      basePath: 'https://eth-sepolia.atlas-operations-relay.fastlane.xyz',
+    })
 
-    // const gasEstimate = await provider.estimateGas({
-    //   to: swapContractAddress,
-    //   data: transactionData,
-    //   value: ethers.utils.parseUnits(sellAmount, 'ether'),
-    // })
+    // init atlas sdk
+    const atlasSdk = new AtlasSdk(provider, chainId, operationsRelay)
 
-    // const transaction = {
-    //   to: swapContractAddress,
-    //   data: transactionData,
-    //   value: ethers.utils.parseUnits(sellAmount, 'ether'),
-    //   gasLimit: gasEstimate,
-    // }
+    let [userOpHash, solverOperations] = await atlasSdk.submitUserOperation(userOperation, callConfig, hints)
 
-    // const txResponse = await signer.sendTransaction(transaction)
-    // await txResponse.wait()
+    // Create a response object
+    const res = {
+      status: 'success',
+      message: 'Swap executed successfully',
+      data: {
+        sellToken,
+        buyToken,
+        sellAmount,
+        slippageTolerance,
+        transactionDeadline,
+        address,
+        chainId,
+        provider,
+        operationsRelayUrl,
+        dapp,
+        control,
+      },
+    }
 
-    // return NextResponse.json({ success: true, txHash: txResponse.hash })
+    // Return the response
+    return NextResponse.json(response)
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+    return NextResponse.json({ status: 'error', message: error.message })
   }
-}
-
-export async function GET(req) {
-  return NextResponse.json({ msg: 'Hello from server' })
 }
