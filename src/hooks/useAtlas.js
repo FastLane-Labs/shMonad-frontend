@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ethers } from 'ethers'
-import { AtlasSdk, FastlaneOperationsRelay } from 'fastlane-atlas-sdk'
+import { AtlasSdk, BaseOperationRelay } from 'fastlane-atlas-sdk'
 
 const useAtlas = () => {
   const [isSwapping, setIsSwapping] = useState(false)
@@ -26,21 +26,19 @@ const useAtlas = () => {
       // Init atlas operation relay
       // todo:
       // replace FastlaneOperationsRelay with import {fastlaneBackend} from atlas-sdk
-      const operationsRelay = new FastlaneOperationsRelay({
-        basePath: operationsRelayUrl,
-      })
+      // const operationsRelay = new FastlaneOperationsRelay({
+      //   basePath: operationsRelayUrl,
+      // })
 
       // Init atlas sdk
-      const atlasSdk = new AtlasSdk(provider, chainId, operationsRelay)
+      // const atlasSdk = new AtlasSdk(provider, chainId, BaseOperationRelay)
 
-      // Assuming userOperation, callConfig, and hints are defined elsewhere in your code
-      const userOperation = {} // Define this based on your requirements
-      const callConfig = {} // Define this based on your requirements
-      const hints = {} // Define this based on your requirements
+      const userOperation = {}
+      const callConfig = {}
+      const hints = {}
 
-      let [userOpHash, solverOperations] = await atlasSdk.submitUserOperation(userOperation, callConfig, hints)
+      // let [userOpHash, solverOperations] = await atlasSdk.submitUserOperation(userOperation, callConfig, hints)
 
-      // Handle success (You can update this to match your requirements)
       console.log('Swap executed successfully', {
         sellToken,
         buyToken,
