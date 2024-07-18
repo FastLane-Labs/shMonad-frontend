@@ -21,11 +21,15 @@ const HandleAtlas = ({ sellToken, buyToken, sellAmount, slippageTolerance, trans
       return
     }
 
+    /////////////////////////////////////////////////
+    // Atlas Parameters:
     const chain = chainInfo.id
     const provider = walletClient
     const operationsRelayUrl = 'https://eth-sepolia.atlas-operations-relay.fastlane.xyz'
     const dapp = getDappAddress(chain)
     const control = getControlAddress(chain)
+    let value, gasEstimate, deadline, data
+    /////////////////////////////////////////////////
 
     const swapParams = {
       sellToken,

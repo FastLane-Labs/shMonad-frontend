@@ -24,6 +24,8 @@ const useAtlas = () => {
 
     try {
       // Init atlas operation relay
+      // todo:
+      // replace FastlaneOperationsRelay with import {fastlaneBackend} from atlas-sdk
       const operationsRelay = new FastlaneOperationsRelay({
         basePath: operationsRelayUrl,
       })
