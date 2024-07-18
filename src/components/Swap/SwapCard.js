@@ -9,6 +9,7 @@ import SettingsModal from './SettingsModal'
 import tokenList from '@/constants/tokenList.json'
 import SettingsButton from './SettingsButton'
 import HandleSwap from './HandleSwap'
+// import HandleAtlas from './HandleAtlas'
 // import UseSimulateQuote from '@/hooks/getQuote'
 
 const SwapCard = () => {
@@ -111,6 +112,8 @@ const SwapCard = () => {
         address={address}
         quoteLoading={quoteLoading}
       />
+      {/* OPTION A:
+      initiate atlas-sdk as a REST /route */}
       <HandleSwap
         sellToken={sellToken}
         buyToken={buyToken}
@@ -119,6 +122,16 @@ const SwapCard = () => {
         transactionDeadline={settings.transactionDeadline}
         address={address}
       />
+      {/* OPTION B:
+      initiate atlas-sdk as a hook */}
+      {/* <HandleAtlas
+        sellToken={sellToken}
+        buyToken={buyToken}
+        sellAmount={sellAmount}
+        slippageTolerance={settings.slippageTolerance}
+        transactionDeadline={settings.transactionDeadline}
+        address={address}
+      /> */}
       {/* <SwapButton isConnected={isConnected} sellAmount={sellAmount} buyToken={buyToken} /> */}
       <SettingsModal
         isVisible={isSettingsModalVisible}

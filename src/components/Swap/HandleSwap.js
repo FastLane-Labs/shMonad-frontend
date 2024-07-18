@@ -1,4 +1,7 @@
 'use client'
+// This component is the same as HandleAtlas.js,
+// except it submits a POST req to '/api/swap' instead of
+// using a custom hook
 
 import { useState, useEffect } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
