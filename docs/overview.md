@@ -40,16 +40,18 @@ Atlas-RFQ Frontend aims to showcase the power of intent-based trading using the 
 
 ```mermaid
 graph TD
-    A[App] --> B[Header]
+    GP[GlobalProvider] --> A[App]
+    A --> B[Header]
     A --> C[MainContent]
     A --> D[Footer]
+    GP -.-> U[TransactionMonitor]
+    GP -.-> DD[NetworkConfigService]
 
     B --> E[WalletConnector]
     B --> F[NotificationOverview]
     B --> H[NetworkInfo]
     B --> I[ThemeToggle]
 
-    F -.-> U[TransactionMonitor]
     F --> T[NotificationEvent]
 
     C --> G[AtlasRFQCore]
@@ -58,7 +60,6 @@ graph TD
     G -.-> V[SwapQuoteService]
     G -.-> W[TokenPriceService]
     G -.-> R[TokenProviderService]
-    G -.-> DD[NetworkConfigService]
 
     J --> L[TabNavigation]
     J --> M[SwapPanel]
@@ -89,6 +90,7 @@ graph TD
     D --> CC[Network Logo]
 
     style A fill:#f9f,stroke:#333,stroke-width:4px
+    style GP fill:#ffcccc,stroke:#333,stroke-width:2px
     style G fill:#ccf,stroke:#333,stroke-width:2px
     style V fill:#e6e6fa,stroke:#333,stroke-width:2px
     style W fill:#e6e6fa,stroke:#333,stroke-width:2px
@@ -115,9 +117,22 @@ graph TD
 
     classDef serviceText fill:#eef075,color:#677387,font-weight:bold
     class V,W,R,U,DD serviceText
+
+    classDef globalProviderText fill:#ffcccc,color:#000000,font-weight:bold
+    class GP globalProviderText
 ```
 
 ## Atlas-RFQ Frontend Service Component Breakdown
+
+### GlobalProvider
+
+Functionality:
+* Provides a global state management for the application
+* Handles wallet connection and network configuration
+
+Responsibilities:
+* Provide a global state management for the application
+* Handles wallet connection and network configuration
 
 ### TransactionMonitor
 
