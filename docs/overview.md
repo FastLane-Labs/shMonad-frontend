@@ -44,7 +44,7 @@ graph TD
     A --> B[Header]
     A --> C[MainContent]
     A --> D[Footer]
-    GP -.-> U[TransactionMonitor]
+    GP -.-> U[TransactionStatusService]
     GP -.-> DD[NetworkConfigService]
 
     B --> E[WalletConnector]
@@ -134,7 +134,7 @@ Responsibilities:
 * Provide a global state management for the application
 * Handles wallet connection and network configuration
 
-### TransactionMonitor
+### TransactionStatusService
 
 Functionality:
 * Monitors the status of submitted transactions
