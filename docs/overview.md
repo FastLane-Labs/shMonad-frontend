@@ -1,6 +1,6 @@
-# Atlas-RFQ Frontend Overview
+# BoomerSwap Frontend Overview
 
-Atlas-RFQ Frontend is an implementation of the first on-chain intent-based Request for Quote (RFQ) system. Built with React and the Atlas SDK, this frontend leverages the Atlas framework to provide a seamless and efficient token swapping experience on EVM-compatible blockchain networks.
+BoomerSwap Frontend is an implementation of the first fully decentralised and on-chain intent-based Request for Quote (RFQ) system. Built with React and the Atlas SDK, this frontend leverages the Atlas framework to provide a seamless and efficient token swapping experience on EVM-compatible blockchain networks with a public mempool.
 
 ## Atlas Framework
 
@@ -16,7 +16,7 @@ Atlas is a permissionless and modular smart contract framework for Execution Abs
 
 4. **Wallet Integration**: Seamless connection with popular Web3 wallets for secure transaction signing and balance management.
 
-5. **Real-Time Quotes**: Fetches and displays up-to-date swap quotes from competing Solvers to offer users the best rates.
+5. **Real-Time Quotes**: Fetches and displays up-to-date swap quotes from a fallback router or aggregator, and has solvers compete to offer users price improvement on the swap.
 
 6. **Transaction Monitoring**: Provides real-time updates on the status of ongoing and past transactions.
 
@@ -28,7 +28,7 @@ Atlas is a permissionless and modular smart contract framework for Execution Abs
 
 ## Architecture Overview
 
-- **Atlas SDK Integration**: Utilizes the Atlas SDK to interact with the Atlas framework for intent submission and Solver interaction.
+- **Atlas SDK Integration**: Utilizes the Atlas SDK to interact with the Atlas framework for intent creation.
 - **Component-Based Structure**: Employs a modular React component architecture for maintainability and reusability.
 - **Service Abstraction**: Implements service layers for handling User Operations, Solver interactions, and blockchain communications.
 - **State Management**: Employs efficient state management techniques to handle complex application states and data flow.
@@ -36,7 +36,150 @@ Atlas is a permissionless and modular smart contract framework for Execution Abs
 
 Atlas-RFQ Frontend aims to showcase the power of intent-based trading using the Atlas framework, providing a seamless, efficient, and secure token swapping experience that leverages competition among Solvers to achieve optimal execution for users.
 
-## Component Overview
+## System Components
+
+### Off Chain Component Interactions
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Browser
+    participant Wallet
+    participant RPC
+    participant P2P
+    participant Searchers
+    participant Validator
+
+    Validator ->> P2P: listen for transactions
+    Searchers ->> P2P: listen for transactions
+
+    Browser ->> RPC: view call to retrieve baseline quote
+    Browser ->> Browser: create user bundled transaction <br/>with SwapIntent and BaselineQuote
+    Browser ->> Wallet: sign user bundled transaction
+
+    Browser ->> RPC: submit signed transaction
+    RPC ->> P2P: gossip transaction
+    Browser ->> RPC: listen for transaction receipt
+
+    loop Searcher loop
+        Note right of P2P: Different searchers compete through the<br/>P2P in a PGA to find the winning solution<br/>of the users swap intent.
+        P2P -->> Searchers: user transaction or solver<br/>frontrun transaction
+        Searchers ->> Searchers: find solution
+        Searchers ->> P2P: submit signed solver<br/>frontrun transaction
+    end
+
+    Validator ->> Validator: build block
+    Validator ->> P2P: gossip block
+
+    RPC ->> Browser: transaction receipt
+```
+
+### On-chain Component Interactions
+
+```mermaid
+sequenceDiagram
+    title FastLane Online Onchain Flow
+
+    participant UserEOA
+    participant SolverEOA
+    participant SolverContract
+    participant FastLaneControl
+    participant Atlas
+    participant ExEnv
+
+    Note over UserEOA,ExEnv: Tx 1: User Permits Atlas
+
+    autonumber
+    UserEOA->>+FastLaneControl: permit token to be sold
+
+    Note over UserEOA,ExEnv: Tx 2: Solver frontruns user to register their solution
+    autonumber
+    SolverEOA->>+SolverContract: call some userdata
+    SolverContract->>+FastLaneControl: register SolverOp for UserOp
+    FastLaneControl->>-SolverContract: OK
+    SolverContract->>-SolverEOA: OK
+
+    Note over UserEOA,ExEnv: Tx 3: Users signed SwapIntent is handled by FastLaneControl
+    autonumber
+    UserEOA->>+FastLaneControl: call fastOnlineSwap(UserOperation)
+    FastLaneControl->>FastLaneControl: transfer from user to control
+    UserEOA-->>FastLaneControl: TokensUserSells
+
+    Note over FastLaneControl: control loads solverOp registered in 1.1 and uses it to create a bundle
+
+    FastLaneControl->>+Atlas: call metacall(Bundle)
+    Atlas->>+ExEnv: call userWrapper(userOp)
+    ExEnv->>+FastLaneControl: delegatecall swap(SwapIntent, BaselineCall)
+
+    Note over FastLaneControl: re-calculate the Baseline Call expected output amount using current on-chain data
+
+    FastLaneControl->>FastLaneControl: transfer TokensUserSells to exenv
+    FastLaneControl->>ExEnv: ReturnData
+    FastLaneControl-->>ExEnv: TokensUserSells
+
+    ExEnv->>-Atlas: UserReturnData
+    Atlas->>Atlas: bidFindingIteration
+
+    loop until solver successful
+        Atlas->>+ExEnv: call solverPreTryCatch(solverOp)
+        ExEnv->>+FastLaneControl: delegatecall preSolverCall
+        FastLaneControl->>FastLaneControl: optimistically transfer sold tokens to solver
+        ExEnv-->>SolverContract: TokensUserSells
+        FastLaneControl->>ExEnv: OK
+        ExEnv->>-Atlas: OK
+    end
+
+    Atlas->>+SolverContract: call atlasSolverCall(solverOp)
+
+    Note over SolverContract: solver fulfills the intent somehow
+
+    SolverContract->>SolverContract: transfer bought tokens to user
+    SolverContract-->>ExEnv: TokensUserBuys
+    SolverContract->>-Atlas: OK
+
+    Atlas->>+ExEnv: call allocateValue(bidAmount, returnData)
+    ExEnv->>ExEnv: transfer TokensUserBuys to user
+    ExEnv-->>UserEOA: TokensUserBuys
+
+    Atlas->>+ExEnv: call postOpsWrapper(solved, returnData)
+    ExEnv->>+FastLaneControl: delegatecall postOpsCall(solved, data)
+
+    Note over FastLaneControl: if a solver fulfills the intent, then this does nothing. otherwise, it will attempt to fulfill the user intent using the baseline call that was provided along with the intent.
+
+    FastLaneControl->>ExEnv: OK
+    ExEnv->>-Atlas: OK
+    Atlas->>-FastLaneControl: OK
+    FastLaneControl->>-UserEOA: OK
+```
+
+## Platform
+
+The DApp will be deployed as a set of static assets on CloudFlare Pages, with no backend dependency other than RPC interaction through a users connected wallet.
+
+```mermaid
+graph TD
+  WebBrowser --> DNS
+  WebBrowser --> WAF
+  WAF --> Pages
+```
+
+### Requirements
+
+* CloudFlare Pages must be configured to block connections from any US citizens using the WAF.
+
+## DevOps
+
+CloudFlare Pages supports the concept of branch based deployments from GitHub, where the app is deployed to a named environment for each branch. We will use a standard [gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)-like branching model with a `main` and `develop` branch, and feature branches as necessary.
+
+Branching structure will look like:
+
+```mermaid
+graph LR
+feature --> develop
+develop --> main
+```
+
+## React Component Overview
 
 ```mermaid
 graph TD
