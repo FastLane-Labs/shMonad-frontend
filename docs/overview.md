@@ -81,7 +81,6 @@ graph TD
 
     V --> X[ISwapQuoteProvider]
     X --> Y[UniswapProvider]
-    X --> Z[AtlasProvider]
 
     R --> S1[ITokenProvider]
     S1 --> AA[ConfigFileTokenProvider]
@@ -100,7 +99,6 @@ graph TD
     style X fill:#d8f0d8,stroke:#333,stroke-width:2px
     style S1 fill:#d8f0d8,stroke:#333,stroke-width:2px
     style Y fill:#fdd,stroke:#333,stroke-width:2px
-    style Z fill:#fdd,stroke:#333,stroke-width:2px
     style AA fill:#fdd,stroke:#333,stroke-width:2px
 
     classDef swapInterfaceText fill:#0fff,color:#000000,font-weight:bold
@@ -110,7 +108,7 @@ graph TD
     class G atlasRFQCoreText
 
     classDef interfacesText fill:#dadb95,color:#000000,font-weight:bold
-    class X,S1 interfacesText
+    class S1,X interfacesText
 
     classDef providerText fill:#c28894,color:#000000,font-weight:bold
     class Y,Z,AA providerText
@@ -150,12 +148,12 @@ Responsibilities:
 ### SwapQuoteService
 
 Functionality:
-* Interfaces with multiple swap providers (Uniswap, Atlas)
+* Interfaces with multiple swap providers (Uniswap, Quickswap)
 * Retrieves and compares quotes from different sources
 
 Responsibilities:
 * Implement the ISwapQuoteProvider interface
-* Manage connections to different swap providers (UniswapProvider, AtlasProvider)
+* Manage connections to different swap providers (UniswapV2Provider, UniswapV3Provider)
 * Fetch real-time quotes based on user input
 * Compare and select the best available quote
 * Handle quote-related errors and edge cases
@@ -195,14 +193,6 @@ Responsibilities:
 1. User Operation Creation:
    * Generate user operations based on swap intents input by users
    * Handle necessary signing and validation of user operations
-
-2. Solver Quote Management:
-   * Submit user operations to receive quotes from solvers
-   * Process and sort received solver operations to present the best available quotes
-
-3. Transaction Handling:
-   * Build and validate Atlas transactions combining user and solver operations
-   * Manage the submission of these transactions to the Atlas framework
 
 ### useWalletConnection Hook
 
