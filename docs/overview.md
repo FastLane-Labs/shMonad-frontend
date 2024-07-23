@@ -246,7 +246,9 @@ graph TD
 
     C --> G[AtlasRFQCore]
 
-    G --> J[SwapInterface]
+    G --> Ja[AppRouter]
+
+    Ja --> J[SwapView]
     G -.-> V[BaseSwapService]
     G -.-> W[TokenPriceService]
     G -.-> R[TokenProviderService]
@@ -256,10 +258,12 @@ graph TD
     J --> N[SettingsButton]
     J --> O[Logo]
 
-    N --> K[SettingsModal]
+    N --> K[SettingsView]
     M --> P[TokenInputPanel From]
     M --> Q[TokenInputPanel To]
     M --> S[SwapButton]
+
+    S --> T5[TransactionProgressView]
 
     P --> T1[TokenInput]
     P --> T2[TokenSelector]
