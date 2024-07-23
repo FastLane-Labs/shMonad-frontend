@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: `${SITE_NAME} · %s`,
   },
   metadataBase: new URL(SITE_URL),
-  description: SITE_DESCRIPTION,d
+  description: SITE_DESCRIPTION,
   manifest: '/manifest.json',
   appleWebApp: {
     title: SITE_NAME,
