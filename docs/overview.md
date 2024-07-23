@@ -200,7 +200,7 @@ graph TD
     C --> G[AtlasRFQCore]
 
     G --> J[SwapInterface]
-    G -.-> V[SwapQuoteService]
+    G -.-> V[BaseSwapService]
     G -.-> W[TokenPriceService]
     G -.-> R[TokenProviderService]
 
@@ -222,7 +222,7 @@ graph TD
     Q --> U1[TokenInput]
     Q --> U2[TokenSelector]
 
-    V --> X[ISwapQuoteProvider]
+    V --> X[IBaseSwapProvider]
     X --> Y[UniswapProvider]
 
     R --> S1[ITokenProvider]
@@ -288,18 +288,19 @@ Responsibilities:
 * Persist transaction statuses for historical reference
 * Notify other components (e.g., NotificationOverview) of status changes
 
-### SwapQuoteService
+### BaseSwapService
 
 Functionality:
-* Interfaces with multiple swap providers (Uniswap, Quickswap)
-* Retrieves and compares quotes from different sources
+* Interfaces with specific decentralized exchanges (DEXes) such as Uniswap and Quickswap
+* Retrieves baseline quotes for token swaps
 
 Responsibilities:
-* Implement the ISwapQuoteProvider interface
-* Manage connections to different swap providers (UniswapV2Provider, UniswapV3Provider)
-* Fetch real-time quotes based on user input
-* Compare and select the best available quote
+* Implement the IBaseSwapProvider interface
+* Manage connections to different DEX providers (e.g., UniswapV2Provider, UniswapV3Provider, QuickswapProvider)
+* Fetch real-time baseline quotes based on user input
+* Construct and manage multicall requests for efficient quote retrieval
 * Handle quote-related errors and edge cases
+* Provide a standardized quote format regardless of the underlying DEX
 
 ### TokenPriceService
 
