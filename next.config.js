@@ -8,6 +8,7 @@ const nextConfig = {
   images: {
     remotePatterns: [{ hostname: '*' }],
   },
+  output: 'export'
 }
 
 module.exports = nextConfig
