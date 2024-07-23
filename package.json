@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "test": "jest",
+    "test": "jest --transformIgnorePatterns \"node_modules/(?!wagmi)/\"",
     "start": "next start",
     "lint": "next lint --fix",
     "lint:check": "next lint",
