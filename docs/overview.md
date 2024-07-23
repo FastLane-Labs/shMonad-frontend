@@ -152,6 +152,53 @@ sequenceDiagram
     FastLaneControl->>-UserEOA: OK
 ```
 
+### RFQ Wizard Frontend Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant QuoteService
+    participant Wallet
+    participant FastLaneControl
+
+    User->>Frontend: Select buy/sell tokens
+    User->>Frontend: Input sell amount
+    User->>Frontend: Set slippage/deadline
+    Frontend->>QuoteService: Request baseline quote
+    QuoteService-->>Frontend: Return baseline quote
+    Frontend->>User: Display quote
+
+    User->>Frontend: Generate token approval
+    Frontend->>Wallet: Generate approval transaction
+    Wallet->>FastLaneControl: Approve token spending
+    FastLaneControl-->>Wallet: Approval confirmed
+    Wallet-->>Frontend: Approval transaction hash
+    Frontend->>User: Display approval confirmation
+
+    User->>Frontend: Confirm swap
+    Frontend->>QuoteService: Generate UserOperation
+    QuoteService-->>Frontend: Return UserOperation
+    Frontend->>Frontend: Build fastOnlineSwap transaction
+    Frontend->>Wallet: Request to sign and submit transaction
+    Wallet->>FastLaneControl: Sign and submit fastOnlineSwap transaction
+    FastLaneControl-->>Wallet: Transaction hash
+    Wallet-->>Frontend: Transaction hash
+    Frontend->>User: Display transaction submitted
+
+    loop Transaction monitoring
+        Frontend->>FastLaneControl: Check transaction status
+        FastLaneControl-->>Frontend: Transaction status
+        alt Transaction pending
+            Frontend->>User: Display pending status
+        else Transaction completed
+            Frontend->>User: Display success and swap details
+        else Transaction failed
+            Frontend->>User: Display failure and error details
+        end
+    end
+```
+
 ## Platform
 
 The DApp will be deployed as a set of static assets on CloudFlare Pages, with no backend dependency other than RPC interaction through a users connected wallet.
@@ -165,7 +212,7 @@ graph TD
 
 ### Requirements
 
-* CloudFlare Pages must be configured to block connections from any US citizens using the WAF.
+- CloudFlare Pages must be configured to block connections from any US citizens using the WAF.
 
 ## DevOps
 
@@ -268,102 +315,119 @@ graph TD
 ### GlobalProvider
 
 Functionality:
-* Provides a global state management for the application
-* Handles wallet connection and network configuration
+
+- Provides a global state management for the application
+- Handles wallet connection and network configuration
 
 Responsibilities:
-* Provide a global state management for the application
-* Handles wallet connection and network configuration
+
+- Provide a global state management for the application
+- Handles wallet connection and network configuration
 
 ### TransactionStatusService
 
 Functionality:
-* Monitors the status of submitted transactions
-* Provides access to past transaction statuses
-* Registers monitor jobs for newly submitted transactions
+
+- Monitors the status of submitted transactions
+- Provides access to past transaction statuses
+- Registers monitor jobs for newly submitted transactions
 
 Responsibilities:
-* Keep track of all user transactions
-* Update transaction statuses in real-time
-* Persist transaction statuses for historical reference
-* Notify other components (e.g., NotificationOverview) of status changes
+
+- Keep track of all user transactions
+- Update transaction statuses in real-time
+- Persist transaction statuses for historical reference
+- Notify other components (e.g., NotificationOverview) of status changes
 
 ### BaseSwapService
 
 Functionality:
-* Interfaces with specific decentralized exchanges (DEXes) such as Uniswap and Quickswap
-* Retrieves baseline quotes for token swaps
+
+- Interfaces with specific decentralized exchanges (DEXes) such as Uniswap and Quickswap
+- Retrieves baseline quotes for token swaps
 
 Responsibilities:
-* Implement the IBaseSwapProvider interface
-* Manage connections to different DEX providers (e.g., UniswapV2Provider, UniswapV3Provider, QuickswapProvider)
-* Fetch real-time baseline quotes based on user input
-* Construct and manage multicall requests for efficient quote retrieval
-* Handle quote-related errors and edge cases
-* Provide a standardized quote format regardless of the underlying DEX
+
+- Implement the IBaseSwapProvider interface
+- Manage connections to different DEX providers (e.g., UniswapV2Provider, UniswapV3Provider, QuickswapProvider)
+- Fetch real-time baseline quotes based on user input
+- Construct and manage multicall requests for efficient quote retrieval
+- Handle quote-related errors and edge cases
+- Provide a standardized quote format regardless of the underlying DEX
 
 ### TokenPriceService
 
 Functionality:
-* Fetches and manages token price data
-* Provides up-to-date price information for supported tokens
+
+- Fetches and manages token price data
+- Provides up-to-date price information for supported tokens
 
 Responsibilities:
-* Regularly update token prices (e.g., every 2-3 minutes)
-* Cache price data to reduce API calls
-* Convert token amounts to their USD equivalent
-* Handle network issues and API failures gracefully
+
+- Regularly update token prices (e.g., every 2-3 minutes)
+- Cache price data to reduce API calls
+- Convert token amounts to their USD equivalent
+- Handle network issues and API failures gracefully
 
 ### TokenProviderService
 
 Functionality:
-* Manages the list of supported tokens
-* Provides token metadata and balance information
+
+- Manages the list of supported tokens
+- Provides token metadata and balance information
 
 Responsibilities:
-* Implement the ITokenProvider interface
-* Load token list from a configuration file (ConfigFileTokenProvider)
-* Fetch token balances for connected wallets
-* Provide methods to search and filter tokens
-* Keep token metadata (symbol, name, decimals, etc.) up to date
+
+- Implement the ITokenProvider interface
+- Load token list from a configuration file (ConfigFileTokenProvider)
+- Fetch token balances for connected wallets
+- Provide methods to search and filter tokens
+- Keep token metadata (symbol, name, decimals, etc.) up to date
 
 ### Atlas SDK Integration
 
 Functionality:
-* Integrates the Atlas SDK capabilities into the frontend application
-* Manages the core interactions between the frontend and the Atlas framework
+
+- Integrates the Atlas SDK capabilities into the frontend application
+- Manages the core interactions between the frontend and the Atlas framework
 
 Responsibilities:
+
 1. User Operation Creation:
-   * Generate user operations based on swap intents input by users
-   * Handle necessary signing and validation of user operations
+   - Generate user operations based on swap intents input by users
+   - Handle necessary signing and validation of user operations
 
 ### useWalletConnection Hook
 
 Functionality:
-* Manages wallet connections and interactions using a wallet connection library (e.g., wagmi, Web3Modal, or RainbowKit)
+
+- Manages wallet connections and interactions using a wallet connection library (e.g., wagmi, Web3Modal, or RainbowKit)
 
 Responsibilities:
-* Provide a simple interface for connecting and disconnecting wallets
-* Expose connected account information and network details
-* Handle network switching requests
-* Offer methods for transaction signing, including Atlas-specific operations
-* Manage wallet connection state
+
+- Provide a simple interface for connecting and disconnecting wallets
+- Expose connected account information and network details
+- Handle network switching requests
+- Offer methods for transaction signing, including Atlas-specific operations
+- Manage wallet connection state
 
 ### NetworkConfigService
 
 Functionality:
-* Stores and provides access to network-specific configurations for Atlas-RFQ Frontend
+
+- Stores and provides access to network-specific configurations for Atlas-RFQ Frontend
 
 Responsibilities:
-* Maintain a mapping of supported network configurations, including:
+
+- Maintain a mapping of supported network configurations, including:
   - Multicall contract addresses
   - Atlas contract addresses
   - Chain IDs
-* Provide methods to retrieve configuration details for the current or a specified network
-* Update configuration details when necessary (e.g., contract address changes)
+- Provide methods to retrieve configuration details for the current or a specified network
+- Update configuration details when necessary (e.g., contract address changes)
 
 Implementation Notes:
-* Implemented as a simple service or context provider
-* Does not handle network switching or detection (managed by wallet connection library)
-* Coordinates with the Atlas SDK to ensure consistent network configurations
+
+- Implemented as a simple service or context provider
+- Does not handle network switching or detection (managed by wallet connection library)
+- Coordinates with the Atlas SDK to ensure consistent network configurations
