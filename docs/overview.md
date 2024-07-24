@@ -158,37 +158,53 @@ sequenceDiagram
 sequenceDiagram
     actor User
     participant Frontend
-    participant QuoteService
+    participant RFQController
+    participant SwapPathService
+    participant SwapService
     participant Wallet
     participant FastLaneControl
 
     User->>Frontend: Select buy/sell tokens
     User->>Frontend: Input sell amount
     User->>Frontend: Set slippage/deadline
-    Frontend->>QuoteService: Request baseline quote
-    QuoteService-->>Frontend: Return baseline quote
+    Frontend->>RFQController: Initiate swap process (tokens, amount, settings)
+
+    RFQController->>SwapPathService: Request swap path (fromToken, toToken)
+    SwapPathService->>SwapPathService: Determine optimal swap path
+    SwapPathService-->>RFQController: Return swap path
+
+    RFQController->>SwapService: Request baseline quote (swap path, amount, token objects)
+    SwapService->>SwapService: Calculate quote based on path and token data
+    SwapService-->>RFQController: Return baseline quote
+    RFQController-->>Frontend: Return quote
     Frontend->>User: Display quote
 
     User->>Frontend: Generate token approval
-    Frontend->>Wallet: Generate approval transaction
+    Frontend->>RFQController: Request token approval
+    RFQController->>Wallet: Generate approval transaction
     Wallet->>FastLaneControl: Approve token spending
     FastLaneControl-->>Wallet: Approval confirmed
-    Wallet-->>Frontend: Approval transaction hash
+    Wallet-->>RFQController: Approval transaction hash
+    RFQController-->>Frontend: Return approval confirmation
     Frontend->>User: Display approval confirmation
 
     User->>Frontend: Confirm swap
-    Frontend->>QuoteService: Generate UserOperation
-    QuoteService-->>Frontend: Return UserOperation
-    Frontend->>Frontend: Build fastOnlineSwap transaction
-    Frontend->>Wallet: Request to sign and submit transaction
+    Frontend->>RFQController: Execute swap
+    RFQController->>SwapService: Generate UserOperation (swap path, amount, token objects)
+    SwapService->>SwapService: Generate swap calldata
+    SwapService-->>RFQController: Return UserOperation with calldata
+    RFQController->>RFQController: Build fastOnlineSwap transaction
+    RFQController->>Wallet: Request to sign and submit transaction
     Wallet->>FastLaneControl: Sign and submit fastOnlineSwap transaction
     FastLaneControl-->>Wallet: Transaction hash
-    Wallet-->>Frontend: Transaction hash
+    Wallet-->>RFQController: Transaction hash
+    RFQController-->>Frontend: Return transaction submitted confirmation
     Frontend->>User: Display transaction submitted
 
     loop Transaction monitoring
-        Frontend->>FastLaneControl: Check transaction status
-        FastLaneControl-->>Frontend: Transaction status
+        RFQController->>FastLaneControl: Check transaction status
+        FastLaneControl-->>RFQController: Transaction status
+        RFQController-->>Frontend: Update transaction status
         alt Transaction pending
             Frontend->>User: Display pending status
         else Transaction completed
@@ -244,7 +260,7 @@ graph TD
 
     F --> T[NotificationEvent]
 
-    C --> G[AtlasRFQCore]
+    C --> G[RFQController]
 
     G --> Ja[AppRouter]
 
@@ -252,6 +268,7 @@ graph TD
     G -.-> V[BaseSwapService]
     G -.-> W[TokenPriceService]
     G -.-> R[TokenProviderService]
+    G -.-> SP[SwapPathService]
 
     J --> L[TabNavigation]
     J --> M[SwapPanel]
@@ -279,6 +296,9 @@ graph TD
     R --> S1[ITokenProvider]
     S1 --> AA[ConfigFileTokenProvider]
 
+    SP --> SPI[ISwapPathService]
+    SPI --> SSP[StaticSwapPathService]
+
     D --> BB[VersionField]
     D --> CC[Network Logo]
 
@@ -288,12 +308,14 @@ graph TD
     style V fill:#e6e6fa,stroke:#333,stroke-width:2px
     style W fill:#e6e6fa,stroke:#333,stroke-width:2px
     style R fill:#e6e6fa,stroke:#333,stroke-width:2px
+    style SP fill:#e6e6fa,stroke:#333,stroke-width:2px
     style U fill:#e6e6fa,stroke:#333,stroke-width:2px
     style DD fill:#e6e6fa,stroke:#333,stroke-width:2px
     style X fill:#d8f0d8,stroke:#333,stroke-width:2px
     style S1 fill:#d8f0d8,stroke:#333,stroke-width:2px
     style Y fill:#fdd,stroke:#333,stroke-width:2px
     style AA fill:#fdd,stroke:#333,stroke-width:2px
+    style SSP fill:#fdd,stroke:#333,stroke-width:2px
 
     classDef swapInterfaceText fill:#0fff,color:#000000,font-weight:bold
     class J swapInterfaceText
@@ -302,13 +324,13 @@ graph TD
     class G atlasRFQCoreText
 
     classDef interfacesText fill:#dadb95,color:#000000,font-weight:bold
-    class S1,X interfacesText
+    class S1,X,SPI interfacesText
 
     classDef providerText fill:#c28894,color:#000000,font-weight:bold
-    class Y,Z,AA providerText
+    class Y,AA,SSP providerText
 
     classDef serviceText fill:#eef075,color:#677387,font-weight:bold
-    class V,W,R,U,DD serviceText
+    class V,W,R,SP,U,DD serviceText
 
     classDef globalProviderText fill:#ffcccc,color:#000000,font-weight:bold
     class GP globalProviderText
@@ -327,6 +349,31 @@ Responsibilities:
 
 - Provide a global state management for the application
 - Handles wallet connection and network configuration
+
+
+### RFQController
+
+Functionality:
+- Handles user input and settings
+- Interacts with the SwapPathService and BaseSwapService
+- Submits the swap to the Atlas SDK
+
+Responsibilities:
+- Responsible for orchestrating the swap process
+
+### SwapPathService
+
+Functionality:
+- Determines swap path between token pairs
+- Initially implements static routing through known high-liquidity pairs (WNATIVE/USDC)
+
+Responsibilities:
+- Generate swap routes for baseswaps between selected token pairs
+- Maintain a list of high-liquidity token pairs for static routing
+- Provide route information to other system components
+- Handle cases where direct routes are unavailable
+- Design for future extensibility to more dynamic routing algorithms
+
 
 ### TransactionStatusService
 
