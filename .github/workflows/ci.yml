@@ -24,10 +24,10 @@ jobs:
 
       - name: Install dependencies on Linux
         if: runner.os == 'Linux'
-        run: sudo apt update && sudo apt install build-essential && npm install -g pnpm
+        run: sudo apt update && sudo apt install build-essential
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
 
       - name: Lint
         run: npm run lint:check
@@ -43,10 +43,10 @@ jobs:
 
       - name: Install dependencies on Linux
         if: runner.os == 'Linux'
-        run: sudo apt update && sudo apt install build-essential && npm install -g pnpm
+        run: sudo apt update && sudo apt install build-essential
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
 
       - name: Test
         run: npm test
