@@ -2,18 +2,14 @@
   "extends": "@tsconfig/next/tsconfig.json",
   "compilerOptions": {
     "target": "es6",
-    "allowJs": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "outDir": "./out",
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "jsx": "react"
+    }
   },
   "ts-node": {
     "require": ["tsconfig-paths/register"]
