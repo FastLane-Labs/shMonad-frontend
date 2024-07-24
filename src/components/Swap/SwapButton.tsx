@@ -1,7 +1,15 @@
 import React, { useState } from 'react'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 
-const SwapButton = ({ isConnected, sellAmount, buyToken, handleSwap, isLoading }) => {
+interface SwapButtonProps {
+  isConnected: boolean
+  sellAmount: string
+  buyToken: string
+  handleSwap: () => Promise<void>
+  isLoading: boolean
+}
+
+const SwapButton: React.FC<SwapButtonProps> = ({ isConnected, sellAmount, buyToken, handleSwap, isLoading }) => {
   const { openConnectModal } = useConnectModal()
   const [localLoading, setLocalLoading] = useState(false)
 
@@ -13,7 +21,7 @@ const SwapButton = ({ isConnected, sellAmount, buyToken, handleSwap, isLoading }
 
   if (!isConnected) {
     return (
-      <button className='btn bg-secondary rounded-2xl w-full text-white' onClick={() => openConnectModal()}>
+      <button className='btn bg-secondary rounded-2xl w-full text-white' onClick={() => openConnectModal?.()}>
         Connect wallet
       </button>
     )

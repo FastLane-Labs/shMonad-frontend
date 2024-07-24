@@ -6,25 +6,31 @@ import { formatBalance } from '@/utils/formatBalance'
 import { erc20Abi } from 'viem'
 
 interface TokenBalanceProps {
-  readonly address: `0x${string}`
-  readonly tokenAddress?: `0x${string}`
+  readonly address: string
+  readonly tokenAddress?: string
   readonly className?: string
   readonly toFixed?: number
   readonly onBalanceChange?: ({ balance, formattedBalance }: { balance: bigint; formattedBalance?: string }) => void
 }
 
-export const TokenBalance = ({ address, tokenAddress, toFixed, onBalanceChange, className }: TokenBalanceProps) => {
-  const ETHBalance = useBalance({ address })
+export const TokenBalance: React.FC<TokenBalanceProps> = ({
+  address,
+  tokenAddress,
+  toFixed,
+  onBalanceChange,
+  className,
+}) => {
+  const ETHBalance = useBalance({ address: address as `0x${string}` })
 
   const tokenBalance = useReadContract({
     abi: erc20Abi,
-    address: tokenAddress,
+    address: tokenAddress as `0x${string}`,
     functionName: 'balanceOf',
-    args: [address],
+    args: [address as `0x${string}`],
   })
 
   useEffect(() => {
-    // pass the value of the balance to the parent component on change
+    // Pass the value of the balance to the parent component on change
     if (tokenBalance.data && onBalanceChange) {
       onBalanceChange({ balance: tokenBalance.data, formattedBalance: formatBalance(tokenBalance.data, toFixed) })
       return
@@ -39,7 +45,7 @@ export const TokenBalance = ({ address, tokenAddress, toFixed, onBalanceChange, 
 
   if (!ETHBalance.data && !tokenBalance.data) return null
   if (tokenAddress && tokenBalance.data) {
-    return <span className={`stat-value${className}`}>{formatBalance(tokenBalance.data, toFixed)}</span>
+    return <span className={`stat-value ${className}`}>{formatBalance(tokenBalance.data, toFixed)}</span>
   }
   return <span className={` ${className}`}>{formatBalance(ETHBalance.data?.value ?? toBigInt(0), toFixed)}</span>
 }

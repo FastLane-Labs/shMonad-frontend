@@ -1,10 +1,29 @@
+'use client'
 import { useState } from 'react'
-import { ethers } from 'ethers'
-import { AtlasSdk, BaseOperationRelay } from 'fastlane-atlas-sdk'
+import { createWalletClient } from 'viem'
+
+export interface SwapParameters {
+  sellToken: string
+  buyToken: string
+  sellAmount: string
+  slippageTolerance: number
+  transactionDeadline: number
+  address?: string
+  chainId: number
+  provider: ReturnType<typeof createWalletClient>
+  operationsRelayUrl: string
+  dapp: string
+  control: string
+}
+
+export interface SwapResult {
+  status: 'success' | 'error'
+  message: string
+}
 
 const useAtlas = () => {
-  const [isSwapping, setIsSwapping] = useState(false)
-  const [error, setError] = useState(null)
+  const [isSwapping, setIsSwapping] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSwap = async ({
     sellToken,
@@ -18,7 +37,7 @@ const useAtlas = () => {
     operationsRelayUrl,
     dapp,
     control,
-  }) => {
+  }: SwapParameters): Promise<SwapResult> => {
     setIsSwapping(true)
     setError(null)
 
@@ -57,7 +76,7 @@ const useAtlas = () => {
         status: 'success',
         message: 'Swap executed successfully',
       }
-    } catch (error) {
+    } catch (error: any) {
       setError(error.message)
       return {
         status: 'error',

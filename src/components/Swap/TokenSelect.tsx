@@ -3,10 +3,17 @@ import { TokenBalance } from '@/components/TokenBalance/TokenBalance'
 import tokenList from '@/constants/tokenList.json'
 import ModalWrapper from '../Wrappers/ModalWrapper'
 
-const TokenSelect = ({ value, onChange, address, defaultLabel }) => {
-  const [isDropdownActive, setIsDropdownActive] = useState(false)
+interface TokenSelectProps {
+  value: string
+  onChange: (tokenSymbol: string) => void
+  address: `0x${string}`
+  defaultLabel: string
+}
 
-  const handleSelect = (tokenSymbol) => {
+const TokenSelect: React.FC<TokenSelectProps> = ({ value, onChange, address, defaultLabel }) => {
+  const [isDropdownActive, setIsDropdownActive] = useState<boolean>(false)
+
+  const handleSelect = (tokenSymbol: string) => {
     onChange(tokenSymbol)
     setIsDropdownActive(false)
   }
@@ -43,7 +50,7 @@ const TokenSelect = ({ value, onChange, address, defaultLabel }) => {
                   <span className='text-gray-500 text-sm'>{token.name}</span>
                 </div>
                 <span className='ml-auto'>
-                  <TokenBalance address={address} tokenAddress={token.address} toFixed={2} />
+                  <TokenBalance address={address} tokenAddress={token.address as `0x${string}`} toFixed={2} />
                 </span>
               </li>
             ))}

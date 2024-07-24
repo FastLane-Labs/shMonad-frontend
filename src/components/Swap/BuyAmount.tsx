@@ -1,8 +1,25 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import TokenSelect from './TokenSelect'
 
-const BuyAmount = ({ buyToken, setBuyToken, buyAmount, setBuyAmount, address, quoteLoading }) => {
-  const handleChange = (e) => {
+// Define the types for the props
+interface BuyAmountProps {
+  buyToken: string
+  setBuyToken: (token: string) => void
+  buyAmount: string
+  setBuyAmount: (amount: string) => void
+  address: `0x${string}`
+  quoteLoading: boolean
+}
+
+const BuyAmount: React.FC<BuyAmountProps> = ({
+  buyToken,
+  setBuyToken,
+  buyAmount,
+  setBuyAmount,
+  address,
+  quoteLoading,
+}) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     // Ensure the input is valid (numbers and one decimal point)
     if (/^\d*\.?\d*$/.test(value)) {

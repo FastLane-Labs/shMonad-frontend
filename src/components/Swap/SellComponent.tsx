@@ -2,7 +2,19 @@ import React from 'react'
 import { TokenBalance } from '@/components/TokenBalance/TokenBalance'
 import SellAmount from './SellAmount'
 
-const SellComponent = ({
+interface SellComponentProps {
+  sellToken: string
+  setSellToken: (token: string) => void
+  sellAmount: string
+  setSellAmount: (amount: string) => void
+  address: `0x${string}`
+  balance: string
+  setBalance: (balance: string) => void
+  decimals: number
+  sellTokenAddress: `0x${string}`
+}
+
+const SellComponent: React.FC<SellComponentProps> = ({
   sellToken,
   setSellToken,
   sellAmount,
@@ -13,7 +25,7 @@ const SellComponent = ({
   decimals,
   sellTokenAddress,
 }) => {
-  const formatBalance = (balance, decimals = 18) => {
+  const formatBalance = (balance: string, decimals: number = 18): number => {
     return Number(balance) / Math.pow(10, decimals)
   }
 
@@ -27,7 +39,7 @@ const SellComponent = ({
             address={address}
             tokenAddress={sellTokenAddress}
             toFixed={4}
-            onBalanceChange={({ balance }) => setBalance(formatBalance(balance, decimals))}
+            onBalanceChange={({ balance }) => setBalance(formatBalance(balance.toString(), decimals).toString())}
           />
         </h1>
       </div>

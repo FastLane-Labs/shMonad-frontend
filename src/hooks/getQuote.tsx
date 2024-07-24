@@ -3,15 +3,27 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
-export function UseSimulateQuote(sellToken, sellAmount, buyToken) {
-  const [buyAmount, setBuyAmount] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+interface UseSimulateQuoteParams {
+  sellToken: string
+  sellAmount: string
+  buyToken: string
+}
+
+interface UseSimulateQuoteResult {
+  buyAmount: string
+  loading: boolean
+  error: string | null
+}
+
+export function useSimulateQuote({ sellToken, sellAmount, buyToken }: UseSimulateQuoteParams): UseSimulateQuoteResult {
+  const [buyAmount, setBuyAmount] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const simulateQuote = async () => {
       if (!sellToken || !sellAmount) {
-        setBuyAmount(0)
+        setBuyAmount('')
         return
       }
 
@@ -24,8 +36,8 @@ export function UseSimulateQuote(sellToken, sellAmount, buyToken) {
         //   sellAmount,
         // })
         // setBuyAmount(response.data.buyAmount)
-        setBuyAmount(6969)
-      } catch (error) {
+        setBuyAmount('6969')
+      } catch (error: any) {
         setError(error.message)
         setBuyAmount('')
       } finally {
