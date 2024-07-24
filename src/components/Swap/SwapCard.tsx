@@ -2,78 +2,77 @@
 import React, { useState, useEffect } from 'react'
 import SellComponent from './SellComponent'
 import BuyComponent from './BuyComponent'
-import SwapButton from './SwapButton'
 import { useAccount } from 'wagmi'
 import FlipButton from './FlipButton'
 import SettingsModal from './SettingsModal'
 import tokenList from '@/constants/tokenList.json'
 import SettingsButton from './SettingsButton'
-// import HandleSwap from './HandleSwap'
 import HandleAtlas from './HandleAtlas'
-// import UseSimulateQuote from '@/hooks/getQuote'
+import { Settings } from '@/types' // Adjust the path as necessary
 
-const SwapCard = () => {
+const SwapCard: React.FC = () => {
   const { address } = useAccount()
-  const [sellToken, setSellToken] = useState('ETH')
-  const [buyToken, setBuyToken] = useState('')
-  const [sellAmount, setSellAmount] = useState('')
-  const [buyAmount, setBuyAmount] = useState('')
-  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false)
-  const [settings, setSettings] = useState({
+  const [sellToken, setSellToken] = useState<string>('ETH')
+  const [buyToken, setBuyToken] = useState<string>('')
+  const [sellAmount, setSellAmount] = useState<string>('')
+  const [buyAmount, setBuyAmount] = useState<string>('')
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
+  const [settings, setSettings] = useState<Settings>({
     slippageTolerance: 0.5,
     transactionDeadline: 20,
   })
-  // wallet Info
-  const [balance, setBalance] = useState('0')
-  const [decimals, setDecimals] = useState(18)
-  const [quoteLoading, setQuoteLoading] = useState(false)
 
-  const getTokenDetails = (symbol) => {
+  const [balance, setBalance] = useState<string>('0')
+  const [decimals, setDecimals] = useState<number>(18)
+  const [quoteLoading, setQuoteLoading] = useState<boolean>(false)
+
+  const getTokenDetails = (symbol: string) => {
     const token = tokenList.tokens.find((token) => token.symbol === symbol)
-    return token || {}
+    return token || null
   }
 
-  const { address: sellTokenAddress, decimals: tokenDecimals = 18 } = getTokenDetails(sellToken)
+  const tokenDetails = getTokenDetails(sellToken)
+
+  const sellTokenAddress =
+    (tokenDetails?.address as `0x${string}`) ?? ('0x0000000000000000000000000000000000000000' as `0x${string}`)
+  const tokenDecimals = tokenDetails?.decimals ?? 18
 
   useEffect(() => {
     setDecimals(tokenDecimals)
   }, [sellToken, tokenDecimals])
 
-  const handleSettingsSave = (newSettings) => {
+  const handleSettingsSave = (newSettings: Settings) => {
     setSettings(newSettings)
   }
 
   useEffect(() => {
     const simulateQuote = async () => {
       if (!sellToken || !sellAmount) {
-        setBuyAmount(0)
+        setBuyAmount('')
         return
       }
 
       setQuoteLoading(true)
-      // setError(null)
 
       try {
-        // const response = await axios.post('/api/quote', {
-        //   sellToken,
-        //   sellAmount,
-        // })
-        // setBuyAmount(response.data.buyAmount)
         setTimeout(() => {
-          setBuyAmount(6969)
-        }, 3000)
+          setBuyAmount('6969')
+        }, 1000)
       } catch (error) {
-        // setError(error.message)
         setBuyAmount('')
       } finally {
         setTimeout(() => {
           setQuoteLoading(false)
-        }, 2000)
+        }, 1000)
       }
     }
 
     simulateQuote()
   }, [sellToken, sellAmount, buyToken])
+
+  if (!address) {
+    return <div>Please connect your wallet to continue.</div>
+  }
 
   return (
     <div className='relative max-w-md mx-auto p-6 rounded-3xl'>
@@ -112,27 +111,13 @@ const SwapCard = () => {
         address={address}
         quoteLoading={quoteLoading}
       />
-      {/* OPTION A:
-      initiate atlas-sdk as a REST /route */}
-      {/* <HandleSwap
-        sellToken={sellToken}
-        buyToken={buyToken}
-        sellAmount={sellAmount}
-        slippageTolerance={settings.slippageTolerance}
-        transactionDeadline={settings.transactionDeadline}
-        address={address}
-      /> */}
-      {/* OPTION B:
-      initiate atlas-sdk as a hook */}
       <HandleAtlas
         sellToken={sellToken}
         buyToken={buyToken}
         sellAmount={sellAmount}
         slippageTolerance={settings.slippageTolerance}
         transactionDeadline={settings.transactionDeadline}
-        address={address}
       />
-      {/* <SwapButton isConnected={isConnected} sellAmount={sellAmount} buyToken={buyToken} /> */}
       <SettingsModal
         isVisible={isSettingsModalVisible}
         onClose={() => setIsSettingsModalVisible(false)}

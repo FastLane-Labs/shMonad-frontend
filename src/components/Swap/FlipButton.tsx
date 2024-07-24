@@ -1,6 +1,18 @@
 import React from 'react'
 
-const FlipButton = ({
+// Define the props interface
+interface FlipButtonProps {
+  sellToken: string
+  setSellToken: (token: string) => void
+  buyToken: string
+  setBuyToken: (token: string) => void
+  sellAmount: string
+  setSellAmount: (amount: string) => void
+  buyAmount: string
+  setBuyAmount: (amount: string) => void
+}
+
+const FlipButton: React.FC<FlipButtonProps> = ({
   sellToken,
   setSellToken,
   buyToken,
@@ -16,6 +28,7 @@ const FlipButton = ({
     setSellAmount(buyAmount)
     setBuyAmount(sellAmount)
   }
+
   return (
     <div className='relative flex justify-center mb-1'>
       <button

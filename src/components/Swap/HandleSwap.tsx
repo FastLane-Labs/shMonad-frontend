@@ -6,15 +6,30 @@
 import { useState, useEffect } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
 import axios from 'axios'
-import { ethers } from 'ethers'
 import { getDappAddress, getControlAddress } from '@/utils/getContractAddress'
 import SwapButton from './SwapButton'
 
-const HandleSwap = ({ sellToken, buyToken, sellAmount, slippageTolerance, transactionDeadline, address }) => {
+interface HandleSwapProps {
+  sellToken: string
+  buyToken: string
+  sellAmount: string
+  slippageTolerance: number
+  transactionDeadline: number
+  address: string
+}
+
+const HandleSwap: React.FC<HandleSwapProps> = ({
+  sellToken,
+  buyToken,
+  sellAmount,
+  slippageTolerance,
+  transactionDeadline,
+  address,
+}) => {
   const { data: walletClient, isError, isLoading } = useWalletClient()
   const { address: account, chain: chainInfo } = useAccount()
   const [isSwapping, setIsSwapping] = useState(false)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSwap = async () => {
     if (!chainInfo) {
@@ -54,7 +69,7 @@ const HandleSwap = ({ sellToken, buyToken, sellAmount, slippageTolerance, transa
 
       // Assuming the response contains transaction details
       console.log('Swap successful', response.data)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Swap failed', error)
       setError(error.message)
     } finally {

@@ -1,9 +1,15 @@
 import React, { useState } from 'react'
 import ModalWrapper from '../Wrappers/ModalWrapper'
+import { Settings } from '@/types'
+interface SettingsModalProps {
+  isVisible: boolean
+  onClose: () => void
+  onSave: (settings: Settings) => void
+}
 
-const SettingsModal = ({ isVisible, onClose, onSave }) => {
-  const [slippageTolerance, setSlippageTolerance] = useState(0.5)
-  const [transactionDeadline, setTransactionDeadline] = useState()
+const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, onSave }) => {
+  const [slippageTolerance, setSlippageTolerance] = useState<number>(0.5)
+  const [transactionDeadline, setTransactionDeadline] = useState<number>(20)
 
   const handleSave = () => {
     if (slippageTolerance > 100) {
