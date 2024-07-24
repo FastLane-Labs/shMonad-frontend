@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 
 const SwapButton = ({ isConnected, sellAmount, buyToken, handleSwap, isLoading }) => {
-  const { open } = useWeb3Modal()
+  const { openConnectModal } = useConnectModal()
   const [localLoading, setLocalLoading] = useState(false)
 
   const handleClick = async () => {
@@ -13,7 +13,7 @@ const SwapButton = ({ isConnected, sellAmount, buyToken, handleSwap, isLoading }
 
   if (!isConnected) {
     return (
-      <button className='btn bg-secondary rounded-2xl w-full text-white' onClick={() => open()}>
+      <button className='btn bg-secondary rounded-2xl w-full text-white' onClick={() => openConnectModal()}>
         Connect wallet
       </button>
     )
