@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint --fix",
+    "lint:check": "next lint",
     "test": "jest --transformIgnorePatterns \"node_modules/(?!wagmi)/\"",
     "pages:build": "npx @cloudflare/next-on-pages",
     "preview": "npm run pages:build && wrangler pages dev",
