@@ -1,12 +1,14 @@
+import '@rainbow-me/rainbowkit/styles.css'
 import type { Metadata, Viewport } from 'next'
 import { PropsWithChildren } from 'react'
 import { SITE_DESCRIPTION, SITE_EMOJI, SITE_INFO, SITE_NAME, SITE_URL } from '@/utils/siteInfo'
 import { Layout } from '@/components/Layout'
-import { Web3Provider } from '@/context/Web3'
+import ClientWeb3Provider from '../context/ClientWeb3Provider'
 import { NotificationProvider } from '@/context/Notifications'
 import { cookieToInitialState } from 'wagmi'
 import { WALLETCONNECT_CONFIG } from '@/utils/web3'
 import '../assets/globals.css'
+import React from 'react'
 
 export const metadata: Metadata = {
   applicationName: SITE_NAME,
@@ -41,8 +43,6 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout(props: PropsWithChildren) {
-  const initialState = cookieToInitialState(WALLETCONNECT_CONFIG, null)
-
   return (
     <html lang='en'>
       <head>
@@ -51,13 +51,12 @@ export default function RootLayout(props: PropsWithChildren) {
           href={`data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${SITE_EMOJI}</text></svg>`}
         />
       </head>
-
       <body>
-        <Web3Provider initialState={initialState}>
+        <ClientWeb3Provider>
           <NotificationProvider>
             <Layout>{props.children}</Layout>
           </NotificationProvider>
-        </Web3Provider>
+        </ClientWeb3Provider>
       </body>
     </html>
   )

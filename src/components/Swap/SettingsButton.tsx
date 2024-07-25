@@ -1,4 +1,15 @@
-const SettingsButton = ({ settings, setIsSettingsModalVisible }) => {
+import React from 'react'
+
+interface Settings {
+  slippageTolerance: number
+}
+
+interface SettingsButtonProps {
+  settings: Settings
+  setIsSettingsModalVisible: (visible: boolean) => void
+}
+
+const SettingsButton: React.FC<SettingsButtonProps> = ({ settings, setIsSettingsModalVisible }) => {
   return (
     <button
       className='btn bg-base-100 border-none flex gap-2 text-primary'

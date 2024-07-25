@@ -1,9 +1,10 @@
 import React from 'react'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 export function Connect() {
   return (
     <div>
-      <w3m-button label='Connect' balance='hide' size='sm' />
+      <ConnectButton label='Connect' showBalance={false} />
     </div>
   )
 }
