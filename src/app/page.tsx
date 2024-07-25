@@ -1,9 +1,10 @@
-import SwapCard from '@/components/Swap/SwapCard'
+'use client'
+import FastlaneApp from '@/core/routes'
 
 export default function Home() {
   return (
     <>
-      <SwapCard />
+      <FastlaneApp />
     </>
   )
 }

@@ -1,12 +1,10 @@
 import '@rainbow-me/rainbowkit/styles.css'
 import type { Metadata, Viewport } from 'next'
-import { PropsWithChildren } from 'react'
+import { Fragment, PropsWithChildren } from 'react'
 import { SITE_DESCRIPTION, SITE_EMOJI, SITE_INFO, SITE_NAME, SITE_URL } from '@/utils/siteInfo'
 import { Layout } from '@/components/Layout'
 import ClientWeb3Provider from '../context/ClientWeb3Provider'
 import { NotificationProvider } from '@/context/Notifications'
-import { cookieToInitialState } from 'wagmi'
-import { WALLETCONNECT_CONFIG } from '@/utils/web3'
 import '../assets/globals.css'
 import React from 'react'
 
@@ -54,10 +52,17 @@ export default function RootLayout(props: PropsWithChildren) {
       <body>
         <ClientWeb3Provider>
           <NotificationProvider>
-            <Layout>{props.children}</Layout>
+            <AppRouter>
+              <Layout>{props.children}</Layout>
+            </AppRouter>
           </NotificationProvider>
         </ClientWeb3Provider>
       </body>
     </html>
   )
+}
+
+export const AppRouter: React.FC<PropsWithChildren<{}>> = ({ children }) => {
+  const Router = Fragment
+  return <Router>{children}</Router>
 }
