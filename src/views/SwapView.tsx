@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react'
+import { useAccount } from 'wagmi'
 import SellComponent from '@/components/Swap/SellComponent'
 import BuyComponent from '@/components/Swap/BuyComponent'
 import FlipButton from '@/components/Buttons/FlipButton'
 import SettingsButton from '@/components/Buttons/SettingsButton'
 import SettingsModal from '@/components/Modals/SettingsModal'
 import HandleAtlas from '@/components/Swap/HandleAtlas'
-import { useAccount } from 'wagmi'
 import { Settings } from '@/types'
 
 const SwapView: React.FC = () => {
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
+
   const [sellToken, setSellToken] = useState<string>('ETH')
   const [buyToken, setBuyToken] = useState<string>('')
   const [sellAmount, setSellAmount] = useState<string>('')
@@ -39,10 +40,6 @@ const SwapView: React.FC = () => {
 
   const handleSettingsSave = (newSettings: Settings) => {
     setSettings(newSettings)
-  }
-
-  if (!address) {
-    return <div>Please connect your wallet to continue.</div>
   }
 
   return (

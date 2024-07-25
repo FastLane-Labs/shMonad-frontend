@@ -6,7 +6,7 @@ import { formatBalance } from '@/utils/formatBalance'
 import { erc20Abi } from 'viem'
 
 interface TokenBalanceProps {
-  readonly address: string
+  readonly address?: string
   readonly tokenAddress?: string
   readonly className?: string
   readonly toFixed?: number

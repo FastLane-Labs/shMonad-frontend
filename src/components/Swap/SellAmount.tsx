@@ -6,7 +6,7 @@ interface SellAmountProps {
   setSellToken: (token: string) => void
   sellAmount: string
   setSellAmount: (amount: string) => void
-  address: `0x${string}`
+  address?: `0x${string}`
   balance: string
 }
 
@@ -42,7 +42,7 @@ const SellAmount: React.FC<SellAmountProps> = ({
       <button className='btn bg-secondary text-primary' onClick={handleSetMax}>
         MAX
       </button>
-      <TokenSelect value={sellToken} onChange={setSellToken} address={address} defaultLabel={'Select a token'} />
+      <TokenSelect value={sellToken} onChange={setSellToken} address={address!!} defaultLabel={'Select a token'} />
     </div>
   )
 }

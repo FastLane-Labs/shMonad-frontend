@@ -6,7 +6,7 @@ interface BuyComponentProps {
   setBuyToken: (token: any) => void
   buyAmount: any
   setBuyAmount: (amount: any) => void
-  address: `0x${string}`
+  address?: `0x${string}`
   quoteLoading: boolean
 }
 
