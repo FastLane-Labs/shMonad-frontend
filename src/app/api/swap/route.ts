@@ -1,7 +1,8 @@
+export const runtime = 'edge'
 import { NextResponse } from 'next/server'
-import { ethers } from 'ethers'
-import { AtlasSdk, FastlaneOperationsRelay } from 'fastlane-atlas-sdk'
 
+import { AtlasSdk, FastlaneOperationsRelay, UserOperation } from 'fastlane-atlas-sdk'
+import { ethers } from 'ethers'
 // const encodeSwapData = (sellToken, buyToken, sellAmount, buyAmount, recipientAddress) => {
 //   const abiCoder = new ethers.utils.AbiCoder()
 //   return abiCoder.encode(
@@ -10,7 +11,7 @@ import { AtlasSdk, FastlaneOperationsRelay } from 'fastlane-atlas-sdk'
 //   )
 // }
 
-export async function POST(req) {
+export async function POST(req: any) {
   try {
     // Parse the request body
     const body = await req.json()
@@ -31,8 +32,6 @@ export async function POST(req) {
     } = body
 
     // init atlas operation relay
-    // todo:
-    // replace FastlaneOperationsRelay with import {fastlaneBackend} from atlas-sdk
     const operationsRelay = new FastlaneOperationsRelay({
       basePath: 'https://eth-sepolia.atlas-operations-relay.fastlane.xyz',
     })
@@ -40,7 +39,13 @@ export async function POST(req) {
     // init atlas sdk
     const atlasSdk = new AtlasSdk(provider, chainId, operationsRelay)
 
-    let [userOpHash, solverOperations] = await atlasSdk.submitUserOperation(userOperation, callConfig, hints)
+    // Define userOperation, callConfig, and hints // Define the user operation
+    const userOperation: UserOperation = {
+      // add other required properties and methods
+    } as UserOperation
+    const callConfig = 10
+
+    let [userOpHash, solverOperations] = await atlasSdk.submitUserOperation(userOperation, callConfig)
 
     // Create a response object
     const res = {
@@ -62,8 +67,8 @@ export async function POST(req) {
     }
 
     // Return the response
-    return NextResponse.json(response)
-  } catch (error) {
+    return NextResponse.json(res)
+  } catch (error: any) {
     return NextResponse.json({ status: 'error', message: error.message })
   }
 }
