@@ -12,7 +12,7 @@ export interface AppConfigState {
   fromPrice?: string
   toPrice?: number
   currentTransaction?: TransactionParams
-  currentRequestId?: string
+  currentQuoteId?: string // unique id for the quote
   config: AppConfig
 }
 
