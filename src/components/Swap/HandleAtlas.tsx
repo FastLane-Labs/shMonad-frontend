@@ -8,9 +8,23 @@ import { useState, useEffect } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
 import { getDappAddress, getControlAddress } from '@/utils/getContractAddress'
 import SwapButton from './SwapButton'
-import useAtlas from '@/hooks/useAtlas'
+import useAtlas, { SwapParameters } from '@/hooks/useAtlas'
 
-const HandleAtlas = ({ sellToken, buyToken, sellAmount, slippageTolerance, transactionDeadline }) => {
+interface HandleAtlasProps {
+  sellToken: string
+  buyToken: string
+  sellAmount: string
+  slippageTolerance: number
+  transactionDeadline: number
+}
+
+const HandleAtlas: React.FC<HandleAtlasProps> = ({
+  sellToken,
+  buyToken,
+  sellAmount,
+  slippageTolerance,
+  transactionDeadline,
+}) => {
   const { data: walletClient, isError, isLoading } = useWalletClient()
   const { address: account, chain: chainInfo } = useAccount()
   const { handleSwap, isSwapping, error } = useAtlas()
@@ -43,7 +57,7 @@ const HandleAtlas = ({ sellToken, buyToken, sellAmount, slippageTolerance, trans
       operationsRelayUrl,
       dapp,
       control,
-    }
+    } as SwapParameters
 
     const response = await handleSwap(swapParams)
 

@@ -2,18 +2,22 @@
   "extends": "@tsconfig/next/tsconfig.json",
   "compilerOptions": {
     "target": "es6",
+    "allowJs": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
+    "outDir": "./out",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "jsx": "preserve"
   },
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   },
-  "include": ["next-env.d.ts", "src", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "src", ".next/types/**/*.ts", "__tests__/**/*.ts", "__tests__/**/*.tsx"],
   "exclude": ["node_modules"]
 }
