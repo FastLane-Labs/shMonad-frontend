@@ -6,6 +6,11 @@ export enum Exchange {
   UNISWAPV3 = 'UNISWAPV3',
 }
 
+export enum SwapType {
+  EXACT_IN = 'EXACT_IN',
+  EXACT_OUT = 'EXACT_OUT',
+}
+
 interface ExchangeAddresses {
   quoter: string
   factory: string

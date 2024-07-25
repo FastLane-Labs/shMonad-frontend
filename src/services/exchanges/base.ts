@@ -1,4 +1,4 @@
-import { QuoteRequest, QuoteResult, SwapRoute } from '@/types'
+import { QuoteRequest, QuoteResult } from '@/types'
 
 export abstract class Exchange {
   public static getQuote(quoteRequest: QuoteRequest): QuoteResult {
