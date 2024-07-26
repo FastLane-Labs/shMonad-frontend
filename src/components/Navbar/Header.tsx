@@ -1,9 +1,7 @@
 import React from 'react'
-import { LinkComponent } from '../LinkComponent'
-import { SITE_EMOJI } from '@/utils/siteInfo'
 import { Connect } from './Connect'
 import { NotificationsDrawer } from '../Notifications/NotificationsDrawer'
-import ThemeToggle from '@/components/ThemeToggle'
+import ThemeToggle from '@/components/Theme/ThemeToggle'
 
 export function Header() {
   return (

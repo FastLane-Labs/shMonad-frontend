@@ -4,7 +4,7 @@ import React from 'react'
 import { useBlockNumber, useAccount } from 'wagmi'
 import { GetNetworkColor } from '@/utils/network'
 import { LinkComponent } from '../LinkComponent'
-import ThemeToggle2 from '../ThemeToggle2'
+import ThemeToggle2 from '@/components/Theme/ThemeToggle2'
 
 export function NetworkStatus() {
   const block = useBlockNumber({ watch: true })

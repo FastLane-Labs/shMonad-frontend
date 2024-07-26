@@ -7,7 +7,7 @@ import SettingsButton from '@/components/Buttons/SettingsButton'
 import SettingsModal from '@/components/Modals/SettingsModal'
 import HandleAtlas from '@/components/Swap/HandleAtlas'
 import { Settings } from '@/types'
-import BackgroundGradient from '@/components/BackgroundGradient'
+import BackgroundGradient from '@/components/Theme/BackgroundGradient'
 import SwapButton from '@/components/Buttons/SwapButton'
 
 const SwapView: React.FC = () => {
@@ -97,15 +97,14 @@ const SwapView: React.FC = () => {
             address={address}
             quoteLoading={quoteLoading}
           />
-
-          {/* <HandleAtlas
+          <HandleAtlas
             sellToken={sellToken}
             buyToken={buyToken}
             sellAmount={sellAmount}
             slippageTolerance={settings.slippageTolerance}
             transactionDeadline={settings.transactionDeadline}
-          /> */}
-          <SwapButton sellAmount={sellAmount} buyToken={buyToken} />
+          />
+          {/* <SwapButton sellAmount={sellAmount} buyToken={buyToken} /> */}
           <SettingsModal
             isVisible={isSettingsModalVisible}
             onClose={() => setIsSettingsModalVisible(false)}
