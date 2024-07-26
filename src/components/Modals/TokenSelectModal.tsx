@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import ModalWrapper from '../Wrappers/ModalWrapper'
 import { useTokenList } from '@/hooks/useTokenList'
-import { useChainId } from 'wagmi'
+import { useChainId, useAccount } from 'wagmi'
 import { Token } from '@/types'
 import { TokenBalance } from '../TokenBalance/TokenBalance'
-import { useAccount } from 'wagmi'
 
 interface TokenSelectModalProps {
   selectedToken: Token | null
@@ -17,7 +16,6 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({ selectedToken, onSe
   const [isOpen, setIsOpen] = useState(false)
   const { tokens, loading, error } = useTokenList(chainId)
   const [searchTerm, setSearchTerm] = useState('')
-
   const { address } = useAccount()
 
   useEffect(() => {

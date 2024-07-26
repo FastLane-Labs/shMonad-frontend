@@ -8,11 +8,15 @@ interface SwapState {
   fromAmount: string
   toAmount: string
   quoteLoading: boolean
+  balance: string
+  decimals: number
   setFromToken: (token: Token | null) => void
   setToToken: (token: Token | null) => void
   setFromAmount: (amount: string) => void
   setToAmount: (amount: string) => void
   setQuoteLoading: (loading: boolean) => void
+  setBalance: (balance: string) => void
+  setDecimals: (decimals: number) => void
   swapTokens: () => void
   resetSelections: () => void
 }
@@ -24,6 +28,8 @@ export const useSwap = (): SwapState => {
   const [fromAmount, setFromAmount] = useState<string>('')
   const [toAmount, setToAmount] = useState<string>('')
   const [quoteLoading, setQuoteLoading] = useState<boolean>(false)
+  const [balance, setBalance] = useState<string>('0')
+  const [decimals, setDecimals] = useState<number>(18)
 
   const handleSwapTokens = useCallback(() => {
     setFromToken(toToken)
@@ -39,28 +45,26 @@ export const useSwap = (): SwapState => {
     setToAmount('')
   }, [])
 
-  // Reset selections when chainId changes
   useEffect(() => {
     resetSelections()
   }, [chainId, resetSelections])
 
-  const swapState = useMemo(
-    () => ({
-      fromToken,
-      toToken,
-      fromAmount,
-      toAmount,
-      quoteLoading,
-      setFromToken,
-      setToToken,
-      setFromAmount,
-      setToAmount,
-      setQuoteLoading,
-      swapTokens: handleSwapTokens,
-      resetSelections,
-    }),
-    [fromToken, toToken, fromAmount, toAmount, quoteLoading, handleSwapTokens, resetSelections]
-  )
-
-  return swapState
+  return {
+    fromToken,
+    toToken,
+    fromAmount,
+    toAmount,
+    quoteLoading,
+    balance,
+    decimals,
+    setFromToken,
+    setToToken,
+    setFromAmount,
+    setToAmount,
+    setQuoteLoading,
+    setBalance,
+    setDecimals,
+    swapTokens: handleSwapTokens,
+    resetSelections,
+  }
 }

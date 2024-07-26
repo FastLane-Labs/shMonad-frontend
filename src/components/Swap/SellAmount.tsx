@@ -11,14 +11,7 @@ interface SellAmountProps {
   balance: string
 }
 
-const SellAmount: React.FC<SellAmountProps> = ({
-  sellToken,
-  setSellToken,
-  sellAmount,
-  setSellAmount,
-  address,
-  balance,
-}) => {
+const SellAmount: React.FC<SellAmountProps> = ({ sellToken, setSellToken, sellAmount, setSellAmount, balance }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     // Ensure the input is valid (numbers and one decimal point)

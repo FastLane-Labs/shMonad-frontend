@@ -8,18 +8,10 @@ interface BuyAmountProps {
   setBuyToken: (token: Token) => void
   buyAmount: string
   setBuyAmount: (amount: string) => void
-  address?: `0x${string}`
   quoteLoading: boolean
 }
 
-const BuyAmount: React.FC<BuyAmountProps> = ({
-  buyToken,
-  setBuyToken,
-  buyAmount,
-  setBuyAmount,
-  address,
-  quoteLoading,
-}) => {
+const BuyAmount: React.FC<BuyAmountProps> = ({ buyToken, setBuyToken, buyAmount, setBuyAmount, quoteLoading }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     // Ensure the input is valid (numbers and one decimal point)
