@@ -1,23 +1,17 @@
 import React, { ChangeEvent } from 'react'
-import TokenSelect from './TokenSelect'
+import TokenSelectModal from '../Modals/TokenSelectModal'
+import { Token } from '@/types'
 
 interface SellAmountProps {
-  sellToken: string
-  setSellToken: (token: string) => void
+  sellToken: Token | null
+  setSellToken: (token: Token) => void
   sellAmount: string
   setSellAmount: (amount: string) => void
-  address: `0x${string}`
+  address?: `0x${string}`
   balance: string
 }
 
-const SellAmount: React.FC<SellAmountProps> = ({
-  sellToken,
-  setSellToken,
-  sellAmount,
-  setSellAmount,
-  address,
-  balance,
-}) => {
+const SellAmount: React.FC<SellAmountProps> = ({ sellToken, setSellToken, sellAmount, setSellAmount, balance }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     // Ensure the input is valid (numbers and one decimal point)
@@ -39,10 +33,15 @@ const SellAmount: React.FC<SellAmountProps> = ({
         className='bg-neutral text-white p-2 rounded-2xl flex-grow text-4xl w-full focus:outline-none'
         placeholder='0'
       />
-      <button className='btn bg-secondary text-primary' onClick={handleSetMax}>
+      <button className='btn-outline text-primary' onClick={handleSetMax}>
         MAX
       </button>
-      <TokenSelect value={sellToken} onChange={setSellToken} address={address} defaultLabel={'Select a token'} />
+      <TokenSelectModal
+        selectedToken={sellToken}
+        onSelectToken={setSellToken}
+        defaultLabel='Select a token'
+        direction='sell'
+      />
     </div>
   )
 }

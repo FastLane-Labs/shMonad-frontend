@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
 import axios from 'axios'
 import { getDappAddress, getControlAddress } from '@/utils/getContractAddress'
-import SwapButton from './SwapButton'
+import SwapButton from '@/components/Buttons/SwapButton'
 
 interface HandleSwapProps {
   sellToken: string

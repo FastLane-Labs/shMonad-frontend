@@ -1,32 +1,23 @@
 import React from 'react'
+import { useSwapContext } from '@/context/SwapContext'
 
-// Define the props interface
-interface FlipButtonProps {
-  sellToken: string
-  setSellToken: (token: string) => void
-  buyToken: string
-  setBuyToken: (token: string) => void
-  sellAmount: string
-  setSellAmount: (amount: string) => void
-  buyAmount: string
-  setBuyAmount: (amount: string) => void
-}
+const FlipButton: React.FC = () => {
+  const {
+    fromToken: sellToken,
+    setFromToken: setSellToken,
+    fromAmount: sellAmount,
+    setFromAmount: setSellAmount,
+    toToken: buyToken,
+    setToToken: setBuyToken,
+    toAmount: buyAmount,
+    setToAmount: setBuyAmount,
+  } = useSwapContext()
 
-const FlipButton: React.FC<FlipButtonProps> = ({
-  sellToken,
-  setSellToken,
-  buyToken,
-  setBuyToken,
-  sellAmount,
-  setSellAmount,
-  buyAmount,
-  setBuyAmount,
-}) => {
   const handleSwapArrow = () => {
     setSellToken(buyToken)
     setBuyToken(sellToken)
     setSellAmount(buyAmount)
-    setBuyAmount(sellAmount)
+    setBuyAmount('')
   }
 
   return (

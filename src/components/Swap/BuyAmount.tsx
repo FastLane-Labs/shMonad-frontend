@@ -1,24 +1,17 @@
 import React, { ChangeEvent } from 'react'
-import TokenSelect from './TokenSelect'
+import TokenSelectModal from '../Modals/TokenSelectModal'
+import { Token } from '@/types'
 
 // Define the types for the props
 interface BuyAmountProps {
-  buyToken: string
-  setBuyToken: (token: string) => void
+  buyToken: Token | null
+  setBuyToken: (token: Token) => void
   buyAmount: string
   setBuyAmount: (amount: string) => void
-  address: `0x${string}`
   quoteLoading: boolean
 }
 
-const BuyAmount: React.FC<BuyAmountProps> = ({
-  buyToken,
-  setBuyToken,
-  buyAmount,
-  setBuyAmount,
-  address,
-  quoteLoading,
-}) => {
+const BuyAmount: React.FC<BuyAmountProps> = ({ buyToken, setBuyToken, buyAmount, setBuyAmount, quoteLoading }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     // Ensure the input is valid (numbers and one decimal point)
@@ -39,7 +32,12 @@ const BuyAmount: React.FC<BuyAmountProps> = ({
         />
         {quoteLoading && <span className='absolute right-4 loading loading-spinner loading-sm'></span>}
       </div>
-      <TokenSelect value={buyToken} onChange={setBuyToken} address={address} defaultLabel='Select a token' />
+      <TokenSelectModal
+        selectedToken={buyToken}
+        onSelectToken={setBuyToken}
+        defaultLabel='Select a token'
+        direction='buy'
+      />
     </div>
   )
 }

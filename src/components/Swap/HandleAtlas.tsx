@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
 import { getDappAddress, getControlAddress } from '@/utils/getContractAddress'
-import SwapButton from './SwapButton'
+import SwapButton from '../Buttons/SwapButton'
 import useAtlas, { SwapParameters } from '@/hooks/useAtlas'
 
 interface HandleAtlasProps {

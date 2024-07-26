@@ -1,4 +1,4 @@
-export const getDappAddress = (chainId) => {
+export const getDappAddress = (chainId: number) => {
   switch (chainId) {
     case 1:
       return '0xMainetDappAddress'
@@ -11,7 +11,7 @@ export const getDappAddress = (chainId) => {
   }
 }
 
-export const getControlAddress = (chainId) => {
+export const getControlAddress = (chainId: number) => {
   switch (chainId) {
     case 1:
       return '0xMainetDappAddress'

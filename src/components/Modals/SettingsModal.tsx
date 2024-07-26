@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import ModalWrapper from '../Wrappers/ModalWrapper'
+import ModalWrapper from '@/components/Wrappers/ModalWrapper'
 import { Settings } from '@/types'
 interface SettingsModalProps {
   isVisible: boolean
