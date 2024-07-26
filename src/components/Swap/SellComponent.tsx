@@ -9,10 +9,10 @@ const SellComponent: React.FC = () => {
     setFromToken: setSellToken,
     fromAmount: sellAmount,
     setFromAmount: setSellAmount,
-    balance,
-    setBalance,
-    decimals,
   } = useSwapContext()
+
+  const balance = '1'
+  const decimals = 18
 
   const formatBalance = (balance: string, decimals: number = 18): number => {
     return Number(balance) / Math.pow(10, decimals)
@@ -24,12 +24,7 @@ const SellComponent: React.FC = () => {
         <span className='text-base-content'>Sell</span>
         <h1 className='text-base-content'>
           <span>Balance: </span>
-          <TokenBalance
-            address={sellToken?.address}
-            tokenAddress={sellToken?.address}
-            toFixed={4}
-            onBalanceChange={({ balance }) => setBalance(formatBalance(balance.toString(), decimals).toString())}
-          />
+          <TokenBalance address={sellToken?.address} tokenAddress={sellToken?.address} toFixed={4} />
         </h1>
       </div>
       <SellAmount

@@ -12,21 +12,7 @@ import { useSwapContext } from '@/context/SwapContext'
 
 const SwapView: React.FC = () => {
   const { address, isConnected } = useAccount()
-  const {
-    fromToken,
-    setFromToken,
-    fromAmount,
-    setFromAmount,
-    toToken,
-    setToToken,
-    toAmount,
-    setToAmount,
-    quoteLoading,
-    setQuoteLoading,
-    balance,
-    setBalance,
-    decimals,
-  } = useSwapContext()
+  const { fromToken, fromAmount, toToken, setToAmount, setQuoteLoading } = useSwapContext()
 
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
   const [settings, setSettings] = useState<Settings>({
