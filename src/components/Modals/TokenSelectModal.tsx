@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import ModalWrapper from '../Wrappers/ModalWrapper'
+import ModalWrapper from '@/components/Wrappers/ModalWrapper'
 import { useTokenList } from '@/hooks/useTokenList'
 import { useChainId, useAccount } from 'wagmi'
 import { Token } from '@/types'
@@ -36,9 +36,9 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({ selectedToken, onSe
   )
 
   return (
-    <>
+    <div className='relative'>
       <button
-        className='h-12 bg-base-200 hover:bg-base-100 text-primary p-2 rounded-xl focus:outline-none appearance-none flex items-center text-nowrap w-max'
+        className='h-[48px] hover:bg-base-100 text-neutral-content p-2 rounded-xl focus:outline-none appearance-none flex items-center text-nowrap w-max'
         onClick={() => setIsOpen(true)}>
         {selectedToken && (
           <img src={selectedToken.logoURI} alt={selectedToken.symbol} className='w-6 h-6 mr-2 rounded-full' />
@@ -86,7 +86,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({ selectedToken, onSe
           )}
         </div>
       </ModalWrapper>
-    </>
+    </div>
   )
 }
 

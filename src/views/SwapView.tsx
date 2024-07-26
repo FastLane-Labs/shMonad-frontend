@@ -6,6 +6,7 @@ import FlipButton from '@/components/Buttons/FlipButton'
 import SettingsButton from '@/components/Buttons/SettingsButton'
 import SettingsModal from '@/components/Modals/SettingsModal'
 import HandleAtlas from '@/components/Swap/HandleAtlas'
+import BackgroundGradient from '@/components/Theme/BackgroundGradient'
 import { Settings } from '@/types'
 import { useSwapContext } from '@/context/SwapContext'
 
@@ -52,29 +53,44 @@ const SwapView: React.FC = () => {
   }
 
   return (
-    <div className='max-w-md mx-auto p-6 rounded-3xl'>
-      <div className='flex justify-between items-center mb-4'>
-        <h2 className='text-xl font-bold'>Swap</h2>
-        <SettingsButton settings={settings} setIsSettingsModalVisible={setIsSettingsModalVisible} />
+    <div className='relative max-w-md mx-auto'>
+      <BackgroundGradient />
+      <div
+        className='relative rounded-3xl'
+        style={{
+          background: 'rgba(0, 0, 0, .3)',
+        }}>
+        <div
+          className='relative max-w-md mx-auto p-4 rounded-3xl border border-accent'
+          style={{
+            background: 'linear-gradient(290deg, rgba(241,35,121, .1) 10%, rgba(7, 76, 255 , .1) 100%)',
+            boxShadow: 'rgba(241, 32, 116, .2) 0px 5px 90px 4px',
+          }}>
+          <div className='flex justify-end items-center mb-2'>
+            <SettingsButton settings={settings} setIsSettingsModalVisible={setIsSettingsModalVisible} />
+          </div>
+
+          <SellComponent />
+
+          <FlipButton />
+
+          <BuyComponent />
+
+          <HandleAtlas
+            sellToken={fromToken?.symbol || ''}
+            buyToken={toToken?.symbol || ''}
+            sellAmount={fromAmount}
+            slippageTolerance={settings.slippageTolerance}
+            transactionDeadline={settings.transactionDeadline}
+          />
+
+          <SettingsModal
+            isVisible={isSettingsModalVisible}
+            onClose={() => setIsSettingsModalVisible(false)}
+            onSave={handleSettingsSave}
+          />
+        </div>
       </div>
-
-      <SellComponent />
-      <FlipButton />
-      <BuyComponent />
-
-      <HandleAtlas
-        sellToken={fromToken?.symbol || ''}
-        buyToken={toToken?.symbol || ''}
-        sellAmount={fromAmount}
-        slippageTolerance={settings.slippageTolerance}
-        transactionDeadline={settings.transactionDeadline}
-      />
-
-      <SettingsModal
-        isVisible={isSettingsModalVisible}
-        onClose={() => setIsSettingsModalVisible(false)}
-        onSave={handleSettingsSave}
-      />
     </div>
   )
 }

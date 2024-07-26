@@ -1,10 +1,16 @@
-import React, { useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef, useCallback, ReactNode } from 'react'
 
-const ModalWrapper = ({ isVisible, onClose, children }) => {
-  const modalRef = useRef()
+interface ModalWrapperProps {
+  isVisible: boolean
+  onClose: () => void
+  children: ReactNode
+}
+
+const ModalWrapper: React.FC<ModalWrapperProps> = ({ isVisible, onClose, children }) => {
+  const modalRef = useRef<HTMLDivElement>(null)
 
   const handleEscape = useCallback(
-    (event) => {
+    (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose()
       }
@@ -20,8 +26,8 @@ const ModalWrapper = ({ isVisible, onClose, children }) => {
   }, [handleEscape])
 
   const handleClickOutside = useCallback(
-    (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
+    (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         onClose()
       }
     },
@@ -38,9 +44,7 @@ const ModalWrapper = ({ isVisible, onClose, children }) => {
   if (!isVisible) return null
 
   return (
-    // dim background outside of modal
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
-      {/* modal */}
       <div ref={modalRef} className='modal-box relative bg-base-200 text-neutral-content rounded-xl w-96 p-4 shadow-lg'>
         <button className='btn absolute top-3 right-2 text-neutral-content' onClick={onClose}>
           <svg
