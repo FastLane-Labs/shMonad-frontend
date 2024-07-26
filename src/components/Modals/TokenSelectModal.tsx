@@ -4,19 +4,27 @@ import { useTokenList } from '@/hooks/useTokenList'
 import { useChainId, useAccount } from 'wagmi'
 import { Token } from '@/types'
 import { TokenBalance } from '../TokenBalance/TokenBalance'
+import { useSwapContext } from '@/context/SwapContext'
 
 interface TokenSelectModalProps {
   selectedToken: Token | null
   onSelectToken: (token: Token) => void
+  direction: 'buy' | 'sell'
   defaultLabel: string
 }
 
-const TokenSelectModal: React.FC<TokenSelectModalProps> = ({ selectedToken, onSelectToken, defaultLabel }) => {
+const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
+  selectedToken,
+  onSelectToken,
+  direction,
+  defaultLabel,
+}) => {
   const chainId = useChainId()
   const [isOpen, setIsOpen] = useState(false)
   const { tokens, loading, error } = useTokenList(chainId)
   const [searchTerm, setSearchTerm] = useState('')
   const { address } = useAccount()
+  const { fromToken, toToken } = useSwapContext()
 
   useEffect(() => {
     if (!isOpen) {
@@ -29,11 +37,18 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({ selectedToken, onSe
     setIsOpen(false)
   }
 
-  const filteredTokens = tokens.filter(
-    (token) =>
+  const filteredTokens = tokens.filter((token) => {
+    if (direction === 'sell' && toToken && token.address.toLowerCase() === toToken.address.toLowerCase()) {
+      return false
+    }
+    if (direction === 'buy' && fromToken && token.address.toLowerCase() === fromToken.address.toLowerCase()) {
+      return false
+    }
+    return (
       token.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
       token.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+    )
+  })
 
   return (
     <div className='relative'>

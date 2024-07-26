@@ -32,7 +32,12 @@ const BuyAmount: React.FC<BuyAmountProps> = ({ buyToken, setBuyToken, buyAmount,
         />
         {quoteLoading && <span className='absolute right-4 loading loading-spinner loading-sm'></span>}
       </div>
-      <TokenSelectModal selectedToken={buyToken} onSelectToken={setBuyToken} defaultLabel='Select a token' />
+      <TokenSelectModal
+        selectedToken={buyToken}
+        onSelectToken={setBuyToken}
+        defaultLabel='Select a token'
+        direction='buy'
+      />
     </div>
   )
 }

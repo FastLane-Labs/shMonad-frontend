@@ -36,7 +36,12 @@ const SellAmount: React.FC<SellAmountProps> = ({ sellToken, setSellToken, sellAm
       <button className='btn-outline text-primary' onClick={handleSetMax}>
         MAX
       </button>
-      <TokenSelectModal selectedToken={sellToken} onSelectToken={setSellToken} defaultLabel='Select a token' />
+      <TokenSelectModal
+        selectedToken={sellToken}
+        onSelectToken={setSellToken}
+        defaultLabel='Select a token'
+        direction='sell'
+      />
     </div>
   )
 }
