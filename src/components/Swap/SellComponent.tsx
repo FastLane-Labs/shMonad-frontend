@@ -7,11 +7,11 @@ interface SellComponentProps {
   setSellToken: (token: string) => void
   sellAmount: string
   setSellAmount: (amount: string) => void
-  address: `0x${string}`
+  address?: `0x${string}`
   balance: string
   setBalance: (balance: string) => void
   decimals: number
-  sellTokenAddress: `0x${string}`
+  sellTokenAddress?: `0x${string}`
 }
 
 const SellComponent: React.FC<SellComponentProps> = ({

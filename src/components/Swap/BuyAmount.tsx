@@ -7,7 +7,7 @@ interface BuyAmountProps {
   setBuyToken: (token: string) => void
   buyAmount: string
   setBuyAmount: (amount: string) => void
-  address: `0x${string}`
+  address?: `0x${string}`
   quoteLoading: boolean
 }
 
@@ -39,7 +39,7 @@ const BuyAmount: React.FC<BuyAmountProps> = ({
         />
         {quoteLoading && <span className='absolute right-4 loading loading-spinner loading-sm'></span>}
       </div>
-      <TokenSelect value={buyToken} onChange={setBuyToken} address={address} defaultLabel='Select a token' />
+      <TokenSelect value={buyToken} onChange={setBuyToken} address={address!!} defaultLabel='Select a token' />
     </div>
   )
 }

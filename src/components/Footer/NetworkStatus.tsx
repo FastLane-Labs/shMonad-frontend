@@ -3,7 +3,7 @@
 import React from 'react'
 import { useBlockNumber, useAccount } from 'wagmi'
 import { GetNetworkColor } from '@/utils/network'
-import { LinkComponent } from '../../utils/LinkComponent'
+import { LinkComponent } from '../LinkComponent'
 import ThemeToggle2 from '../ThemeToggle2'
 
 export function NetworkStatus() {

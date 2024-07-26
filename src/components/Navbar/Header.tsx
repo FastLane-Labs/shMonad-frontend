@@ -1,5 +1,5 @@
 import React from 'react'
-import { LinkComponent } from '../../utils/LinkComponent'
+import { LinkComponent } from '../LinkComponent'
 import { SITE_EMOJI } from '@/utils/siteInfo'
 import { Connect } from './Connect'
 import { NotificationsDrawer } from '../Notifications/NotificationsDrawer'

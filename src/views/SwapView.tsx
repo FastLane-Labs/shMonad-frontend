@@ -1,17 +1,16 @@
-'use client'
 import React, { useState, useEffect } from 'react'
-import SellComponent from './SellComponent'
-import BuyComponent from './BuyComponent'
 import { useAccount } from 'wagmi'
-import FlipButton from './FlipButton'
-import SettingsModal from './SettingsModal'
-import tokenList from '@/constants/tokenList.json'
-import SettingsButton from './SettingsButton'
-import HandleAtlas from './HandleAtlas'
-import { Settings } from '@/types' // Adjust the path as necessary
+import SellComponent from '@/components/Swap/SellComponent'
+import BuyComponent from '@/components/Swap/BuyComponent'
+import FlipButton from '@/components/Buttons/FlipButton'
+import SettingsButton from '@/components/Buttons/SettingsButton'
+import SettingsModal from '@/components/Modals/SettingsModal'
+import HandleAtlas from '@/components/Swap/HandleAtlas'
+import { Settings } from '@/types'
 
-const SwapCard: React.FC = () => {
-  const { address } = useAccount()
+const SwapView: React.FC = () => {
+  const { address, isConnected } = useAccount()
+
   const [sellToken, setSellToken] = useState<string>('ETH')
   const [buyToken, setBuyToken] = useState<string>('')
   const [sellAmount, setSellAmount] = useState<string>('')
@@ -21,67 +20,35 @@ const SwapCard: React.FC = () => {
     slippageTolerance: 0.5,
     transactionDeadline: 20,
   })
-
   const [balance, setBalance] = useState<string>('0')
   const [decimals, setDecimals] = useState<number>(18)
   const [quoteLoading, setQuoteLoading] = useState<boolean>(false)
 
-  const getTokenDetails = (symbol: string) => {
-    const token = tokenList.tokens.find((token) => token.symbol === symbol)
-    return token || null
-  }
-
-  const tokenDetails = getTokenDetails(sellToken)
-
-  const sellTokenAddress =
-    (tokenDetails?.address as `0x${string}`) ?? ('0x0000000000000000000000000000000000000000' as `0x${string}`)
-  const tokenDecimals = tokenDetails?.decimals ?? 18
-
+  // Simulating quote fetching
   useEffect(() => {
-    setDecimals(tokenDecimals)
-  }, [sellToken, tokenDecimals])
+    const fetchQuote = async () => {
+      if (sellToken && sellAmount) {
+        setQuoteLoading(true)
+        // Simulate API call delay
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        setBuyAmount('100') // Dummy value
+        setQuoteLoading(false)
+      }
+    }
+    fetchQuote()
+  }, [sellToken, sellAmount])
 
   const handleSettingsSave = (newSettings: Settings) => {
     setSettings(newSettings)
   }
 
-  useEffect(() => {
-    const simulateQuote = async () => {
-      if (!sellToken || !sellAmount) {
-        setBuyAmount('')
-        return
-      }
-
-      setQuoteLoading(true)
-
-      try {
-        setTimeout(() => {
-          setBuyAmount('6969')
-        }, 1000)
-      } catch (error) {
-        setBuyAmount('')
-      } finally {
-        setTimeout(() => {
-          setQuoteLoading(false)
-        }, 1000)
-      }
-    }
-
-    simulateQuote()
-  }, [sellToken, sellAmount, buyToken])
-
-  if (!address) {
-    return <div>Please connect your wallet to continue.</div>
-  }
-
   return (
-    <div className='relative max-w-md mx-auto p-6 rounded-3xl'>
-      <div className='flex justify-between items-center'>
-        <h2 className='btn bg-base-100 hover:bg-base-100 mb-2 rounded-xl w-24 text-center border border-secondary text-base-300 cursor-default hover:border-secondary'>
-          Exchange
-        </h2>
+    <div className='max-w-md mx-auto p-6 rounded-3xl'>
+      <div className='flex justify-between items-center mb-4'>
+        <h2 className='text-xl font-bold'>Swap</h2>
         <SettingsButton settings={settings} setIsSettingsModalVisible={setIsSettingsModalVisible} />
       </div>
+
       <SellComponent
         sellToken={sellToken}
         setSellToken={setSellToken}
@@ -91,8 +58,9 @@ const SwapCard: React.FC = () => {
         balance={balance}
         setBalance={setBalance}
         decimals={decimals}
-        sellTokenAddress={sellTokenAddress}
+        sellTokenAddress={address} // This should be the actual token address
       />
+
       <FlipButton
         sellToken={sellToken}
         setSellToken={setSellToken}
@@ -103,6 +71,7 @@ const SwapCard: React.FC = () => {
         buyAmount={buyAmount}
         setBuyAmount={setBuyAmount}
       />
+
       <BuyComponent
         buyToken={buyToken}
         setBuyToken={setBuyToken}
@@ -111,6 +80,7 @@ const SwapCard: React.FC = () => {
         address={address}
         quoteLoading={quoteLoading}
       />
+
       <HandleAtlas
         sellToken={sellToken}
         buyToken={buyToken}
@@ -118,6 +88,7 @@ const SwapCard: React.FC = () => {
         slippageTolerance={settings.slippageTolerance}
         transactionDeadline={settings.transactionDeadline}
       />
+
       <SettingsModal
         isVisible={isSettingsModalVisible}
         onClose={() => setIsSettingsModalVisible(false)}
@@ -127,4 +98,4 @@ const SwapCard: React.FC = () => {
   )
 }
 
-export default SwapCard
+export default SwapView
