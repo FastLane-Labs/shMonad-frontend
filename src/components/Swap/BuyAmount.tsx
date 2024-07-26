@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react'
-import TokenSelect from './TokenSelect'
+import TokenSelectModal from '../Modals/TokenSelectModal'
 
 // Define the types for the props
 interface BuyAmountProps {
@@ -39,7 +39,7 @@ const BuyAmount: React.FC<BuyAmountProps> = ({
         />
         {quoteLoading && <span className='absolute right-4 loading loading-spinner loading-sm'></span>}
       </div>
-      <TokenSelect value={buyToken} onChange={setBuyToken} address={address!!} defaultLabel='Select a token' />
+      <TokenSelectModal value={buyToken} onChange={setBuyToken} address={address!!} defaultLabel='Select a token' />
     </div>
   )
 }

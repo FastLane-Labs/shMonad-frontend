@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react'
-import TokenSelect from './TokenSelect'
+import TokenSelect from '../Modals/TokenSelectModal'
 
 interface SellAmountProps {
   sellToken: string
