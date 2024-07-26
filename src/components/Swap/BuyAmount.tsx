@@ -40,12 +40,7 @@ const BuyAmount: React.FC<BuyAmountProps> = ({
         />
         {quoteLoading && <span className='absolute right-4 loading loading-spinner loading-sm'></span>}
       </div>
-      <TokenSelectModal
-        selectedToken={buyToken}
-        onSelectToken={setBuyToken}
-        defaultLabel='Select a token'
-        chainId={address ? parseInt(address.slice(2, 10), 16) : 1} // Default to Ethereum mainnet if no address
-      />
+      <TokenSelectModal selectedToken={buyToken} onSelectToken={setBuyToken} defaultLabel='Select a token' />
     </div>
   )
 }
