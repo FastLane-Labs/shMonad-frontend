@@ -1,8 +1,12 @@
-export interface Token {
-  address: string
+export type Token = {
   chainId: number
+  address: string
+  decimals: number
   name: string
   symbol: string
-  decimals: number
   logoURI: string
+}
+
+export interface ITokenProvider {
+  getTokensByChainId(chainId: number): Promise<Token[]>
 }
