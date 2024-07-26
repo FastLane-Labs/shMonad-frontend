@@ -42,7 +42,7 @@ const SellAmount: React.FC<SellAmountProps> = ({
       <button className='btn-outline text-primary' onClick={handleSetMax}>
         MAX
       </button>
-      <TokenSelect value={sellToken} onChange={setSellToken} address={address} defaultLabel={'Select a token'} />
+      <TokenSelect value={sellToken} onChange={setSellToken} address={address!!} defaultLabel={'Select a token'} />
     </div>
   )
 }
