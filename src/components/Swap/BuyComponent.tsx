@@ -1,34 +1,20 @@
 import React from 'react'
 import BuyAmount from './BuyAmount'
+import { useSwapContext } from '@/context/SwapContext'
 
-interface BuyComponentProps {
-  buyToken: any
-  setBuyToken: (token: any) => void
-  buyAmount: any
-  setBuyAmount: (amount: any) => void
-  address?: `0x${string}`
-  quoteLoading: boolean
-}
+const BuyComponent: React.FC = () => {
+  const { toToken, setToToken, toAmount, setToAmount, quoteLoading, setQuoteLoading } = useSwapContext()
 
-const BuyComponent: React.FC<BuyComponentProps> = ({
-  buyToken,
-  setBuyToken,
-  buyAmount,
-  setBuyAmount,
-  address,
-  quoteLoading,
-}) => {
   return (
     <div className='input-card mb-4'>
       <div className='flex justify-between items-center mb-2 text-sm'>
         <span className='text-base-content'>To</span>
       </div>
       <BuyAmount
-        buyToken={buyToken}
-        setBuyToken={setBuyToken}
-        buyAmount={buyAmount}
-        setBuyAmount={setBuyAmount}
-        address={address}
+        buyToken={toToken}
+        setBuyToken={setToToken}
+        buyAmount={toAmount}
+        setBuyAmount={setToAmount}
         quoteLoading={quoteLoading}
       />
     </div>

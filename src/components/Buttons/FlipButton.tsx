@@ -1,40 +1,30 @@
 import React from 'react'
+import { useSwapContext } from '@/context/SwapContext'
 
-// Define the props interface
-interface FlipButtonProps {
-  sellToken: string
-  setSellToken: (token: string) => void
-  buyToken: string
-  setBuyToken: (token: string) => void
-  sellAmount: string
-  setSellAmount: (amount: string) => void
-  buyAmount: string
-  setBuyAmount: (amount: string) => void
-}
+const FlipButton: React.FC = () => {
+  const {
+    fromToken: sellToken,
+    setFromToken: setSellToken,
+    fromAmount: sellAmount,
+    setFromAmount: setSellAmount,
+    toToken: buyToken,
+    setToToken: setBuyToken,
+    toAmount: buyAmount,
+    setToAmount: setBuyAmount,
+  } = useSwapContext()
 
-const FlipButton: React.FC<FlipButtonProps> = ({
-  sellToken,
-  setSellToken,
-  buyToken,
-  setBuyToken,
-  sellAmount,
-  setSellAmount,
-  buyAmount,
-  setBuyAmount,
-}) => {
   const handleSwapArrow = () => {
     setSellToken(buyToken)
     setBuyToken(sellToken)
     setSellAmount(buyAmount)
-    setBuyAmount(sellAmount)
+    setBuyAmount('')
   }
 
   return (
-    <div className='relative flex justify-center mb-2'>
+    <div className='relative flex justify-center mb-1'>
       <button
         onClick={handleSwapArrow}
-        className='absolute bg-gradient-to-br from-primary to-secondary from-35% text-neutral-content hover:from-secondary hover:to-primary hover:from-[0%]
-        border-none p-[0.3rem] rounded-lg -top-3'>
+        className='absolute bg-neutral text-white hover:text-gray-300 border-base-100 border-4 p-[0.4rem] rounded-xl -top-4'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
           className='h-5 w-5'
