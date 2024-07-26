@@ -1,3 +1,5 @@
+import { Address } from 'viem'
+
 export enum ChainId {
   POLYGON = 137,
 }
@@ -12,17 +14,17 @@ export enum SwapType {
 }
 
 interface ExchangeAddresses {
-  quoter: string
-  factory: string
-  router: string
+  quoter: Address
+  factory: Address
+  router: Address
 }
 
 export const CONTRACT_ADDRRESSES: { [chainId in ChainId]: { [exchange in Exchange]: ExchangeAddresses } } = {
   [ChainId.POLYGON]: {
     [Exchange.UNISWAPV3]: {
-      quoter: '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6',
-      factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
-      router: '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45',
+      quoter: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e', // QuoterV2
+      factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984', // UniswapV3Factory
+      router: '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45', // SwapRouter02
     },
   },
 }

@@ -1,4 +1,5 @@
 import { ChainId, SwapType, Exchange } from '@/constants'
+import { Address } from 'viem'
 
 export interface Settings {
   slippageTolerance: number
@@ -6,8 +7,8 @@ export interface Settings {
 }
 
 export interface SwapStep {
-  tokenIn: string // Address of the token to be swapped
-  tokenOut: string // Address of the token to receive
+  tokenIn: Address // Address of the token to be swapped
+  tokenOut: Address // Address of the token to receive
   extra: any // Extra data needed for the swap (e.g. UniswapV3 pool fee)
 }
 
@@ -19,7 +20,7 @@ export interface SwapRoute {
 
 export interface QuoteRequest {
   swapType: SwapType
-  amountIn: bigint
+  amount: bigint // in or out depending on swapType
   swapRoute: SwapRoute
 }
 

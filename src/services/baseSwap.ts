@@ -1,69 +1,112 @@
-import { SwapType, CONTRACT_ADDRRESSES } from '@/constants'
-import { MULTICALL3_ABI, MULTICALL3_ADDR } from '@/constants/multicall3'
+import { config } from '../../wagmi.config'
+import { SwapType } from '@/constants'
 import { QuoteRequest, QuoteResult, SwapRoute } from '@/types'
 import { getExchange } from '@/services/exchanges'
-import { useReadContract } from 'wagmi'
+import { multicall } from '@wagmi/core'
+import { ContractFunctionParameters } from 'viem'
 
 interface IBaseSwapService {
-  getBestQuoteExactIn(amountIn: bigint, candidates: SwapRoute[]): QuoteResult
-  getBestQuoteExactOut(amountOut: bigint, candidates: SwapRoute[]): QuoteResult
+  getBestQuoteExactIn(amountIn: bigint, candidates: SwapRoute[]): Promise<QuoteResult | undefined>
+  getBestQuoteExactOut(amountOut: bigint, candidates: SwapRoute[]): Promise<QuoteResult | undefined>
 }
 
 export class BaseSwapService implements IBaseSwapService {
-  getBestQuoteExactIn(amountIn: bigint, candidates: SwapRoute[]): QuoteResult {
+  /**
+   * Get the best quote from a list of candidates routes for an exact input swap
+   * @param amountIn The exact amount in
+   * @param candidates The swap route candidates
+   * @returns The best quote result or undefined in case of failure
+   */
+  async getBestQuoteExactIn(amountIn: bigint, candidates: SwapRoute[]): Promise<QuoteResult | undefined> {
+    return this.getBestQuote(SwapType.EXACT_IN, amountIn, candidates)
+  }
+
+  /**
+   * Get the best quote from a list of candidates routes for an exact output swap
+   * @param amountOut The exact amount out
+   * @param candidates The swap route candidates
+   * @returns The best quote result or undefined in case of failure
+   */
+  async getBestQuoteExactOut(amountOut: bigint, candidates: SwapRoute[]): Promise<QuoteResult | undefined> {
+    return this.getBestQuote(SwapType.EXACT_OUT, amountOut, candidates)
+  }
+
+  /**
+   * Get the best quote from a list of candidates routes
+   * @param swapType The swap type (exact in or exact out)
+   * @param amount The amount in or out depending on the swap type
+   * @param candidates The swap route candidates
+   * @returns The best quote result or undefined in case of failure
+   */
+  protected async getBestQuote(
+    swapType: SwapType,
+    amount: bigint,
+    candidates: SwapRoute[]
+  ): Promise<QuoteResult | undefined> {
     if (!candidates.length) {
-      throw new Error('No swap route candidates provided')
+      console.debug('getBestQuote: no swap route candidates provided')
+      return
     }
 
     if (candidates.length === 1) {
       // Single candidate, direct quote call
       const quoteRequest: QuoteRequest = {
-        swapType: SwapType.EXACT_IN,
-        amountIn: amountIn,
+        swapType: swapType,
+        amount: amount,
         swapRoute: candidates[0],
       }
+
       return getExchange(candidates[0].exchange).getQuote(quoteRequest)
     }
 
     // Multicall when more than one candidate
-    let calls = []
+    let quoteRequests: QuoteRequest[] = []
+    let calls: ContractFunctionParameters[] = []
 
     for (const candidate of candidates) {
       const quoteRequest: QuoteRequest = {
-        swapType: SwapType.EXACT_IN,
-        amountIn: amountIn,
+        swapType: swapType,
+        amount: amount,
         swapRoute: candidate,
       }
 
-      calls.push({
-        target: CONTRACT_ADDRRESSES[candidate.chainId][candidate.exchange].quoter,
-        allowFailure: true,
-        callData: getExchange(candidate.exchange).getQuoteCallData(quoteRequest),
-      })
+      quoteRequests.push(quoteRequest)
+      calls.push(getExchange(candidate.exchange).getQuoteContractCall(quoteRequest))
     }
 
-    const result = useReadContract({
-      abi: MULTICALL3_ABI,
-      address: MULTICALL3_ADDR,
-      functionName: 'aggregate3',
-      args: [calls],
+    const results = await multicall(config, {
+      allowFailure: true,
+      contracts: calls,
     })
 
-    let bestAmountOut = BigInt(0)
-    let bestSwapRoute: SwapRoute = candidates[0]
+    let bestAmount = BigInt(0)
+    let bestQuoteResult: QuoteResult | undefined
 
-    // TODO: inspect results and get best quote
+    for (let i = 0; i < results.length; i++) {
+      if (results[i].status === 'failure') {
+        continue
+      }
 
-    return {
-      swapType: SwapType.EXACT_IN,
-      amountIn: amountIn,
-      amountOut: bestAmountOut,
-      swapRoute: bestSwapRoute,
+      const quoteResult = getExchange(candidates[i].exchange).getFormattedQuoteResult(
+        quoteRequests[i],
+        results[i].result
+      )
+
+      switch (swapType) {
+        case SwapType.EXACT_IN:
+          if (quoteResult.amountOut > bestAmount) {
+            bestAmount = quoteResult.amountOut
+            bestQuoteResult = quoteResult
+          }
+
+        case SwapType.EXACT_OUT:
+          if (quoteResult.amountIn < bestAmount || bestAmount === BigInt(0)) {
+            bestAmount = quoteResult.amountIn
+            bestQuoteResult = quoteResult
+          }
+      }
     }
-  }
 
-  getBestQuoteExactOut(amountOut: bigint, candidates: SwapRoute[]): QuoteResult {
-    // TODO
-    return {} as QuoteResult
+    return bestQuoteResult
   }
 }
