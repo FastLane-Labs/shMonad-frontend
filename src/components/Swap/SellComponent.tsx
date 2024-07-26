@@ -1,6 +1,9 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { TokenBalance } from '@/components/TokenBalance/TokenBalance'
 import SellAmount from './SellAmount'
+import { useTokenList } from '@/hooks/useTokenList'
+import { useChainId } from 'wagmi'
+import { Token } from '@/types'
 
 interface SellComponentProps {
   sellToken: string
@@ -25,6 +28,20 @@ const SellComponent: React.FC<SellComponentProps> = ({
   decimals,
   sellTokenAddress,
 }) => {
+  const chainId = useChainId()
+  const { tokens, loading, error } = useTokenList(chainId)
+  const [selectedToken, setSelectedToken] = useState<Token | null>(null)
+
+  useEffect(() => {
+    const token = tokens.find((t) => t.symbol === sellToken)
+    setSelectedToken(token || null)
+  }, [sellToken, tokens])
+
+  const handleTokenSelect = (token: Token) => {
+    setSellToken(token.symbol)
+    setSelectedToken(token)
+  }
+
   const formatBalance = (balance: string, decimals: number = 18): number => {
     return Number(balance) / Math.pow(10, decimals)
   }
@@ -44,13 +61,15 @@ const SellComponent: React.FC<SellComponentProps> = ({
         </h1>
       </div>
       <SellAmount
-        sellToken={sellToken}
-        setSellToken={setSellToken}
+        sellToken={selectedToken}
+        setSellToken={handleTokenSelect}
         sellAmount={sellAmount}
         setSellAmount={setSellAmount}
         address={address}
         balance={balance}
       />
+      {loading && <div>Loading tokens...</div>}
+      {error && <div>Error loading tokens: {error.message}</div>}
     </div>
   )
 }

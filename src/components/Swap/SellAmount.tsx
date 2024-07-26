@@ -1,9 +1,10 @@
 import React, { ChangeEvent } from 'react'
-import TokenSelect from '../Modals/TokenSelectModal'
+import TokenSelectModal from '../Modals/TokenSelectModal'
+import { Token } from '@/types'
 
 interface SellAmountProps {
-  sellToken: string
-  setSellToken: (token: string) => void
+  sellToken: Token | null
+  setSellToken: (token: Token) => void
   sellAmount: string
   setSellAmount: (amount: string) => void
   address?: `0x${string}`
@@ -42,7 +43,7 @@ const SellAmount: React.FC<SellAmountProps> = ({
       <button className='btn-outline text-primary' onClick={handleSetMax}>
         MAX
       </button>
-      <TokenSelect value={sellToken} onChange={setSellToken} address={address!!} defaultLabel={'Select a token'} />
+      <TokenSelectModal selectedToken={sellToken} onSelectToken={setSellToken} defaultLabel='Select a token' />
     </div>
   )
 }

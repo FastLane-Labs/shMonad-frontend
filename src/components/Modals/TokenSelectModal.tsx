@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ModalWrapper from '../Wrappers/ModalWrapper'
 import { useTokenList } from '@/hooks/useTokenList'
+import { useChainId } from 'wagmi'
 import { Token } from '@/types'
 import { TokenBalance } from '../TokenBalance/TokenBalance'
 import { useAccount } from 'wagmi'
@@ -9,15 +10,10 @@ interface TokenSelectModalProps {
   selectedToken: Token | null
   onSelectToken: (token: Token) => void
   defaultLabel: string
-  chainId?: number // Making chainId optional, you might want to provide a default value
 }
 
-const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
-  selectedToken,
-  onSelectToken,
-  defaultLabel,
-  chainId = 1, // Default to Ethereum mainnet if not provided
-}) => {
+const TokenSelectModal: React.FC<TokenSelectModalProps> = ({ selectedToken, onSelectToken, defaultLabel }) => {
+  const chainId = useChainId()
   const [isOpen, setIsOpen] = useState(false)
   const { tokens, loading, error } = useTokenList(chainId)
   const [searchTerm, setSearchTerm] = useState('')
@@ -44,7 +40,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   return (
     <>
       <button
-        className='h-[48px] hover:bg-base-100 text-neutral-content p-2 rounded-xl focus:outline-none appearance-none flex items-center text-nowrap w-max'
+        className='h-12 bg-base-200 hover:bg-base-100 text-primary p-2 rounded-xl focus:outline-none appearance-none flex items-center text-nowrap w-max'
         onClick={() => setIsOpen(true)}>
         {selectedToken && (
           <img src={selectedToken.logoURI} alt={selectedToken.symbol} className='w-6 h-6 mr-2 rounded-full' />
@@ -58,8 +54,8 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
         </svg>
       </button>
       <ModalWrapper isVisible={isOpen} onClose={() => setIsOpen(false)}>
-        <div className='p-4'>
-          <div className='label text-lg font-bold mb-4'>Select a token</div>
+        <div className='p-4 max-w-lg mx-auto min-h-[300px] flex flex-col justify-between'>
+          <h2 className='text-2xl font-bold mb-4 text-center'>Select a token</h2>
           <input
             type='text'
             placeholder='Search tokens'
@@ -67,8 +63,8 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          {loading && <div>Loading tokens...</div>}
-          {error && <div>Error loading tokens: {error.message}</div>}
+          {loading && <div className='text-center'>Loading tokens...</div>}
+          {error && <div className='text-center text-red-500'>Error loading tokens: {error.message}</div>}
           {!loading && !error && (
             <ul className='space-y-2'>
               {filteredTokens.map((token) => (

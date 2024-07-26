@@ -1,10 +1,11 @@
 import React, { ChangeEvent } from 'react'
 import TokenSelectModal from '../Modals/TokenSelectModal'
+import { Token } from '@/types'
 
 // Define the types for the props
 interface BuyAmountProps {
-  buyToken: string
-  setBuyToken: (token: string) => void
+  buyToken: Token | null
+  setBuyToken: (token: Token) => void
   buyAmount: string
   setBuyAmount: (amount: string) => void
   address?: `0x${string}`
@@ -39,7 +40,12 @@ const BuyAmount: React.FC<BuyAmountProps> = ({
         />
         {quoteLoading && <span className='absolute right-4 loading loading-spinner loading-sm'></span>}
       </div>
-      <TokenSelectModal value={buyToken} onChange={setBuyToken} address={address!!} defaultLabel='Select a token' />
+      <TokenSelectModal
+        selectedToken={buyToken}
+        onSelectToken={setBuyToken}
+        defaultLabel='Select a token'
+        chainId={address ? parseInt(address.slice(2, 10), 16) : 1} // Default to Ethereum mainnet if no address
+      />
     </div>
   )
 }
