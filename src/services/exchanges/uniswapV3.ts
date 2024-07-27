@@ -17,19 +17,18 @@ export class UniswapV3 extends Exchange {
    * inherited and overriden from Exchange
    */
   public static async getQuote(quoteRequest: QuoteRequest): Promise<QuoteResult | undefined> {
-    const data = await publicClient.simulateContract(this.getQuoteContractCall(quoteRequest))
-    return this.getFormattedQuoteResult(quoteRequest, data.result)
+    const { result } = await publicClient.simulateContract(this.getQuoteContractCall(quoteRequest))
+    return this.getFormattedQuoteResult(quoteRequest, result)
   }
 
   /**
    * inherited and overriden from Exchange
    */
   public static getFormattedQuoteResult(quoteRequest: QuoteRequest, result: any): QuoteResult {
-    // All quote functions return a single uint256
     return {
       swapType: quoteRequest.swapType,
-      amountIn: quoteRequest.swapType === SwapType.EXACT_IN ? quoteRequest.amount : BigInt(result),
-      amountOut: quoteRequest.swapType === SwapType.EXACT_OUT ? quoteRequest.amount : BigInt(result),
+      amountIn: quoteRequest.swapType === SwapType.EXACT_IN ? quoteRequest.amount : BigInt(result[0]),
+      amountOut: quoteRequest.swapType === SwapType.EXACT_OUT ? quoteRequest.amount : BigInt(result[0]),
       swapRoute: quoteRequest.swapRoute,
     }
   }
@@ -57,6 +56,7 @@ export class UniswapV3 extends Exchange {
         return quoteRequest.swapRoute.swapSteps.length === 1
           ? QuoteFunctionName.quoteExactInputSingle
           : QuoteFunctionName.quoteExactInput
+
       case SwapType.EXACT_OUT:
         return quoteRequest.swapRoute.swapSteps.length === 1
           ? QuoteFunctionName.quoteExactOutputSingle
@@ -72,31 +72,57 @@ export class UniswapV3 extends Exchange {
   protected static _getQuoteFunctionParameters(quoteRequest: QuoteRequest): any[] {
     switch (this._getQuoteFunctionName(quoteRequest)) {
       case QuoteFunctionName.quoteExactInputSingle:
-        // function quoteExactInputSingle(address tokenIn, address tokenOut, uint24 fee, uint256 amountIn, uint160 sqrtPriceLimitX96) public returns (uint256 amountOut)
+        /*
+          function quoteExactInputSingle(struct IQuoterV2.QuoteExactInputSingleParams params) public returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)
+          struct IQuoterV2.QuoteExactInputSingleParams {
+            address tokenIn;
+            address tokenOut;
+            uint256 amountIn;
+            uint24 fee;
+            uint160 sqrtPriceLimitX96;
+          }
+        */
         return [
-          quoteRequest.swapRoute.swapSteps[0].tokenIn,
-          quoteRequest.swapRoute.swapSteps[0].tokenOut,
-          quoteRequest.swapRoute.swapSteps[0].extra.fee,
-          quoteRequest.amount,
-          0,
+          {
+            tokenIn: quoteRequest.swapRoute.swapSteps[0].tokenIn,
+            tokenOut: quoteRequest.swapRoute.swapSteps[0].tokenOut,
+            amountIn: quoteRequest.amount,
+            fee: quoteRequest.swapRoute.swapSteps[0].extra.fee,
+            sqrtPriceLimitX96: 0,
+          },
         ]
 
       case QuoteFunctionName.quoteExactInput:
-        // function quoteExactInput(bytes path, uint256 amountIn) external returns (uint256 amountOut)
+        /*
+          function quoteExactInput(bytes path, uint256 amountIn) external returns (uint256 amountOut, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList, uint256 gasEstimate)
+        */
         return [this._computePath(quoteRequest.swapRoute), quoteRequest.amount]
 
       case QuoteFunctionName.quoteExactOutputSingle:
-        // function quoteExactOutputSingle(address tokenIn, address tokenOut, uint24 fee, uint256 amountOut, uint160 sqrtPriceLimitX96) public returns (uint256 amountIn)
+        /*
+        function quoteExactOutputSingle(struct IQuoterV2.QuoteExactOutputSingleParams params) public returns (uint256 amountIn, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)
+        struct IQuoterV2.QuoteExactOutputSingleParams {
+          address tokenIn;
+          address tokenOut;
+          uint256 amount;
+          uint24 fee;
+          uint160 sqrtPriceLimitX96;
+        }
+        */
         return [
-          quoteRequest.swapRoute.swapSteps[0].tokenIn,
-          quoteRequest.swapRoute.swapSteps[0].tokenOut,
-          quoteRequest.swapRoute.swapSteps[0].extra.fee,
-          quoteRequest.amount,
-          0,
+          {
+            tokenIn: quoteRequest.swapRoute.swapSteps[0].tokenIn,
+            tokenOut: quoteRequest.swapRoute.swapSteps[0].tokenOut,
+            amount: quoteRequest.amount,
+            fee: quoteRequest.swapRoute.swapSteps[0].extra.fee,
+            sqrtPriceLimitX96: 0,
+          },
         ]
 
       case QuoteFunctionName.quoteExactOutput:
-        // function quoteExactOutput(bytes path, uint256 amountOut) external returns (uint256 amountIn)
+        /*
+        function quoteExactOutput(bytes path, uint256 amountOut) external returns (uint256 amountIn, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList, uint256 gasEstimate)
+        */
         return [this._computePath(quoteRequest.swapRoute), quoteRequest.amount]
     }
   }
