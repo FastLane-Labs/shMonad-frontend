@@ -17,8 +17,12 @@ export class UniswapV3 extends Exchange {
    * inherited and overriden from Exchange
    */
   public static async getQuote(quoteRequest: QuoteRequest): Promise<QuoteResult | undefined> {
-    const { result } = await publicClient.simulateContract(this.getQuoteContractCall(quoteRequest))
-    return this.getFormattedQuoteResult(quoteRequest, result)
+    try {
+      const { result } = await publicClient.simulateContract(this.getQuoteContractCall(quoteRequest))
+      return this.getFormattedQuoteResult(quoteRequest, result)
+    } catch (error: any) {
+      // Let the function return undefined in case of an error
+    }
   }
 
   /**

@@ -32,6 +32,36 @@ export class BaseSwapService implements IBaseSwapService {
   }
 
   /**
+   * Validate swap route candidates
+   * @param candidates The swap route candidates
+   * @throws Error if the candidates are invalid
+   * @dev This method isn't part of the interface, it is public for unit testing purposes only
+   */
+  validateSwapRouteCandidates(candidates: SwapRoute[]) {
+    if (!candidates.length) {
+      throw new Error('validateSwapRouteCandidates: no swap route candidates provided')
+    }
+
+    // All routes must start and end with the same tokens
+    const tokenIn = candidates[0].swapSteps[0].tokenIn
+    const tokenOut = candidates[0].swapSteps[candidates[0].swapSteps.length - 1].tokenOut
+
+    if (tokenIn === tokenOut) {
+      throw new Error('validateSwapRouteCandidates: invalid route, tokenIn and tokenOut are the same')
+    }
+
+    for (const candidate of candidates) {
+      if (candidate.swapSteps[0].tokenIn !== tokenIn) {
+        throw new Error('validateSwapRouteCandidates: invalid route, tokenIn mismatch')
+      }
+
+      if (candidate.swapSteps[candidate.swapSteps.length - 1].tokenOut !== tokenOut) {
+        throw new Error('validateSwapRouteCandidates: invalid route, tokenOut mismatch')
+      }
+    }
+  }
+
+  /**
    * Get the best quote from a list of candidates routes
    * @param swapType The swap type (exact in or exact out)
    * @param amount The amount in or out depending on the swap type
@@ -43,8 +73,10 @@ export class BaseSwapService implements IBaseSwapService {
     amount: bigint,
     candidates: SwapRoute[]
   ): Promise<QuoteResult | undefined> {
-    if (!candidates.length) {
-      console.debug('getBestQuote: no swap route candidates provided')
+    try {
+      this.validateSwapRouteCandidates(candidates)
+    } catch (error: any) {
+      console.error(error)
       return
     }
 
