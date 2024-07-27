@@ -5,7 +5,6 @@
 import { BaseSwapService } from '@/services/baseSwap'
 import { ChainId, Exchange } from '@/constants'
 import { SwapRoute } from '@/types'
-import exp from 'constants'
 
 const POLYGON_WMATIC = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
 const POLYGON_USDC = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
@@ -33,15 +32,3 @@ describe('baseSwap', () => {
     expect(result?.amountOut).toBeGreaterThan(BigInt(0))
   })
 })
-
-// export interface SwapStep {
-//   tokenIn: Address // Address of the token to be swapped
-//   tokenOut: Address // Address of the token to receive
-//   extra: any // Extra data needed for the swap (e.g. UniswapV3 pool fee)
-// }
-
-// export interface SwapRoute {
-//   chainId: ChainId
-//   exchange: Exchange
-//   swapSteps: SwapStep[]
-// }
