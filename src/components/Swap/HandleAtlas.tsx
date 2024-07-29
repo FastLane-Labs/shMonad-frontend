@@ -4,11 +4,11 @@
 // POST request to '/api/swap'
 // for better error handling and readability.
 
-import { useState, useEffect } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
 import { getDappAddress, getControlAddress } from '@/utils/getContractAddress'
 import SwapButton from '../Buttons/SwapButton'
 import useAtlas, { SwapParameters } from '@/hooks/useAtlas'
+import { useEthersProviderContext } from '@/context/EthersProviderContext'
 
 interface HandleAtlasProps {
   sellToken: string
@@ -25,9 +25,10 @@ const HandleAtlas: React.FC<HandleAtlasProps> = ({
   slippageTolerance,
   transactionDeadline,
 }) => {
-  const { data: walletClient, isError, isLoading } = useWalletClient()
+  const { isError, isLoading } = useWalletClient()
   const { address: account, chain: chainInfo } = useAccount()
   const { handleSwap, isSwapping, error } = useAtlas()
+  const { provider } = useEthersProviderContext()
 
   const handleSwapClick = async () => {
     if (!chainInfo) {
@@ -38,11 +39,9 @@ const HandleAtlas: React.FC<HandleAtlasProps> = ({
     /////////////////////////////////////////////////
     // Atlas Parameters:
     const chain = chainInfo.id
-    const provider = walletClient
     const operationsRelayUrl = 'https://eth-sepolia.atlas-operations-relay.fastlane.xyz'
     const dapp = getDappAddress(chain)
     const control = getControlAddress(chain)
-    let value, gasEstimate, deadline, data
     /////////////////////////////////////////////////
 
     const swapParams = {
@@ -74,7 +73,7 @@ const HandleAtlas: React.FC<HandleAtlasProps> = ({
       sellAmount={sellAmount}
       buyToken={buyToken}
       handleSwap={handleSwapClick}
-      isLoading={isSwapping || isLoading || !walletClient}
+      isLoading={isSwapping || isLoading || !provider}
     />
   )
 }

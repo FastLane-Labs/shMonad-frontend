@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { TokenBalance } from '@/components/TokenBalance/TokenBalance'
 import SellAmount from './SellAmount'
 import { useSwapContext } from '@/context/SwapContext'
+import { useAccount } from 'wagmi'
+import { useBalance } from '@/hooks/useBalance'
+import { Token } from '@/types'
+import { ethers } from 'ethers'
 
 const SellComponent: React.FC = () => {
   const {
@@ -11,12 +15,24 @@ const SellComponent: React.FC = () => {
     setFromAmount: setSellAmount,
   } = useSwapContext()
 
-  const balance = '1'
-  const decimals = 18
+  const { address } = useAccount()
+  const [balance, setBalance] = useState<string>('0')
 
-  const formatBalance = (balance: string, decimals: number = 18): number => {
-    return Number(balance) / Math.pow(10, decimals)
-  }
+  const {
+    data: fetchedBalance,
+    isLoading,
+    error,
+  } = useBalance({
+    token: sellToken as Token,
+    userAddress: address as string,
+    enabled: !!sellToken && !!address,
+  })
+
+  useEffect(() => {
+    if (sellToken && !isLoading && !error) {
+      setBalance(ethers.formatUnits(fetchedBalance ?? 0n, sellToken.decimals))
+    }
+  }, [fetchedBalance, sellToken, isLoading, error])
 
   return (
     <div className='input-card mb-0'>
@@ -24,7 +40,7 @@ const SellComponent: React.FC = () => {
         <span className='text-base-content'>Sell</span>
         <h1 className='text-base-content'>
           <span>Balance: </span>
-          <TokenBalance address={sellToken?.address} tokenAddress={sellToken?.address} toFixed={4} />
+          <TokenBalance token={sellToken || undefined} toFixed={4} />
         </h1>
       </div>
       <SellAmount
