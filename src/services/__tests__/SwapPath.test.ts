@@ -1,4 +1,4 @@
-import { PathService } from '@/services/path'
+import { SwapPathService } from '@/services/swapPath'
 import { ChainId, Exchange } from '@/constants'
 import { Token } from '@/types'
 import { tokenCmp } from '@/utils/token'
@@ -45,28 +45,28 @@ const INVALID_TOKEN: Token = {
 }
 
 describe('path', () => {
-  const pathService = new PathService(ChainId.POLYGON)
+  const swapPathService = new SwapPathService(ChainId.POLYGON)
 
   test('get swap routes - token from not found', async () => {
-    await expect(pathService.getSwapRoutes(INVALID_TOKEN, POLYGON_WMATIC, Exchange.UNISWAPV3)).rejects.toThrow(
+    await expect(swapPathService.getSwapRoutes(INVALID_TOKEN, POLYGON_WMATIC, Exchange.UNISWAPV3)).rejects.toThrow(
       'getSwapRoutes: token not found: ' + INVALID_TOKEN.address
     )
   })
 
   test('get swap routes - token to not found', async () => {
-    await expect(pathService.getSwapRoutes(POLYGON_WMATIC, INVALID_TOKEN, Exchange.UNISWAPV3)).rejects.toThrow(
+    await expect(swapPathService.getSwapRoutes(POLYGON_WMATIC, INVALID_TOKEN, Exchange.UNISWAPV3)).rejects.toThrow(
       'getSwapRoutes: token not found: ' + INVALID_TOKEN.address
     )
   })
 
   test('get swap routes - from and to are the same', async () => {
-    await expect(pathService.getSwapRoutes(POLYGON_WMATIC, POLYGON_WMATIC, Exchange.UNISWAPV3)).rejects.toThrow(
+    await expect(swapPathService.getSwapRoutes(POLYGON_WMATIC, POLYGON_WMATIC, Exchange.UNISWAPV3)).rejects.toThrow(
       'getSwapRoutes: from and to tokens are the same'
     )
   })
 
   test('get swap routes - wrapped native as from', async () => {
-    const swapRoutes = await pathService.getSwapRoutes(POLYGON_WMATIC, POLYGON_USDC, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_WMATIC, POLYGON_USDC, Exchange.UNISWAPV3)
 
     // Should return 3 routes, 1 for each uniswap pool fee tier
     expect(swapRoutes).toHaveLength(3)
@@ -91,7 +91,7 @@ describe('path', () => {
   })
 
   test('get swap routes - wrapped native as to', async () => {
-    const swapRoutes = await pathService.getSwapRoutes(POLYGON_USDC, POLYGON_WMATIC, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDC, POLYGON_WMATIC, Exchange.UNISWAPV3)
 
     // Should return 3 routes, 1 for each uniswap pool fee tier
     expect(swapRoutes).toHaveLength(3)
@@ -116,7 +116,7 @@ describe('path', () => {
   })
 
   test('get swap routes - non wrapped native swap - gateway token as from', async () => {
-    const swapRoutes = await pathService.getSwapRoutes(POLYGON_USDC, POLYGON_USDT, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDC, POLYGON_USDT, Exchange.UNISWAPV3)
 
     // Should return 12 routes
     // + 3 pool fee tiers for direct swap
@@ -224,7 +224,7 @@ describe('path', () => {
   })
 
   test('get swap routes - non wrapped native swap - gateway token as to', async () => {
-    const swapRoutes = await pathService.getSwapRoutes(POLYGON_USDT, POLYGON_USDC, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDT, POLYGON_USDC, Exchange.UNISWAPV3)
 
     // Should return 12 routes
     // + 3 pool fee tiers for direct swap
@@ -332,7 +332,7 @@ describe('path', () => {
   })
 
   test('get swap routes - non wrapped native swap - non gateway token swap', async () => {
-    const swapRoutes = await pathService.getSwapRoutes(POLYGON_USDT, POLYGON_DAI, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDT, POLYGON_DAI, Exchange.UNISWAPV3)
 
     // Should return 21 routes
     // + 3 pool fee tiers for direct swap

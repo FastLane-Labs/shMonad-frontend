@@ -5,11 +5,11 @@ import { getExchange } from '@/services/exchanges'
 import { tokenCmp } from '@/utils/token'
 import { Address } from 'viem'
 
-interface IPathService {
+interface ISwapPathService {
   getSwapRoutes(from: Token, to: Token, exchange: Exchange): Promise<SwapRoute[]>
 }
 
-export class PathService implements IPathService {
+export class SwapPathService implements ISwapPathService {
   protected wrappedNativeToken: Token = {} as Token
   protected gatewayToken: Token = {} as Token
   protected tokens: Map<Address, Token> = new Map()
