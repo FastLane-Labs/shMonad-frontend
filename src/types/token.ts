@@ -1,6 +1,9 @@
+import { ChainId } from '@/constants'
+import { Address } from 'viem'
+
 export type Token = {
-  chainId: number
-  address: string
+  chainId: ChainId
+  address: Address
   decimals: number
   name: string
   symbol: string
