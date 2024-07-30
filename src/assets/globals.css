@@ -45,6 +45,10 @@ select {
   @apply bg-neutral p-4 rounded-2xl border-accent-content hover:border-accent border;
 }
 
+.modal-box {
+  @apply w-full max-w-md;
+}
+
 .gradient-1-geoblock {
   background: radial-gradient(50% 50% at 50% 50%, rgb(241, 35, 121) 0px, rgba(243, 160, 66, 0) 100%);
   opacity: 0.1;
@@ -64,4 +68,14 @@ select {
   top: -12rem;
   width: 50rem;
   height: 43rem;
+}
+
+.scroll-bar {
+  scrollbar-width: thin;
+  scrollbar-color: #888 transparent;
+}
+
+.line-seperator {
+  width: calc(100% + 100px);
+  @apply border-t border-zinc-800 -ml-10;
 }
