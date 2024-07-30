@@ -71,7 +71,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
       setHasAttemptedRefetch(true) // Mark refetch attempt
     }
   }, [balancesQuery, balancesQuery.error, balancesQuery.data, hasAttemptedRefetch])
-  
+
   useEffect(() => {
     if (!isOpen) {
       setSearchTerm('')

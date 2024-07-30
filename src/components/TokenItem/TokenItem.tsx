@@ -30,7 +30,7 @@ const TokenItem: React.FC<TokenItemProps> = ({ token, selectedToken, handleSelec
       </span>
     </div>
     <span className='ml-auto'>
-  {isLoading ? (
+      {isLoading ? (
         <span className='loading loading-spinner'></span>
       ) : (token as TokenWithBalance).balance ? (
         formatBalanceToFixedDecimal((token as TokenWithBalance).balance)
