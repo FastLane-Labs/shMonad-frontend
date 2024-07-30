@@ -1,0 +1,36 @@
+name: OFAC
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-list:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Generate OFAC list
+        run: |
+          mkdir ofac_data
+          python3 scripts/ofac_sdn.py ./ofac_data/ofac_sdn.json
+      - name: Commit changes
+        run: |
+          git config --local user.email "45324+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git checkout ofac-list
+          mv ./ofac_data/ofac_sdn.json ./src/constants/sanctioned_addresses_ofac.json
+          git add ./src/constants/sanctioned_addresses_ofac.json
+          git commit -m "automatic ofac update: $(date)" -a || true
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ofac-list
