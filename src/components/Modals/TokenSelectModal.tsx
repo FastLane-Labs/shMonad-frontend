@@ -3,8 +3,12 @@ import ModalWrapper from '@/components/Wrappers/ModalWrapper'
 import { useTokenList } from '@/hooks/useTokenList'
 import { useChainId, useAccount } from 'wagmi'
 import { Token } from '@/types'
-import { TokenBalance } from '../TokenBalance/TokenBalance'
+import { useBalances } from '@/hooks/useBalances'
 import { useSwapContext } from '@/context/SwapContext'
+import TokenItem from '@/components/TokenItem/TokenItem'
+import TokenGrid from '@/components/TokenGrid/TokenGrid'
+import UnknownToken from 'src/assets/svg/unknownToken.svg'
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 
 interface TokenSelectModalProps {
   selectedToken: Token | null
@@ -12,6 +16,8 @@ interface TokenSelectModalProps {
   direction: 'buy' | 'sell'
   defaultLabel: string
 }
+
+type TokenWithBalance = Token & { balance: string }
 
 const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   selectedToken,
@@ -26,18 +32,19 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   const { address } = useAccount()
   const { fromToken, toToken } = useSwapContext()
 
-  useEffect(() => {
-    if (!isOpen) {
-      setSearchTerm('')
-    }
-  }, [isOpen])
+  const balancesQuery = useBalances({
+    tokens: tokens,
+    userAddress: address as string,
+  })
 
-  const handleSelect = (token: Token) => {
-    onSelectToken(token)
-    setIsOpen(false)
-  }
+  const [hasAttemptedRefetch, setHasAttemptedRefetch] = useState(false)
 
-  const filteredTokens = tokens.filter((token) => {
+  const tokensWithBalances: TokenWithBalance[] = tokens.map((token, index) => ({
+    ...token,
+    balance: balancesQuery.data && balancesQuery.data.length > 0 ? balancesQuery.data[index] : '0',
+  }))
+
+  const filteredTokensWithBalances = tokensWithBalances.filter((token) => {
     if (direction === 'sell' && toToken && token.address.toLowerCase() === toToken.address.toLowerCase()) {
       return false
     }
@@ -50,15 +57,49 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
     )
   })
 
+  const sortedTokensWithBalances = filteredTokensWithBalances.sort(
+    (a, b) => parseFloat(b.balance) - parseFloat(a.balance)
+  )
+
+  const popularTokens = tokensWithBalances.filter((token) => token.tags?.includes('popular'))
+  const tokensWithUserBalances = sortedTokensWithBalances.filter((token) => parseFloat(token.balance) > 0)
+  const remainingTokens = sortedTokensWithBalances.filter((token) => parseFloat(token.balance) === 0)
+
+  useEffect(() => {
+    if ((balancesQuery.error || balancesQuery.data === undefined) && !hasAttemptedRefetch) {
+      balancesQuery.refetch({ cancelRefetch: true })
+      setHasAttemptedRefetch(true) // Mark refetch attempt
+    }
+  }, [balancesQuery, balancesQuery.error, balancesQuery.data, hasAttemptedRefetch])
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchTerm('')
+    }
+  }, [isOpen])
+
+  const handleSelect = (token: Token) => {
+    onSelectToken(token)
+    setIsOpen(false)
+  }
+
   return (
     <div className='relative'>
       <button
         className='h-[48px] hover:bg-base-100 text-neutral-content p-2 rounded-xl focus:outline-none appearance-none flex items-center text-nowrap w-max'
         onClick={() => setIsOpen(true)}>
-        {selectedToken && (
-          <img src={selectedToken.logoURI} alt={selectedToken.symbol} className='w-6 h-6 mr-2 rounded-full' />
+        {selectedToken ? (
+          <>
+            {selectedToken.logoURI ? (
+              <img src={selectedToken.logoURI} alt={selectedToken.symbol} className='w-6 h-6 mr-2 rounded-full' />
+            ) : (
+              <UnknownToken className='w-6 h-6 mr-2 rounded-full' />
+            )}
+            <span>{selectedToken.symbol}</span>
+          </>
+        ) : (
+          <span>{defaultLabel}</span>
         )}
-        <span>{selectedToken ? selectedToken.symbol : defaultLabel}</span>
         <svg
           className='w-4 h-4 fill-current text-neutral-content ml-2'
           xmlns='http://www.w3.org/2000/svg'
@@ -66,40 +107,61 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
           <path d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' />
         </svg>
       </button>
-      <ModalWrapper isVisible={isOpen} onClose={() => setIsOpen(false)}>
-        <div className='p-4 max-w-lg mx-auto min-h-[300px] flex flex-col justify-between'>
-          <h2 className='text-2xl font-bold mb-4 text-center'>Select a token</h2>
-          <input
-            type='text'
-            placeholder='Search tokens'
-            className='w-full p-2 mb-4 border rounded'
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      <ModalWrapper
+        isVisible={isOpen}
+        onClose={() => setIsOpen(false)}
+        style={{ maxHeight: '90vh', minHeight: '90vh', paddingBottom: '0px' }}>
+        <div className='h-fit'>
+          <h2 className='text-2xl font-bold my-4 text-center'>Select a token</h2>
+          <div className='relative w-full mb-4'>
+            <input
+              type='text'
+              placeholder='Search tokens'
+              className='bg-neutral w-full p-2 pl-10 border border-zinc-800 rounded-xl focus:outline-none appearance-none'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <MagnifyingGlassIcon className='absolute left-3 top-2.5 h-5 w-5 text-gray-400' />
+          </div>
           {loading && <div className='text-center'>Loading tokens...</div>}
           {error && <div className='text-center text-red-500'>Error loading tokens: {error.message}</div>}
           {!loading && !error && (
-            <ul className='space-y-2'>
-              {filteredTokens.map((token) => (
-                <li
-                  key={token.address}
-                  className={`flex items-center p-2 cursor-pointer hover:bg-gray-700 rounded-xl ${
-                    token.address.toLowerCase() === selectedToken?.address.toLowerCase() ? 'bg-gray-600' : ''
-                  }`}
-                  onClick={() => handleSelect(token)}>
-                  <img src={token.logoURI} alt={token.symbol} className='w-6 h-6 mr-2 rounded-full' />
-                  <div className='flex flex-col'>
-                    <span>{token.symbol}</span>
-                    <span className='text-gray-500 text-sm'>{token.name}</span>
-                  </div>
-                  <span className='ml-auto'>
-                    <TokenBalance address={address} tokenAddress={token.address as `0x${string}`} toFixed={2} />
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <>
+              <TokenGrid tokens={popularTokens} selectedToken={selectedToken!} handleSelect={handleSelect} />
+              <div className='line-seperator mt-4' />
+            </>
           )}
         </div>
+        {!loading && !error && (
+          <div className='scroll-bar flex flex-shrink flex-col overflow-y-scroll -mr-2 h-full'>
+            <div className='h-full pr-2'>
+              {tokensWithUserBalances.length > 0 && <h3 className='font-medium py-4 text-zinc-400'>Your Tokens</h3>}
+              <ul className='space-y-2'>
+                {tokensWithUserBalances.map((token) => (
+                  <TokenItem
+                    key={token.address}
+                    token={token}
+                    selectedToken={selectedToken!}
+                    handleSelect={handleSelect}
+                  />
+                ))}
+              </ul>
+              <h3 className='font-medium py-4 text-zinc-400'>All Tokens</h3>
+              <ul className='space-y-2'>
+                {remainingTokens
+                  .filter((token) => token.address !== selectedToken?.address)
+                  .map((token) => (
+                    <TokenItem
+                      key={token.address}
+                      token={token}
+                      selectedToken={selectedToken!}
+                      handleSelect={handleSelect}
+                    />
+                  ))}
+              </ul>
+            </div>
+          </div>
+        )}
       </ModalWrapper>
     </div>
   )

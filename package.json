@@ -26,11 +26,13 @@
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "@rainbow-me/rainbowkit": "^2.1.3",
+    "@svgr/webpack": "^8.1.0",
     "@tanstack/react-query": "^5.29.0",
     "@wagmi/cli": "^2.1.15",
     "axios": "^1.7.2",
     "dayjs": "^1.11.10",
     "ethers": "^6.13.0",
+    "ethers-multicall-provider": "^6.4.0",
     "fastlane-atlas-sdk": "file:./atlas-sdk-rfq",
     "iron-session": "^6.3.1",
     "next": "^14.1.4",

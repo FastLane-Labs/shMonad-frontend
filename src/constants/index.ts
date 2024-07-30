@@ -20,7 +20,13 @@ interface ExchangeAddresses {
   router: Address
 }
 
-export const CONTRACT_ADDRRESSES: { [chainId in ChainId]: { [exchange in Exchange]: ExchangeAddresses } } = {
+type IContractAddresses = {
+  [chainId in ChainId]: {
+    [exchange in Exchange]: ExchangeAddresses
+  }
+}
+
+export const CONTRACT_ADDRRESSES: IContractAddresses = {
   [ChainId.POLYGON]: {
     [Exchange.UNISWAPV3]: {
       quoter: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e', // QuoterV2
@@ -30,6 +36,21 @@ export const CONTRACT_ADDRRESSES: { [chainId in ChainId]: { [exchange in Exchang
   },
 }
 
+type ITokenAddresses = {
+  [chainId in ChainId]: {
+    wrappedNative: Address
+    bestGateway: Address
+  }
+}
+
+export const TOKEN_ADDRESSES: ITokenAddresses = {
+  [ChainId.POLYGON]: {
+    wrappedNative: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
+    bestGateway: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC
+  },
+}
+
+export const nativeEvmTokenAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 export const defaultValues: AppConfigState = {
   config: {
     slippage: 0.5,

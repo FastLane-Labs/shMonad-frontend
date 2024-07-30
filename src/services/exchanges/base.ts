@@ -1,4 +1,4 @@
-import { QuoteRequest, QuoteResult } from '@/types'
+import { Token, SwapStep, QuoteRequest, QuoteResult } from '@/types'
 import { ContractFunctionParameters } from 'viem'
 
 /**
@@ -6,6 +6,16 @@ import { ContractFunctionParameters } from 'viem'
  * @abstract
  */
 export abstract class Exchange {
+  /**
+   * Build the possible swap steps for a pair of tokens
+   * @param from The token to swap from
+   * @param to The token to swap to
+   * @returns The possible swap steps for this pair of tokens
+   */
+  public static buildSwapStepsFromTokens(from: Token, to: Token): SwapStep[] {
+    throw new Error('Method not implemented.')
+  }
+
   /**
    * Get a quote for a swap
    * @param quoteRequest The quote request

@@ -1,9 +1,11 @@
 import { publicClient } from '../../../wagmi.config'
 import { Exchange } from './base'
-import { SwapRoute, QuoteRequest, QuoteResult } from '@/types'
+import { Token, SwapStep, SwapRoute, QuoteRequest, QuoteResult } from '@/types'
 import { SwapType, CONTRACT_ADDRRESSES } from '@/constants'
 import { QUOTERV2_ABI } from '@/constants/uniswap/v3/quoterV2'
 import { Hex, ContractFunctionParameters, encodePacked } from 'viem'
+
+const POOL_FEES = [500, 3000, 10000]
 
 enum QuoteFunctionName {
   quoteExactInputSingle = 'quoteExactInputSingle',
@@ -13,6 +15,25 @@ enum QuoteFunctionName {
 }
 
 export class UniswapV3 extends Exchange {
+  /**
+   * inherited and overriden from Exchange
+   */
+  public static buildSwapStepsFromTokens(from: Token, to: Token): SwapStep[] {
+    let swapSteps: SwapStep[] = []
+
+    for (const poolFee of POOL_FEES) {
+      swapSteps.push({
+        tokenIn: from,
+        tokenOut: to,
+        extra: {
+          fee: poolFee,
+        },
+      })
+    }
+
+    return swapSteps
+  }
+
   /**
    * inherited and overriden from Exchange
    */

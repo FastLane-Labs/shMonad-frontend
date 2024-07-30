@@ -20,7 +20,7 @@ const myCustomTheme: Theme = {
     menuItemBackground: 'hsl(229, 9%, 20%)',
     modalBackdrop: 'rgba(0, 0, 0, 0.5)',
     modalBackground: '#020810', // Modal bg: Black Blue
-    modalBorder: '#A72F60', // Modal Border: Pink
+    modalBorder: '#A72F60', // Modal Border: Pink Accent
     modalText: 'hsl(0, 0%, 100%)',
     modalTextDim: 'rgba(60, 66, 66, 0.3)',
     modalTextSecondary: 'hsl(0, 0%, 60%)',

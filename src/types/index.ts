@@ -1,5 +1,6 @@
 import { ChainId, SwapType, Exchange } from '@/constants'
 import { Address } from 'viem'
+import { Token } from '@/types'
 export * from './transactions'
 export * from './swap'
 export * from './config'
@@ -12,8 +13,8 @@ export interface Settings {
 }
 
 export interface SwapStep {
-  tokenIn: Address // Address of the token to be swapped
-  tokenOut: Address // Address of the token to receive
+  tokenIn: Token
+  tokenOut: Token
   extra: any // Extra data needed for the swap (e.g. UniswapV3 pool fee)
 }
 
