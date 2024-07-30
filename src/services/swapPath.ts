@@ -1,5 +1,5 @@
 import { TokenProvider } from '@/providers/StaticTokenListProvider'
-import { ChainId, Exchange, TOKEN_ADDRESSES } from '@/constants'
+import { ChainId, Exchange, nativeEvmTokenAddress, TOKEN_ADDRESSES } from '@/constants'
 import { Token, SwapStep, SwapRoute } from '@/types'
 import { getExchange } from '@/services/exchanges'
 import { tokenCmp } from '@/utils/token'
@@ -10,6 +10,7 @@ interface ISwapPathService {
 }
 
 export class SwapPathService implements ISwapPathService {
+  protected nativeToken: Token = {} as Token
   protected wrappedNativeToken: Token = {} as Token
   protected gatewayToken: Token = {} as Token
   protected tokens: Map<Address, Token> = new Map()
@@ -18,13 +19,18 @@ export class SwapPathService implements ISwapPathService {
 
   /**
    * Load tokens for the chain ID set in the constructor
-   * @throws If the wrapped native token or gateway token are not found
+   * @throws If the native, wrapped native token or gateway token are not found
    */
   async loadTokens() {
     const tokens = await TokenProvider.getTokensByChainId(this.chainId)
     tokens.forEach((token) => {
       this.tokens.set(token.address, token)
     })
+
+    const nativeToken = this.tokens.get(nativeEvmTokenAddress)
+    if (!nativeToken) {
+      throw new Error('Native token not found for chain ID ' + this.chainId)
+    }
 
     const wrappedNativeToken = this.tokens.get(TOKEN_ADDRESSES[this.chainId].wrappedNative)
     if (!wrappedNativeToken) {
@@ -36,6 +42,7 @@ export class SwapPathService implements ISwapPathService {
       throw new Error('Gateway token not found for chain ID ' + this.chainId)
     }
 
+    this.nativeToken = nativeToken
     this.wrappedNativeToken = wrappedNativeToken
     this.gatewayToken = gatewayToken
   }
@@ -51,6 +58,14 @@ export class SwapPathService implements ISwapPathService {
   async getSwapRoutes(from: Token, to: Token, _exchange: Exchange): Promise<SwapRoute[]> {
     if (!this.wrappedNativeToken.address) {
       await this.loadTokens()
+    }
+
+    if (tokenCmp(from, this.nativeToken)) {
+      from = this.wrappedNativeToken
+    }
+
+    if (tokenCmp(to, this.nativeToken)) {
+      to = this.wrappedNativeToken
     }
 
     if (!this.tokens.has(from.address)) {

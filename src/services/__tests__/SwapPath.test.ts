@@ -3,6 +3,14 @@ import { ChainId, Exchange } from '@/constants'
 import { Token } from '@/types'
 import { tokenCmp } from '@/utils/token'
 
+const POLYGON_MATIC: Token = {
+  address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+  chainId: ChainId.POLYGON,
+  decimals: 18,
+  symbol: 'MATIC',
+  name: 'Matic',
+  logoURI: '',
+}
 const POLYGON_WMATIC: Token = {
   address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
   chainId: ChainId.POLYGON,
@@ -519,5 +527,61 @@ describe('path', () => {
     expect(tokenCmp(swapRoutes[20].swapSteps[1].tokenIn, POLYGON_USDC)).toBe(true)
     expect(tokenCmp(swapRoutes[20].swapSteps[1].tokenOut, POLYGON_DAI)).toBe(true)
     expect(swapRoutes[20].swapSteps[1].extra?.fee).toBe(10000)
+  })
+
+  test('get swap routes - from is native token', async () => {
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_MATIC, POLYGON_USDC, Exchange.UNISWAPV3)
+
+    // Should return 3 routes
+    expect(swapRoutes).toHaveLength(3)
+
+    // Direct swap, pool fee 0.05%
+    expect(swapRoutes[0].swapSteps).toHaveLength(1)
+    // Native token should have been switched to its wrapped version
+    expect(tokenCmp(swapRoutes[0].swapSteps[0].tokenIn, POLYGON_WMATIC)).toBe(true)
+    expect(tokenCmp(swapRoutes[0].swapSteps[0].tokenOut, POLYGON_USDC)).toBe(true)
+    expect(swapRoutes[0].swapSteps[0].extra?.fee).toBe(500)
+
+    // Direct swap, pool fee 0.3%
+    expect(swapRoutes[1].swapSteps).toHaveLength(1)
+    // Native token should have been switched to its wrapped version
+    expect(tokenCmp(swapRoutes[1].swapSteps[0].tokenIn, POLYGON_WMATIC)).toBe(true)
+    expect(tokenCmp(swapRoutes[1].swapSteps[0].tokenOut, POLYGON_USDC)).toBe(true)
+    expect(swapRoutes[1].swapSteps[0].extra?.fee).toBe(3000)
+
+    // Direct swap, pool fee 1%
+    expect(swapRoutes[2].swapSteps).toHaveLength(1)
+    // Native token should have been switched to its wrapped version
+    expect(tokenCmp(swapRoutes[2].swapSteps[0].tokenIn, POLYGON_WMATIC)).toBe(true)
+    expect(tokenCmp(swapRoutes[2].swapSteps[0].tokenOut, POLYGON_USDC)).toBe(true)
+    expect(swapRoutes[2].swapSteps[0].extra?.fee).toBe(10000)
+  })
+
+  test('get swap routes - to is native token', async () => {
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDC, POLYGON_MATIC, Exchange.UNISWAPV3)
+
+    // Should return 3 routes
+    expect(swapRoutes).toHaveLength(3)
+
+    // Direct swap, pool fee 0.05%
+    expect(swapRoutes[0].swapSteps).toHaveLength(1)
+    expect(tokenCmp(swapRoutes[0].swapSteps[0].tokenIn, POLYGON_USDC)).toBe(true)
+    // Native token should have been switched to its wrapped version
+    expect(tokenCmp(swapRoutes[0].swapSteps[0].tokenOut, POLYGON_WMATIC)).toBe(true)
+    expect(swapRoutes[0].swapSteps[0].extra?.fee).toBe(500)
+
+    // Direct swap, pool fee 0.3%
+    expect(swapRoutes[1].swapSteps).toHaveLength(1)
+    expect(tokenCmp(swapRoutes[1].swapSteps[0].tokenIn, POLYGON_USDC)).toBe(true)
+    // Native token should have been switched to its wrapped version
+    expect(tokenCmp(swapRoutes[1].swapSteps[0].tokenOut, POLYGON_WMATIC)).toBe(true)
+    expect(swapRoutes[1].swapSteps[0].extra?.fee).toBe(3000)
+
+    // Direct swap, pool fee 1%
+    expect(swapRoutes[2].swapSteps).toHaveLength(1)
+    expect(tokenCmp(swapRoutes[2].swapSteps[0].tokenIn, POLYGON_USDC)).toBe(true)
+    // Native token should have been switched to its wrapped version
+    expect(tokenCmp(swapRoutes[2].swapSteps[0].tokenOut, POLYGON_WMATIC)).toBe(true)
+    expect(swapRoutes[2].swapSteps[0].extra?.fee).toBe(10000)
   })
 })
