@@ -3,9 +3,11 @@ import { ChainId, Exchange } from '@/constants'
 import { Token } from '@/types'
 import { tokenCmp } from '@/utils/token'
 
+const chainId = ChainId.POLYGON
+
 const POLYGON_MATIC: Token = {
   address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-  chainId: ChainId.POLYGON,
+  chainId: chainId,
   decimals: 18,
   symbol: 'MATIC',
   name: 'Matic',
@@ -13,7 +15,7 @@ const POLYGON_MATIC: Token = {
 }
 const POLYGON_WMATIC: Token = {
   address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
-  chainId: ChainId.POLYGON,
+  chainId: chainId,
   decimals: 18,
   symbol: 'WMATIC',
   name: 'Wrapped Matic',
@@ -21,7 +23,7 @@ const POLYGON_WMATIC: Token = {
 }
 const POLYGON_USDC: Token = {
   address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-  chainId: ChainId.POLYGON,
+  chainId: chainId,
   decimals: 6,
   symbol: 'USDC',
   name: 'USD Coin',
@@ -29,7 +31,7 @@ const POLYGON_USDC: Token = {
 }
 const POLYGON_USDT: Token = {
   address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
-  chainId: ChainId.POLYGON,
+  chainId: chainId,
   decimals: 6,
   symbol: 'USDT',
   name: 'Tether USD',
@@ -37,7 +39,7 @@ const POLYGON_USDT: Token = {
 }
 const POLYGON_DAI: Token = {
   address: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
-  chainId: ChainId.POLYGON,
+  chainId: chainId,
   decimals: 18,
   symbol: 'DAI',
   name: 'Dai Stablecoin',
@@ -45,7 +47,7 @@ const POLYGON_DAI: Token = {
 }
 const INVALID_TOKEN: Token = {
   address: '0xinvalid',
-  chainId: ChainId.POLYGON,
+  chainId: chainId,
   decimals: 18,
   symbol: 'INVALID',
   name: 'Invalid',
@@ -53,28 +55,28 @@ const INVALID_TOKEN: Token = {
 }
 
 describe('path', () => {
-  const swapPathService = new SwapPathService(ChainId.POLYGON)
+  const swapPathService = new SwapPathService()
 
   test('get swap routes - token from not found', async () => {
-    await expect(swapPathService.getSwapRoutes(INVALID_TOKEN, POLYGON_WMATIC, Exchange.UNISWAPV3)).rejects.toThrow(
-      'getSwapRoutes: token not found: ' + INVALID_TOKEN.address
-    )
+    await expect(
+      swapPathService.getSwapRoutes(INVALID_TOKEN, POLYGON_WMATIC, chainId, Exchange.UNISWAPV3)
+    ).rejects.toThrow('getSwapRoutes: token not found: ' + INVALID_TOKEN.address)
   })
 
   test('get swap routes - token to not found', async () => {
-    await expect(swapPathService.getSwapRoutes(POLYGON_WMATIC, INVALID_TOKEN, Exchange.UNISWAPV3)).rejects.toThrow(
-      'getSwapRoutes: token not found: ' + INVALID_TOKEN.address
-    )
+    await expect(
+      swapPathService.getSwapRoutes(POLYGON_WMATIC, INVALID_TOKEN, chainId, Exchange.UNISWAPV3)
+    ).rejects.toThrow('getSwapRoutes: token not found: ' + INVALID_TOKEN.address)
   })
 
   test('get swap routes - from and to are the same', async () => {
-    await expect(swapPathService.getSwapRoutes(POLYGON_WMATIC, POLYGON_WMATIC, Exchange.UNISWAPV3)).rejects.toThrow(
-      'getSwapRoutes: from and to tokens are the same'
-    )
+    await expect(
+      swapPathService.getSwapRoutes(POLYGON_WMATIC, POLYGON_WMATIC, chainId, Exchange.UNISWAPV3)
+    ).rejects.toThrow('getSwapRoutes: from and to tokens are the same')
   })
 
   test('get swap routes - wrapped native as from', async () => {
-    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_WMATIC, POLYGON_USDC, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_WMATIC, POLYGON_USDC, chainId, Exchange.UNISWAPV3)
 
     // Should return 3 routes, 1 for each uniswap pool fee tier
     expect(swapRoutes).toHaveLength(3)
@@ -99,7 +101,7 @@ describe('path', () => {
   })
 
   test('get swap routes - wrapped native as to', async () => {
-    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDC, POLYGON_WMATIC, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDC, POLYGON_WMATIC, chainId, Exchange.UNISWAPV3)
 
     // Should return 3 routes, 1 for each uniswap pool fee tier
     expect(swapRoutes).toHaveLength(3)
@@ -124,7 +126,7 @@ describe('path', () => {
   })
 
   test('get swap routes - non wrapped native swap - gateway token as from', async () => {
-    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDC, POLYGON_USDT, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDC, POLYGON_USDT, chainId, Exchange.UNISWAPV3)
 
     // Should return 12 routes
     // + 3 pool fee tiers for direct swap
@@ -232,7 +234,7 @@ describe('path', () => {
   })
 
   test('get swap routes - non wrapped native swap - gateway token as to', async () => {
-    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDT, POLYGON_USDC, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDT, POLYGON_USDC, chainId, Exchange.UNISWAPV3)
 
     // Should return 12 routes
     // + 3 pool fee tiers for direct swap
@@ -340,7 +342,7 @@ describe('path', () => {
   })
 
   test('get swap routes - non wrapped native swap - non gateway token swap', async () => {
-    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDT, POLYGON_DAI, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDT, POLYGON_DAI, chainId, Exchange.UNISWAPV3)
 
     // Should return 21 routes
     // + 3 pool fee tiers for direct swap
@@ -530,7 +532,7 @@ describe('path', () => {
   })
 
   test('get swap routes - from is native token', async () => {
-    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_MATIC, POLYGON_USDC, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_MATIC, POLYGON_USDC, chainId, Exchange.UNISWAPV3)
 
     // Should return 3 routes
     expect(swapRoutes).toHaveLength(3)
@@ -558,7 +560,7 @@ describe('path', () => {
   })
 
   test('get swap routes - to is native token', async () => {
-    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDC, POLYGON_MATIC, Exchange.UNISWAPV3)
+    const swapRoutes = await swapPathService.getSwapRoutes(POLYGON_USDC, POLYGON_MATIC, chainId, Exchange.UNISWAPV3)
 
     // Should return 3 routes
     expect(swapRoutes).toHaveLength(3)
