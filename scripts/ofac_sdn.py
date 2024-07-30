@@ -1,4 +1,3 @@
-import requests
 import re
 import json
 import sys
@@ -11,18 +10,20 @@ eth_addr_regex = re.compile(r"0x[a-fA-F0-9]{40}")
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python ofac_sdn.py <output_file>")
+    if len(sys.argv) < 3:
+        print("Usage: python ofac_sdn.py <input_file> <output_file>")
         sys.exit(1)
 
-    # Get the output file name
-    outpute_file = sys.argv[1]
+    # Get the input file content
+    input_file = sys.argv[1]
+    with open(input_file) as f:
+        content = f.read()
 
-    # Download the file
-    response = requests.get(SDN_PATH)
+    # Get the output file name
+    outpute_file = sys.argv[2]
 
     # Parse the file and find all Ethereum addresses
-    eth_addresses = eth_addr_regex.findall(response.text)
+    eth_addresses = eth_addr_regex.findall(content)
 
     # Save the addresses to a json file
     with open(outpute_file, "w") as f:
