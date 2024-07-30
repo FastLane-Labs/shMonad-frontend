@@ -37,9 +37,11 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
     userAddress: address as string,
   })
 
+  const [hasAttemptedRefetch, setHasAttemptedRefetch] = useState(false)
+
   const tokensWithBalances: TokenWithBalance[] = tokens.map((token, index) => ({
     ...token,
-    balance: balancesQuery.data ? balancesQuery.data[index] : '0',
+    balance: balancesQuery.data && balancesQuery.data.length > 0 ? balancesQuery.data[index] : '0',
   }))
 
   const filteredTokensWithBalances = tokensWithBalances.filter((token) => {
@@ -64,11 +66,12 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   const remainingTokens = sortedTokensWithBalances.filter((token) => parseFloat(token.balance) === 0)
 
   useEffect(() => {
-    if (balancesQuery.error || balancesQuery.data === undefined) {
-      balancesQuery.refetch({ cancelRefetch: true }) // Force refetch with canceling any running requests
+    if ((balancesQuery.error || balancesQuery.data === undefined) && !hasAttemptedRefetch) {
+      balancesQuery.refetch({ cancelRefetch: true })
+      setHasAttemptedRefetch(true) // Mark refetch attempt
     }
-  }, [balancesQuery, balancesQuery.error, balancesQuery.data])
-
+  }, [balancesQuery, balancesQuery.error, balancesQuery.data, hasAttemptedRefetch])
+  
   useEffect(() => {
     if (!isOpen) {
       setSearchTerm('')
@@ -90,7 +93,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
             {selectedToken.logoURI ? (
               <img src={selectedToken.logoURI} alt={selectedToken.symbol} className='w-6 h-6 mr-2 rounded-full' />
             ) : (
-              <img src={UnknownToken} alt='unknown' className='w-6 h-6 mr-2 rounded-full' />
+              <UnknownToken className='w-6 h-6 mr-2 rounded-full' />
             )}
             <span>{selectedToken.symbol}</span>
           </>
