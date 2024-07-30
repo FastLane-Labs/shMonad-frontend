@@ -3,6 +3,7 @@ import { SwapType } from '@/constants'
 import { QuoteRequest, QuoteResult, SwapRoute } from '@/types'
 import { getExchange } from '@/services/exchanges'
 import { multicall } from '@wagmi/core'
+import { tokenCmp } from '@/utils/token'
 import { ContractFunctionParameters } from 'viem'
 
 interface IBaseSwapService {
@@ -46,16 +47,16 @@ export class BaseSwapService implements IBaseSwapService {
     const tokenIn = candidates[0].swapSteps[0].tokenIn
     const tokenOut = candidates[0].swapSteps[candidates[0].swapSteps.length - 1].tokenOut
 
-    if (tokenIn === tokenOut) {
+    if (tokenCmp(tokenIn, tokenOut)) {
       throw new Error('validateSwapRouteCandidates: invalid route, tokenIn and tokenOut are the same')
     }
 
     for (const candidate of candidates) {
-      if (candidate.swapSteps[0].tokenIn !== tokenIn) {
+      if (!tokenCmp(candidate.swapSteps[0].tokenIn, tokenIn)) {
         throw new Error('validateSwapRouteCandidates: invalid route, tokenIn mismatch')
       }
 
-      if (candidate.swapSteps[candidate.swapSteps.length - 1].tokenOut !== tokenOut) {
+      if (!tokenCmp(candidate.swapSteps[candidate.swapSteps.length - 1].tokenOut, tokenOut)) {
         throw new Error('validateSwapRouteCandidates: invalid route, tokenOut mismatch')
       }
     }

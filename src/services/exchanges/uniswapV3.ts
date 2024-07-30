@@ -109,8 +109,8 @@ export class UniswapV3 extends Exchange {
         */
         return [
           {
-            tokenIn: quoteRequest.swapRoute.swapSteps[0].tokenIn,
-            tokenOut: quoteRequest.swapRoute.swapSteps[0].tokenOut,
+            tokenIn: quoteRequest.swapRoute.swapSteps[0].tokenIn.address,
+            tokenOut: quoteRequest.swapRoute.swapSteps[0].tokenOut.address,
             amountIn: quoteRequest.amount,
             fee: quoteRequest.swapRoute.swapSteps[0].extra.fee,
             sqrtPriceLimitX96: 0,
@@ -136,8 +136,8 @@ export class UniswapV3 extends Exchange {
         */
         return [
           {
-            tokenIn: quoteRequest.swapRoute.swapSteps[0].tokenIn,
-            tokenOut: quoteRequest.swapRoute.swapSteps[0].tokenOut,
+            tokenIn: quoteRequest.swapRoute.swapSteps[0].tokenIn.address,
+            tokenOut: quoteRequest.swapRoute.swapSteps[0].tokenOut.address,
             amount: quoteRequest.amount,
             fee: quoteRequest.swapRoute.swapSteps[0].extra.fee,
             sqrtPriceLimitX96: 0,
@@ -163,11 +163,11 @@ export class UniswapV3 extends Exchange {
     }
 
     let types = ['address', 'uint24', 'address']
-    let values = [route.swapSteps[0].tokenIn, route.swapSteps[0].extra.fee, route.swapSteps[0].tokenOut]
+    let values = [route.swapSteps[0].tokenIn.address, route.swapSteps[0].extra.fee, route.swapSteps[0].tokenOut.address]
 
     for (let i = 1; i < route.swapSteps.length; i++) {
       types.push('uint24', 'address')
-      values.push(route.swapSteps[i].extra.fee, route.swapSteps[i].tokenOut)
+      values.push(route.swapSteps[i].extra.fee, route.swapSteps[i].tokenOut.address)
     }
 
     return encodePacked(types, values)

@@ -4,11 +4,34 @@
 
 import { BaseSwapService } from '@/services/baseSwap'
 import { ChainId, Exchange, SwapType } from '@/constants'
-import { SwapRoute } from '@/types'
+import { Token, SwapRoute } from '@/types'
 
-const POLYGON_WMATIC = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
-const POLYGON_USDC = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
-const POLYGON_USDT = '0xc2132d05d31c914a87c6611c10748aeb04b58e8f'
+const chainId = ChainId.POLYGON
+
+const POLYGON_WMATIC: Token = {
+  address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+  chainId: chainId,
+  decimals: 18,
+  symbol: 'WMATIC',
+  name: 'Wrapped Matic',
+  logoURI: '',
+}
+const POLYGON_USDC: Token = {
+  address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+  chainId: chainId,
+  decimals: 6,
+  symbol: 'USDC',
+  name: 'USD Coin',
+  logoURI: '',
+}
+const POLYGON_USDT: Token = {
+  address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+  chainId: chainId,
+  decimals: 6,
+  symbol: 'USDT',
+  name: 'Tether USD',
+  logoURI: '',
+}
 
 describe('baseSwap', () => {
   const baseSwapService = new BaseSwapService()
