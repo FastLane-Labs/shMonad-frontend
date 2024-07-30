@@ -9,12 +9,12 @@ interface TokenGridProps {
 }
 
 const TokenGrid: React.FC<TokenGridProps> = ({ tokens, selectedToken, handleSelect }) => (
-  <div className='grid grid-cols-2 gap-2'>
+  <div className='grid grid-cols-3 gap-2'>
     {tokens.map((token) => (
       <div
         key={token.address}
-        className={`flex items-center justify-center p-2 cursor-pointer hover:bg-gray-700 rounded-xl ${
-          token.address.toLowerCase() === selectedToken?.address?.toLowerCase() ? 'bg-gray-600' : ''
+        className={`flex items-center justify-center p-2 cursor-pointer hover:bg-[#2e3038] border-zinc-800 border rounded-xl font-medium ${
+          token.address.toLowerCase() === selectedToken?.address?.toLowerCase() ? 'bg-primary' : ''
         }`}
         onClick={() => handleSelect(token)}>
         {token.logoURI ? (

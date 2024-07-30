@@ -8,6 +8,7 @@ import { useSwapContext } from '@/context/SwapContext'
 import TokenItem from '@/components/TokenItem/TokenItem'
 import TokenGrid from '@/components/TokenGrid/TokenGrid'
 import UnknownToken from 'src/assets/svg/unknownToken.svg'
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 
 interface TokenSelectModalProps {
   selectedToken: Token | null
@@ -106,22 +107,35 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
           <path d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' />
         </svg>
       </button>
-      <ModalWrapper isVisible={isOpen} onClose={() => setIsOpen(false)}>
-        <div className='p-4 max-w-lg mx-auto min-h-[300px] flex flex-col justify-between'>
-          <h2 className='text-2xl font-bold mb-4 text-center'>Select a token</h2>
-          <input
-            type='text'
-            placeholder='Search tokens'
-            className='w-full p-2 mb-4 border rounded'
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      <ModalWrapper
+        isVisible={isOpen}
+        onClose={() => setIsOpen(false)}
+        style={{ maxHeight: '90vh', minHeight: '90vh', paddingBottom: '0px' }}>
+        <div className='h-fit'>
+          <h2 className='text-2xl font-bold my-4 text-center'>Select a token</h2>
+          <div className='relative w-full mb-4'>
+            <input
+              type='text'
+              placeholder='Search tokens'
+              className='bg-neutral w-full p-2 pl-10 border border-zinc-800 rounded-xl focus:outline-none appearance-none'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <MagnifyingGlassIcon className='absolute left-3 top-2.5 h-5 w-5 text-gray-400' />
+          </div>
           {loading && <div className='text-center'>Loading tokens...</div>}
           {error && <div className='text-center text-red-500'>Error loading tokens: {error.message}</div>}
           {!loading && !error && (
             <>
               <TokenGrid tokens={popularTokens} selectedToken={selectedToken!} handleSelect={handleSelect} />
-              {tokensWithUserBalances.length > 0 && <h3 className='text-xl font-bold mb-2'>Your Tokens</h3>}
+              <div className='line-seperator mt-4' />
+            </>
+          )}
+        </div>
+        {!loading && !error && (
+          <div className='scroll-bar flex flex-shrink flex-col overflow-y-scroll -mr-2 h-full'>
+            <div className='h-full pr-2'>
+              {tokensWithUserBalances.length > 0 && <h3 className='font-medium py-4 text-zinc-400'>Your Tokens</h3>}
               <ul className='space-y-2'>
                 {tokensWithUserBalances.map((token) => (
                   <TokenItem
@@ -129,11 +143,10 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
                     token={token}
                     selectedToken={selectedToken!}
                     handleSelect={handleSelect}
-                    isLoading={balancesQuery.isLoading}
                   />
                 ))}
               </ul>
-              <h3 className='text-xl font-bold mb-2'>All Tokens</h3>
+              <h3 className='font-medium py-4 text-zinc-400'>All Tokens</h3>
               <ul className='space-y-2'>
                 {remainingTokens
                   .filter((token) => token.address !== selectedToken?.address)
@@ -143,13 +156,12 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
                       token={token}
                       selectedToken={selectedToken!}
                       handleSelect={handleSelect}
-                      isLoading={balancesQuery.isLoading}
                     />
                   ))}
               </ul>
-            </>
-          )}
-        </div>
+            </div>
+          </div>
+        )}
       </ModalWrapper>
     </div>
   )
