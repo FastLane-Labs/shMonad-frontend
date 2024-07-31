@@ -15,7 +15,6 @@ const SellComponent: React.FC = () => {
     setFromToken: setSellToken,
     fromAmount: sellAmount,
     setFromAmount: setSellAmount,
-    swapDirection,
     setSwapDirection,
   } = useSwapContext()
 

@@ -1,3 +1,5 @@
+import { Token } from '@/types'
+
 export const keys = ({ address }: { address?: string }) => ({
   all: [address, 'all'],
   balances: () => [...keys({ address }).all, 'balances'],
@@ -7,5 +9,21 @@ export const keys = ({ address }: { address?: string }) => ({
     tokenAddress,
     userAddress,
     'balance',
+  ],
+  swapPath: (fromToken: Token, toToken: Token) => [
+    ...keys({ address }).all,
+    'swapPath',
+    fromToken.address,
+    toToken.address,
+  ],
+  swapQuote: (fromToken: Token, toToken: Token, direction: 'buy' | 'sell', amount: string) => [
+    ...keys({ address }).all,
+    'swapQuote',
+    fromToken.address,
+    toToken.address,
+    direction,
+    amount,
+    // Add a timestamp rounded to the nearest 20 seconds
+    Math.floor(Date.now() / 20000) * 20000,
   ],
 })
