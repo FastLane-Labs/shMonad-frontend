@@ -59,7 +59,7 @@ export const useBaselineQuote = (): boolean => {
       ),
       queryFn: async (): Promise<QuoteResult | null> => {
         if (!isSwapReady || !swapRoutes || swapRoutes.length === 0 || !fromToken || !toToken) return null
-
+        console.log('fetching quote')
         const relevantAmountBigInt = toBigInt(
           debouncedAmount,
           swapDirection === 'sell' ? fromToken.decimals : toToken.decimals
@@ -73,6 +73,9 @@ export const useBaselineQuote = (): boolean => {
         return quote || null
       },
       enabled: isSwapReady && !!swapRoutes && swapRoutes.length > 0,
+      refetchOnWindowFocus: true,
+      refetchInterval: 20000,
+      refetchIntervalInBackground: false,
       keepPreviousData: true,
     }),
     [address, fromToken, toToken, swapDirection, debouncedAmount, isSwapReady, swapRoutes, baselineSwapService]
