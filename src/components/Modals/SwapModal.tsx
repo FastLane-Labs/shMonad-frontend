@@ -104,9 +104,7 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
             <h2 className='text-lg font-semibold'>Swap success!</h2>
           </div>
           {renderSwapDetails()}
-          <button
-            onClick={onClose}
-            className='w-full bg-purple-500 text-white py-2 rounded-xl font-semibold text-sm hover:bg-purple-600 transition-colors'>
+          <button onClick={onClose} className='btn btn-explorer'>
             View on Explorer
           </button>
         </>

@@ -22,6 +22,10 @@ input[type='number']::-webkit-inner-spin-button {
   @apply bg-[#1a1b1f] h-10 shadow-black rounded-xl !important;
 }
 
+.btn-explorer {
+  @apply bg-purple-600 hover:bg-purple-700 hover:shadow-purple-600 !important;
+}
+
 .btn-navbar:hover {
   @apply scale-105 !important;
 }
