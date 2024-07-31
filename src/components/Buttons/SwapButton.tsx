@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi'
 import { useBalance } from '@/hooks/useBalance'
 import { useSwapContext } from '@/context/SwapContext'
 import { toBigInt } from '@/utils/format'
+import { SANCTIONED_ADDRESSES } from '@/constants'
 
 interface SwapButtonProps {
   handleSwap: () => Promise<void>
@@ -16,6 +17,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
   const { address: userAddress, status, isConnected } = useAccount()
   const [localLoading, setLocalLoading] = useState(false)
   const [initialized, setInitialized] = useState(false)
+  const [userBlocked, setUserBlocked] = useState(false)
   const { data: balance, isLoading: balanceLoading } = useBalance({ token: fromToken!, userAddress: userAddress! })
 
   useEffect(() => {
@@ -23,6 +25,10 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
       setInitialized(true)
     }
   }, [status])
+
+  useEffect(() => {
+    setUserBlocked(SANCTIONED_ADDRESSES.includes(userAddress!))
+  }, [userAddress])
 
   const handleClick = async () => {
     setLocalLoading(true)
@@ -41,7 +47,13 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
     )
   }
 
-  if (!isConnected && status != 'reconnecting') {
+  if (userBlocked) {
+    return (
+      <button className='btn rounded-2xl w-full' disabled>
+        You are not allowed to use this app
+      </button>
+    )
+  } else if (!isConnected && status != 'reconnecting') {
     return (
       <button className='btn rounded-2xl w-full' onClick={() => openConnectModal?.()}>
         Connect wallet
