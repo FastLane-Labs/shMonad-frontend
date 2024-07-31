@@ -64,13 +64,10 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
   const hasSufficientBalance =
     balance && fromToken && toBigInt(fromAmount, fromToken.decimals) <= BigInt(balance.toString())
 
+  const isMissingUserInput = !fromToken || !toToken || !fromAmount || !hasSufficientBalance
+
   const isDisabled =
-    status === 'reconnecting' ||
-    !initialized ||
-    (!fromToken && isSupportedChain) ||
-    (!toToken && isSupportedChain) ||
-    (!fromAmount && isSupportedChain) ||
-    (!hasSufficientBalance && isSupportedChain)
+    status === 'reconnecting' || !initialized || (isSupportedChain && (isMissingUserInput || !hasSufficientBalance))
 
   const getButtonText = () => {
     if (!isConnected) return 'Connect wallet'
