@@ -15,6 +15,8 @@ const SellComponent: React.FC = () => {
     setFromToken: setSellToken,
     fromAmount: sellAmount,
     setFromAmount: setSellAmount,
+    swapDirection,
+    setSwapDirection,
   } = useSwapContext()
 
   const { address, chainId } = useAccount()
@@ -61,6 +63,7 @@ const SellComponent: React.FC = () => {
         setSellToken={setSellToken}
         sellAmount={sellAmount}
         setSellAmount={setSellAmount}
+        setSwapDirection={setSwapDirection}
         balance={balance}
       />
     </div>

@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from 'react'
 import TokenSelectModal from '../Modals/TokenSelectModal'
-import { Token } from '@/types'
+import { SwapDirection, Token } from '@/types'
 
 // Define the types for the props
 interface BuyAmountProps {
@@ -9,14 +9,23 @@ interface BuyAmountProps {
   buyAmount: string
   setBuyAmount: (amount: string) => void
   quoteLoading: boolean
+  setSwapDirection: (direction: SwapDirection) => void
 }
 
-const BuyAmount: React.FC<BuyAmountProps> = ({ buyToken, setBuyToken, buyAmount, setBuyAmount, quoteLoading }) => {
+const BuyAmount: React.FC<BuyAmountProps> = ({
+  buyToken,
+  setBuyToken,
+  buyAmount,
+  setBuyAmount,
+  quoteLoading,
+  setSwapDirection,
+}) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     // Ensure the input is valid (numbers and one decimal point)
     if (/^\d*\.?\d*$/.test(value)) {
       setBuyAmount(value)
+      setSwapDirection('buy')
     }
   }
 

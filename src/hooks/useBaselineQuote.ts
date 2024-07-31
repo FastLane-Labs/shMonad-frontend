@@ -3,53 +3,66 @@ import { useSwapContext } from '@/context/SwapContext'
 import { BaseSwapService } from '@/services/baseSwap'
 import { SwapPathService } from '@/services/swapPath'
 import { useAccount } from 'wagmi'
-import { Exchange, SwapType } from '@/constants'
+import { Exchange } from '@/constants'
 import { formatBalance, toBigInt } from '@/utils/format'
 
 export const useBaselineQuote = () => {
-  const { fromToken, fromAmount, toToken, setToAmount, setQuoteLoading } = useSwapContext()
+  const { fromToken, fromAmount, toToken, toAmount, setToAmount, setFromAmount, setQuoteLoading, swapDirection } =
+    useSwapContext()
   const { chainId } = useAccount()
   const [isQuoteLoading, setIsQuoteLoading] = useState(false)
+
   const baselineSwapService = new BaseSwapService()
   const swapPathService = new SwapPathService()
 
   const fetchQuote = useCallback(async () => {
-    if (!fromToken || !fromAmount || !toToken || !chainId) return
+    if (!fromToken || !toToken || !chainId) return
+
+    const relevantAmount = swapDirection === 'sell' ? fromAmount : toAmount
+    if (!relevantAmount) return
 
     setIsQuoteLoading(true)
     setQuoteLoading(true)
+
     try {
-      // Convert fromAmount to bigint
-      const fromAmountBigInt = toBigInt(fromAmount, fromToken.decimals)
+      // Convert relevant amount to bigint
+      const relevantAmountBigInt = toBigInt(
+        relevantAmount,
+        swapDirection === 'sell' ? fromToken.decimals : toToken.decimals
+      )
+
       // Get swap routes
-      console.log('fromToken', fromToken.symbol)
-      console.log('toToken', toToken.symbol)
-      console.log('chainId', chainId)
-
-      console.log('fromAmountBigInt', fromAmountBigInt)
-      console.log('fromAmount', fromAmount)
-      console.log('fromAmountDecimals', fromToken.decimals)
-
       const swapRoutes = await swapPathService.getSwapRoutes(fromToken, toToken, chainId, Exchange.UNISWAPV3)
       // Get best quote
-      console.log('swapRoutes', swapRoutes)
-      const swap = await baselineSwapService.getBestQuoteExactIn(fromAmountBigInt, swapRoutes)
+
+      const swap =
+        swapDirection === 'sell'
+          ? await baselineSwapService.getBestQuoteExactIn(relevantAmountBigInt, swapRoutes)
+          : await baselineSwapService.getBestQuoteExactOut(relevantAmountBigInt, swapRoutes)
 
       if (swap) {
-        setToAmount(formatBalance(swap.amountOut, toToken.decimals))
+        if (swapDirection === 'sell') {
+          setToAmount(formatBalance(swap.amountOut, toToken.decimals))
+        } else {
+          setFromAmount(formatBalance(swap.amountIn, fromToken.decimals))
+        }
       }
     } catch (error) {
-      setToAmount(formatBalance(0n, toToken.decimals))
+      if (swapDirection === 'sell') {
+        setToAmount(formatBalance(0n, toToken.decimals))
+      } else {
+        setFromAmount(formatBalance(0n, fromToken.decimals))
+      }
       console.error('Fetching quote failed', error)
     } finally {
       setIsQuoteLoading(false)
       setQuoteLoading(false)
     }
-  }, [fromToken, fromAmount, toToken])
+  }, [fromToken, fromAmount, toToken, toAmount, swapDirection, chainId, setQuoteLoading, setFromAmount, setToAmount])
 
   useEffect(() => {
     fetchQuote()
-  }, [fromToken, fromAmount, toToken, fetchQuote])
+  }, [fromToken, fromAmount, toToken, toAmount, swapDirection, chainId, fetchQuote])
 
   return { isQuoteLoading }
 }
