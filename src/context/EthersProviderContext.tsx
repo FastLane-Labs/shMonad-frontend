@@ -1,22 +1,32 @@
 'use client'
 import React, { createContext, useContext, useMemo, ReactNode } from 'react'
-import { JsonRpcProvider, FallbackProvider } from 'ethers'
+import { JsonRpcProvider, FallbackProvider, Signer } from 'ethers'
 import { useChainId } from 'wagmi'
-import { useEthersProvider } from '@/hooks/useEthersProvider'
+import { useEthersProvider } from '@/hooks/helper/useEthersProvider'
+import { useEthersSigner } from '@/hooks/helper/useEthersSigner'
 
-const EthersProviderContext = createContext<JsonRpcProvider | FallbackProvider | undefined>(undefined)
+interface EthersContextValue {
+  provider: JsonRpcProvider | FallbackProvider | null
+  signer: Signer | null
+}
+
+const EthersProviderContext = createContext<EthersContextValue | undefined>(undefined)
 
 export const EthersProviderWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const chainId = useChainId()
   const ethersProvider = useEthersProvider({ chainId })
-  const value = useMemo(() => ethersProvider, [ethersProvider])
+  const signer = useEthersSigner({ chainId })
+
+  const value = useMemo(() => {
+    return { provider: ethersProvider || null, signer: signer || null }
+  }, [ethersProvider, signer])
 
   return <EthersProviderContext.Provider value={value}>{children}</EthersProviderContext.Provider>
 }
 
-export const useEthersProviderContext = (): JsonRpcProvider | FallbackProvider => {
+export const useEthersProviderContext = (): EthersContextValue => {
   const context = useContext(EthersProviderContext)
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useEthersProviderContext must be used within an EthersProviderWrapper')
   }
   return context

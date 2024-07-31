@@ -4,16 +4,7 @@ import { useEthersProviderContext } from '@/context/EthersProviderContext'
 import { keys } from '@/core/queries/query-keys'
 import { nativeEvmTokenAddress } from '@/constants'
 import { Token } from '@/types'
-
-const ERC20_ABI = [
-  {
-    constant: true,
-    inputs: [{ name: '_owner', type: 'address' }],
-    name: 'balanceOf',
-    outputs: [{ name: 'balance', type: 'uint256' }],
-    type: 'function',
-  },
-]
+import { ierc20Abi } from '@/abis'
 
 type UseBalanceParams = {
   token?: Token
@@ -26,17 +17,17 @@ const createBalanceQueryOptions = ({
   token,
   userAddress,
   enabled = true,
-}: UseBalanceParams & { provider: ethers.AbstractProvider }): UseQueryOptions<bigint, Error> => {
+}: UseBalanceParams & { provider: ethers.AbstractProvider | null }): UseQueryOptions<bigint, Error> => {
   const queryKey = keys({ address: userAddress }).balance(token?.chainId, token?.address, userAddress)
 
   const queryFn = async (): Promise<bigint> => {
-    if (!userAddress || !token) return BigInt(0)
+    if (!provider || !userAddress || !token) return BigInt(0)
 
     if (token.address.toLowerCase() === nativeEvmTokenAddress.toLowerCase()) {
       const balance = await provider.getBalance(userAddress)
       return BigInt(balance.toString())
     } else {
-      const contract = new ethers.Contract(token.address, ERC20_ABI, provider)
+      const contract = new ethers.Contract(token.address, ierc20Abi, provider)
       try {
         const balance = await contract.balanceOf(userAddress)
         return BigInt(balance.toString())
@@ -56,7 +47,7 @@ const createBalanceQueryOptions = ({
 }
 
 export const useBalance = (params: UseBalanceParams): UseQueryResult<bigint, Error> => {
-  const provider = useEthersProviderContext()
+  const { provider } = useEthersProviderContext()
   const options = createBalanceQueryOptions({ ...params, provider })
   return useQuery<bigint, Error>(options)
 }

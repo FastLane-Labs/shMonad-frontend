@@ -2,6 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { useChainId } from 'wagmi'
 import { Token } from '@/types'
 import { useCurrentTokenList } from './useTokenList'
+import { useAccount } from 'wagmi'
+import { getDappAddress } from '@/utils/getContractAddress'
+import { toBigInt } from '@/utils/format'
+import useAllowance from '@/hooks/useAllowance'
 
 interface SwapState {
   fromToken: Token | null
@@ -10,6 +14,9 @@ interface SwapState {
   toAmount: string
   quote: any
   quoteLoading: boolean
+  allowance: bigint
+  sufficientAllowance: boolean
+  allowanceLoading: boolean
   setFromToken: (token: Token | null) => void
   setToToken: (token: Token | null) => void
   setFromAmount: (amount: string) => void
@@ -18,9 +25,10 @@ interface SwapState {
   setQuoteLoading: (loading: boolean) => void
   swapTokens: () => void
   resetSelections: () => void
+  updateAllowance: () => void
+  setSufficientAllowance: (sufficientAllowance: boolean) => void
 }
 
-// useSwapContext over useSwap
 export const useSwap = (): SwapState => {
   const chainId = useChainId()
   const tokens = useCurrentTokenList()
@@ -31,6 +39,36 @@ export const useSwap = (): SwapState => {
   const [toAmount, setToAmount] = useState<string>('')
   const [quote, setQuote] = useState<any>(null)
   const [quoteLoading, setQuoteLoading] = useState<boolean>(false)
+  const [allowance, setAllowance] = useState<bigint>(BigInt(0))
+  const [sufficientAllowance, setSufficientAllowance] = useState<boolean>(false)
+  const [allowanceLoading, setAllowanceLoading] = useState<boolean>(false)
+  const [allowanceRefreshTrigger, setAllowanceRefreshTrigger] = useState(0)
+
+  const { address: userAddress } = useAccount()
+  const spenderAddress = getDappAddress(chainId)
+
+  const {
+    allowance: fetchedAllowance,
+    sufficientAllowance: fetchedSufficientAllowance,
+    loading: fetchedAllowanceLoading,
+  } = useAllowance({
+    token: fromToken!,
+    userAddress: userAddress!,
+    spenderAddress: spenderAddress,
+    requiredAmount: toBigInt(fromAmount, fromToken?.decimals ?? 0),
+    refreshTrigger: allowanceRefreshTrigger,
+  })
+
+  const updateAllowance = useCallback(() => {
+    setAllowanceLoading(true)
+    setAllowanceRefreshTrigger((prev) => prev + 1)
+  }, [])
+
+  useEffect(() => {
+    setAllowance(fetchedAllowance ?? BigInt(0))
+    setSufficientAllowance(fetchedSufficientAllowance ?? false)
+    setAllowanceLoading(fetchedAllowanceLoading)
+  }, [fetchedAllowance, fetchedSufficientAllowance, fetchedAllowanceLoading])
 
   const handleSwapTokens = useCallback(() => {
     setFromToken(toToken)
@@ -45,11 +83,20 @@ export const useSwap = (): SwapState => {
     setFromAmount('')
     setToAmount('')
     setQuote(null)
+    setAllowance(BigInt(0))
+    setSufficientAllowance(false)
   }, [])
 
   useEffect(() => {
     resetSelections()
   }, [chainId, resetSelections])
+
+  useEffect(() => {
+    // Update allowance when fromToken or fromAmount changes
+    if (fromToken && userAddress) {
+      updateAllowance()
+    }
+  }, [fromToken, fromAmount, userAddress, updateAllowance])
 
   return {
     fromToken,
@@ -58,6 +105,9 @@ export const useSwap = (): SwapState => {
     toAmount,
     quote,
     quoteLoading,
+    allowance,
+    sufficientAllowance,
+    allowanceLoading,
     setFromToken,
     setToToken,
     setFromAmount,
@@ -66,5 +116,7 @@ export const useSwap = (): SwapState => {
     setQuoteLoading,
     swapTokens: handleSwapTokens,
     resetSelections,
+    updateAllowance,
+    setSufficientAllowance,
   }
 }
