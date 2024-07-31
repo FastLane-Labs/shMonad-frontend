@@ -5,6 +5,8 @@ import { useAccount } from 'wagmi'
 import { toBigInt } from '@/utils/format'
 import useAllowance from '@/hooks/useAllowance'
 import { useFastLaneOnline } from './useFastLaneOnline'
+import useDebounce from '@/hooks/useDebounce' // Adjust the path as necessary
+import { useBaselineQuote } from './useBaselineQuote'
 
 interface SwapState {
   // Token and Amount States
@@ -66,6 +68,9 @@ export const useSwap = (): SwapState => {
   // fastlane online contract address
   const spenderAddress = useFastLaneOnline()
 
+  const debouncedFromAmount = useDebounce(fromAmount, 500) // 500ms delay
+  const debouncedToAmount = useDebounce(toAmount, 500) // 500ms delay
+
   const {
     allowance: fetchedAllowance,
     sufficientAllowance: fetchedSufficientAllowance,
@@ -74,7 +79,7 @@ export const useSwap = (): SwapState => {
     token: fromToken!,
     userAddress: userAddress!,
     spenderAddress: spenderAddress,
-    requiredAmount: toBigInt(fromAmount, fromToken?.decimals ?? 0),
+    requiredAmount: toBigInt(debouncedFromAmount, fromToken?.decimals ?? 0),
     refreshTrigger: allowanceRefreshTrigger,
   })
 
@@ -89,7 +94,7 @@ export const useSwap = (): SwapState => {
       setDefaultToken(tokens.find((token) => token.tags?.includes('default')) as Token)
       setFromToken(defaultToken)
     }
-  }, [chainId])
+  }, [chainId, tokens])
 
   useEffect(() => {
     setAllowance(fetchedAllowance ?? BigInt(0))
@@ -119,11 +124,11 @@ export const useSwap = (): SwapState => {
   }, [chainId, resetSelections])
 
   useEffect(() => {
-    // Update allowance when fromToken or fromAmount changes
+    // Update allowance when fromToken or debouncedFromAmount changes
     if (fromToken && userAddress) {
       updateAllowance()
     }
-  }, [fromToken, fromAmount, userAddress, updateAllowance])
+  }, [fromToken, debouncedFromAmount, userAddress, updateAllowance])
 
   return {
     // Token and Amount States

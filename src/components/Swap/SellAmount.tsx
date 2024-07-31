@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import TokenSelectModal from '../Modals/TokenSelectModal'
 import { SwapDirection, Token } from '@/types'
-import { useSwapContext } from '@/context/SwapContext'
 
 interface SellAmountProps {
   sellToken: Token | null
