@@ -1,14 +1,8 @@
 name: OFAC
 on:
-  # TODO: uncomment
-  # schedule:
-  #   - cron: '0 0 * * *'
-  # workflow_dispatch:
-
-  # temporary for testing
-  pull_request:
-    branches:
-      - '**'
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   update-list:
@@ -33,7 +27,7 @@ jobs:
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git checkout ofac-list
+          git checkout develop
           mv ./ofac_data/ofac_sdn.json ./src/constants/sanctioned_addresses_ofac.json
           git add ./src/constants/sanctioned_addresses_ofac.json
           git commit -m "automatic ofac update: $(date)" -a || true
@@ -41,4 +35,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ofac-list # change branch to develop
+          branch: develop
