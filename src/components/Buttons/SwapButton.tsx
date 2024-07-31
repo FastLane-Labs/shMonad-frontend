@@ -63,7 +63,13 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
     balance && fromToken && toBigInt(fromAmount, fromToken.decimals) <= BigInt(balance.toString())
 
   const isDisabled =
-    userBlocked || status === 'reconnecting' || !initialized || !fromToken || !toToken || !fromAmount || !hasSufficientBalance
+    userBlocked ||
+    status === 'reconnecting' ||
+    !initialized ||
+    !fromToken ||
+    !toToken ||
+    !fromAmount ||
+    !hasSufficientBalance
 
   const getButtonText = () => {
     if (userBlocked) return 'You are not allowed to use this app'
