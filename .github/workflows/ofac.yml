@@ -13,7 +13,6 @@ on:
 jobs:
   update-list:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,7 +31,9 @@ jobs:
           python3 scripts/ofac_sdn.py ./ofac_data/sdn.xml ./ofac_data/ofac_sdn.json
       - name: Commit changes
         run: |
-          git checkout ofac-list
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git checkout develop
           mv ./ofac_data/ofac_sdn.json ./src/constants/sanctioned_addresses_ofac.json
           git add ./src/constants/sanctioned_addresses_ofac.json
           git commit -m "automatic ofac update: $(date)" -a || true
@@ -40,4 +41,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ofac-list
+          branch: ofac-list # change branch to develop
