@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Token } from '@/types'
+import { SwapDirection, Token } from '@/types'
 import { useCurrentTokenList } from './useTokenList'
 import { useAccount } from 'wagmi'
 import { toBigInt } from '@/utils/format'
@@ -7,25 +7,38 @@ import useAllowance from '@/hooks/useAllowance'
 import { useFastLaneOnline } from './useFastLaneOnline'
 
 interface SwapState {
+  // Token and Amount States
   fromToken: Token | null
   toToken: Token | null
   fromAmount: string
   toAmount: string
+
+  // Quote States
   quote: any
   quoteLoading: boolean
+
+  // Allowance States
   allowance: bigint
   sufficientAllowance: boolean
   allowanceLoading: boolean
+
+  // Swap Direction
+  swapDirection: SwapDirection
+
+  // State Setters
+  setSwapDirection: (direction: SwapDirection) => void
   setFromToken: (token: Token | null) => void
   setToToken: (token: Token | null) => void
   setFromAmount: (amount: string) => void
   setToAmount: (amount: string) => void
   setQuote: (quote: any) => void
   setQuoteLoading: (loading: boolean) => void
+  setSufficientAllowance: (sufficientAllowance: boolean) => void
+
+  // Actions
   swapTokens: () => void
   resetSelections: () => void
   updateAllowance: () => void
-  setSufficientAllowance: (sufficientAllowance: boolean) => void
 }
 
 export const useSwap = (): SwapState => {
@@ -40,6 +53,7 @@ export const useSwap = (): SwapState => {
   const [toToken, setToToken] = useState<Token | null>(null)
   const [fromAmount, setFromAmount] = useState<string>('')
   const [toAmount, setToAmount] = useState<string>('')
+  const [swapDirection, setSwapDirection] = useState<SwapDirection>('sell')
   const [quote, setQuote] = useState<any>(null)
   const [quoteLoading, setQuoteLoading] = useState<boolean>(false)
   const [allowance, setAllowance] = useState<bigint>(BigInt(0))
@@ -112,24 +126,37 @@ export const useSwap = (): SwapState => {
   }, [fromToken, fromAmount, userAddress, updateAllowance])
 
   return {
+    // Token and Amount States
     fromToken,
     toToken,
     fromAmount,
     toAmount,
+
+    // Quote States
     quote,
     quoteLoading,
+
+    // Allowance States
     allowance,
     sufficientAllowance,
     allowanceLoading,
+
+    // Swap Direction
+    swapDirection,
+
+    // State Setters
+    setSwapDirection,
     setFromToken,
     setToToken,
     setFromAmount,
     setToAmount,
     setQuote,
     setQuoteLoading,
+    setSufficientAllowance,
+
+    // Actions
     swapTokens: handleSwapTokens,
     resetSelections,
     updateAllowance,
-    setSufficientAllowance,
   }
 }
