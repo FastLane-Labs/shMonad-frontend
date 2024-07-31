@@ -154,6 +154,7 @@ export class UniswapV3 extends Exchange {
 
   /**
    * Compute the path for the quoteExactInput and quoteExactOutput functions
+   * @param swapType The swap type (EXACT_IN or EXACT_OUT)
    * @param route The swap route
    * @returns The path
    */
