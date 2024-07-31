@@ -19,6 +19,9 @@ def main():
     # Parse the file and find all Ethereum addresses
     eth_addresses = re.compile(r"0x[a-fA-F0-9]{40}").findall(content)
 
+    # Filter out duplicates
+    eth_addresses = list(set(eth_addresses))
+
     # Save the addresses to a json file
     with open(outpute_file, "w") as f:
         f.write(json.dumps(eth_addresses, indent=2))
