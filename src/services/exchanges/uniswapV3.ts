@@ -121,7 +121,7 @@ export class UniswapV3 extends Exchange {
         /*
           function quoteExactInput(bytes path, uint256 amountIn) external returns (uint256 amountOut, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList, uint256 gasEstimate)
         */
-        return [this._computePath(quoteRequest.swapRoute), quoteRequest.amount]
+        return [this._computePath(quoteRequest.swapType, quoteRequest.swapRoute), quoteRequest.amount]
 
       case QuoteFunctionName.quoteExactOutputSingle:
         /*
@@ -148,7 +148,7 @@ export class UniswapV3 extends Exchange {
         /*
         function quoteExactOutput(bytes path, uint256 amountOut) external returns (uint256 amountIn, uint160[] memory sqrtPriceX96AfterList, uint32[] memory initializedTicksCrossedList, uint256 gasEstimate)
         */
-        return [this._computePath(quoteRequest.swapRoute), quoteRequest.amount]
+        return [this._computePath(quoteRequest.swapType, quoteRequest.swapRoute), quoteRequest.amount]
     }
   }
 
@@ -157,7 +157,7 @@ export class UniswapV3 extends Exchange {
    * @param route The swap route
    * @returns The path
    */
-  protected static _computePath(route: SwapRoute): Hex {
+  protected static _computePath(swapType: SwapType, route: SwapRoute): Hex {
     if (!route.swapSteps.length) {
       return '0x'
     }
@@ -168,6 +168,11 @@ export class UniswapV3 extends Exchange {
     for (let i = 1; i < route.swapSteps.length; i++) {
       types.push('uint24', 'address')
       values.push(route.swapSteps[i].extra.fee, route.swapSteps[i].tokenOut.address)
+    }
+
+    // Invert the path for exact output
+    if (swapType === SwapType.EXACT_OUT) {
+      values = values.reverse()
     }
 
     return encodePacked(types, values)

@@ -137,12 +137,10 @@ export class BaseSwapService implements IBaseSwapService {
           }
           break
         case SwapType.EXACT_OUT:
-          if (quoteResult.amountIn > bestAmount || bestAmount === BigInt(0)) {
+          if (quoteResult.amountIn < bestAmount || bestAmount === BigInt(0)) {
             bestAmount = quoteResult.amountIn
             bestQuoteResult = quoteResult
           }
-          break
-        default:
           break
       }
     }
