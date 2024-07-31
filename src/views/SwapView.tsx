@@ -18,7 +18,7 @@ const SwapView: React.FC = () => {
   })
 
   const { handleSwap, isSwapping } = useHandleSwap()
-  const { isQuoteLoading } = useBaselineQuote()
+  const isQuoteLoading = useBaselineQuote()
 
   const handleSettingsSave = (newSettings: Settings) => {
     setSettings(newSettings)
