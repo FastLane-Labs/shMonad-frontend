@@ -22,8 +22,17 @@ export const useBaselineQuote = () => {
       // Convert fromAmount to bigint
       const fromAmountBigInt = toBigInt(fromAmount, fromToken.decimals)
       // Get swap routes
+      console.log('fromToken', fromToken.symbol)
+      console.log('toToken', toToken.symbol)
+      console.log('chainId', chainId)
+
+      console.log('fromAmountBigInt', fromAmountBigInt)
+      console.log('fromAmount', fromAmount)
+      console.log('fromAmountDecimals', fromToken.decimals)
+
       const swapRoutes = await swapPathService.getSwapRoutes(fromToken, toToken, chainId, Exchange.UNISWAPV3)
       // Get best quote
+      console.log('swapRoutes', swapRoutes)
       const swap = await baselineSwapService.getBestQuoteExactIn(fromAmountBigInt, swapRoutes)
 
       if (swap) {
