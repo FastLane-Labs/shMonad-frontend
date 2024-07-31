@@ -30,7 +30,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, onSav
             <button
               key={tolerance}
               onClick={() => setSlippageTolerance(tolerance)}
-              className={`btn text-white px-3 py-1 rounded-md ${slippageTolerance === tolerance ? 'bg-secondary' : 'bg-gray-700'}`}>
+              className={`btn btn-settings ${slippageTolerance === tolerance ? 'bg-secondary' : 'bg-gray-700'}`}>
               {tolerance}%
             </button>
           ))}
@@ -56,12 +56,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, onSav
             value={transactionDeadline}
             placeholder='20'
             onChange={(e) => setTransactionDeadline(parseInt(e.target.value))}
-            className='input input-bordered bg-gray-700 text-white px-3 py-1 rounded-md w-20'
+            className='input input-bordered bg-gray-700 px-3 py-1 rounded-md w-20'
           />
           <span className='ml-2'>minutes</span>
         </div>
       </div>
-      <button onClick={handleSave} className='btn bg-secondary rounded-2xl w-full text-white'>
+      <button onClick={handleSave} className='btn'>
         Save
       </button>
     </ModalWrapper>

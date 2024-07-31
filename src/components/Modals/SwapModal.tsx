@@ -43,10 +43,7 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
   const renderButton = () => {
     if (!sufficientAllowance) {
       return (
-        <button
-          onClick={handleApprove}
-          disabled={isApproving}
-          className='w-full bg-pink-500 text-white py-3 rounded-xl font-semibold text-sm disabled:bg-gray-500 hover:bg-pink-600 transition-colors'>
+        <button onClick={handleApprove} disabled={isApproving} className='btn'>
           {isApproving ? (
             <span className='flex items-center justify-center'>
               <svg className='animate-spin h-5 w-5 mr-3' viewBox='0 0 24 24'>
@@ -65,10 +62,7 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
       )
     } else {
       return (
-        <button
-          onClick={handleSwap}
-          disabled={isSwapping}
-          className='w-full bg-pink-500 text-white py-3 rounded-xl font-semibold text-sm disabled:bg-gray-500 hover:bg-pink-600 transition-colors'>
+        <button onClick={handleSwap} disabled={isSwapping} className='btn'>
           {isSwapping ? 'Swapping...' : 'Confirm swap'}
         </button>
       )
@@ -151,10 +145,8 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
   }
 
   return (
-    <ModalWrapper isVisible={isVisible} onClose={onClose}>
-      <div className='bg-base-200 text-neutral-content p-4 rounded-xl h-auto flex flex-col justify-between'>
-        {renderContent()}
-      </div>
+    <ModalWrapper isVisible={isVisible} onClose={onClose} style={{ paddingBottom: '28px' }}>
+      <div className='text-neutral-content p-4 rounded-xl h-auto flex flex-col justify-between'>{renderContent()}</div>
     </ModalWrapper>
   )
 }

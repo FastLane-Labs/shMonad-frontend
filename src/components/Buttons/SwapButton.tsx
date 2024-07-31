@@ -98,7 +98,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
 
   return (
     <>
-      <button className='btn rounded-2xl w-full' onClick={handleButtonClick} disabled={isDisabled}>
+      <button className='btn' onClick={handleButtonClick} disabled={isDisabled}>
         {getButtonText()}
       </button>
       <SwapModal

@@ -10,12 +10,16 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .btn {
-  @apply border-none bg-primary text-neutral-content
+  @apply border-none bg-primary text-neutral-content rounded-2xl w-full
   hover:bg-primary-content hover:shadow-primary hover:shadow-sm;
 }
 
+.btn-settings {
+  @apply w-14 rounded-lg !important;
+}
+
 .btn-navbar {
-  @apply bg-[#1a1b1f] h-10 shadow-black !important;
+  @apply bg-[#1a1b1f] h-10 shadow-black rounded-xl !important;
 }
 
 .btn-navbar:hover {
@@ -24,6 +28,10 @@ input[type='number']::-webkit-inner-spin-button {
 
 .btn-outline {
   @apply border border-transparent hover:border-transparent hover:bg-transparent hover:text-primary-content;
+}
+
+.input {
+  @apply rounded-lg;
 }
 
 /* Hide number input spinners in Firefox */
