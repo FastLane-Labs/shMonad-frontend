@@ -10,7 +10,6 @@ export const approveErc20Token = async (
   overrides: ethers.Overrides = {}
 ): Promise<boolean> => {
   try {
-    console.log('Approving token', tokenAddress, 'for spender', spenderAddress, 'with amount', amount)
     const contract = new ethers.Contract(tokenAddress, ierc20Abi, signer)
     const amountToApprove = infiniteApproval ? ethers.MaxUint256 : amount
 
