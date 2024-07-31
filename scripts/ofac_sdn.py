@@ -22,6 +22,9 @@ def main():
     # Filter out duplicates
     eth_addresses = list(set(eth_addresses))
 
+    # Order the addresses
+    eth_addresses.sort()
+
     # Save the addresses to a json file
     with open(outpute_file, "w") as f:
         f.write(json.dumps(eth_addresses, indent=2))
