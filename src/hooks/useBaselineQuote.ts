@@ -1,78 +1,112 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { useSwapContext } from '@/context/SwapContext'
 import { BaseSwapService } from '@/services/baseSwap'
 import { SwapPathService } from '@/services/swapPath'
 import { useAccount } from 'wagmi'
-import { Exchange } from '@/constants'
+import { Exchange, SwapType } from '@/constants'
 import { formatBalance, toBigInt } from '@/utils/format'
-import useDebounce from '@/hooks/useDebounce' // Adjust the path as necessary
+import useDebounce from '@/hooks/useDebounce'
+import { keys } from '@/core/queries/query-keys'
+import { QuoteResult, SwapRoute, Token } from '@/types'
 
-export const useBaselineQuote = () => {
-  const {
-    fromToken,
-    fromAmount,
-    toToken,
-    toAmount,
-    setToAmount,
-    setFromAmount,
-    setQuoteLoading,
-    swapDirection,
-    quoteLoading,
-  } = useSwapContext()
-  const { chainId } = useAccount()
+const getTokenIdentifier = (token: Token | null) => (token ? token : ({} as Token))
+export const useBaselineQuote = (): boolean => {
+  const { fromToken, fromAmount, toToken, toAmount, setToAmount, setFromAmount, setQuoteLoading, swapDirection } =
+    useSwapContext()
+  const { address, chainId } = useAccount()
 
-  // Debounce the relevant amount based on swap direction
-  const debouncedAmount = useDebounce(swapDirection === 'sell' ? fromAmount : toAmount, 500) // 500ms delay
+  const debouncedAmount = useDebounce(swapDirection === 'sell' ? fromAmount : toAmount, 500)
 
-  const baselineSwapService = new BaseSwapService()
-  const swapPathService = new SwapPathService()
+  const baselineSwapService = useMemo(() => new BaseSwapService(), [])
+  const swapPathService = useMemo(() => new SwapPathService(), [])
 
-  const fetchQuote = useCallback(async () => {
-    if (!fromToken || !toToken || !chainId) return
-
-    const relevantAmount = debouncedAmount
-    if (!relevantAmount) return
-
-    setQuoteLoading(true)
-
-    try {
-      // Convert relevant amount to bigint
-      const relevantAmountBigInt = toBigInt(
-        relevantAmount,
-        swapDirection === 'sell' ? fromToken.decimals : toToken.decimals
-      )
-
-      // Get swap routes
-      const swapRoutes = await swapPathService.getSwapRoutes(fromToken, toToken, chainId, Exchange.UNISWAPV3)
-
-      // Get best quote
-      const swap =
-        swapDirection === 'sell'
-          ? await baselineSwapService.getBestQuoteExactIn(relevantAmountBigInt, swapRoutes)
-          : await baselineSwapService.getBestQuoteExactOut(relevantAmountBigInt, swapRoutes)
-
-      if (swap) {
-        if (swapDirection === 'sell') {
-          setToAmount(formatBalance(swap.amountOut, toToken.decimals))
-        } else {
-          setFromAmount(formatBalance(swap.amountIn, fromToken.decimals))
-        }
-      }
-    } catch (error) {
-      if (swapDirection === 'sell') {
-        setToAmount(formatBalance(0n, toToken.decimals))
-      } else {
-        setFromAmount(formatBalance(0n, fromToken.decimals))
-      }
-      console.error('Fetching quote failed', error)
-    } finally {
-      setQuoteLoading(false)
-    }
-  }, [fromToken, toToken, swapDirection, chainId, debouncedAmount, setQuoteLoading, setFromAmount, setToAmount])
+  const isSwapReady = useMemo(() => {
+    return !!fromToken && !!toToken && !!chainId && !!debouncedAmount
+  }, [fromToken, toToken, chainId, debouncedAmount])
 
   useEffect(() => {
-    fetchQuote()
-  }, [fromToken, toToken, swapDirection, chainId, fetchQuote])
+    setQuoteLoading(isSwapReady)
+  }, [isSwapReady, setQuoteLoading])
+
+  // Query for swap path
+  const swapPathOptions: UseQueryOptions<SwapRoute[], Error> = useMemo(
+    () => ({
+      queryKey: keys({ address }).swapPath(getTokenIdentifier(fromToken), getTokenIdentifier(toToken)),
+      queryFn: () => {
+        if (!isSwapReady) return Promise.resolve([])
+        if (!fromToken || !toToken || !chainId) {
+          throw new Error('Missing required parameters for swap path query')
+        }
+        return swapPathService.getSwapRoutes(fromToken, toToken, chainId, Exchange.UNISWAPV3)
+      },
+      enabled: isSwapReady,
+      staleTime: Infinity,
+    }),
+    [address, fromToken, toToken, chainId, swapPathService, isSwapReady]
+  )
+
+  const { data: swapRoutes } = useQuery<SwapRoute[], Error>(swapPathOptions)
+
+  // Query for swap quote
+  const swapQuoteOptions: UseQueryOptions<QuoteResult | null, Error> = useMemo(
+    () => ({
+      queryKey: keys({ address }).swapQuote(
+        getTokenIdentifier(fromToken),
+        getTokenIdentifier(toToken),
+        swapDirection,
+        debouncedAmount
+      ),
+      queryFn: async (): Promise<QuoteResult | null> => {
+        if (!isSwapReady || !swapRoutes || swapRoutes.length === 0 || !fromToken || !toToken) return null
+
+        const relevantAmountBigInt = toBigInt(
+          debouncedAmount,
+          swapDirection === 'sell' ? fromToken.decimals : toToken.decimals
+        )
+
+        const quote =
+          swapDirection === 'sell'
+            ? await baselineSwapService.getBestQuoteExactIn(relevantAmountBigInt, swapRoutes)
+            : await baselineSwapService.getBestQuoteExactOut(relevantAmountBigInt, swapRoutes)
+
+        return quote || null
+      },
+      enabled: isSwapReady && !!swapRoutes && swapRoutes.length > 0,
+      keepPreviousData: true,
+    }),
+    [address, fromToken, toToken, swapDirection, debouncedAmount, isSwapReady, swapRoutes, baselineSwapService]
+  )
+
+  const { data: quoteResult, isLoading: quoteLoading, error } = useQuery<QuoteResult | null, Error>(swapQuoteOptions)
+
+  useEffect(() => {
+    if (!isSwapReady) {
+      setQuoteLoading(false)
+    } else {
+      setQuoteLoading(quoteLoading)
+    }
+  }, [isSwapReady, quoteLoading, setQuoteLoading])
+
+  useEffect(() => {
+    if (quoteResult && fromToken && toToken) {
+      if (swapDirection === 'sell') {
+        setToAmount(formatBalance(quoteResult.amountOut, toToken.decimals))
+      } else {
+        setFromAmount(formatBalance(quoteResult.amountIn, fromToken.decimals))
+      }
+    } else if (error) {
+      console.error('Error fetching quote:', error)
+      setQuoteLoading(false)
+      if (fromToken && toToken) {
+        if (swapDirection === 'sell') {
+          setToAmount(formatBalance(0n, toToken.decimals))
+        } else {
+          setFromAmount(formatBalance(0n, fromToken.decimals))
+        }
+      }
+    }
+  }, [quoteResult, error, fromToken, toToken, swapDirection, setToAmount, setFromAmount, setQuoteLoading])
 
   return quoteLoading
 }
