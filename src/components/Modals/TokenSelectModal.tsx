@@ -132,7 +132,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
           )}
         </div>
         {!loading && !error && (
-          <div className='scroll-bar flex flex-shrink flex-col overflow-y-scroll -mr-2 h-full'>
+          <div className='scroll-bar flex flex-shrink flex-col overflow-y-scroll -mr-3 h-full'>
             <div className='h-full pr-2'>
               {tokensWithUserBalances.length > 0 && <h3 className='font-medium py-4 text-zinc-400'>Your Tokens</h3>}
               <ul className='space-y-2'>

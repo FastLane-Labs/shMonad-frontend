@@ -22,7 +22,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
   const { address: userAddress, status, isConnected, chainId } = useAccount()
   const [isSupportedChain, setIsSupportedChain] = useState(false)
   const [localLoading, setLocalLoading] = useState(false)
-  const [isSwapModalOpen, setIsSwapModalOpen] = useState(false)
+  const [isSwapModalOpen, setIsSwapModalOpen] = useState(true)
   const [initialized, setInitialized] = useState(false)
   const { data: balance, isLoading: balanceLoading } = useBalance({ token: fromToken!, userAddress: userAddress! })
   const { signer } = useEthersProviderContext()

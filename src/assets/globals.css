@@ -31,7 +31,8 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .btn-outline {
-  @apply border border-transparent hover:border-transparent hover:bg-transparent hover:text-primary-content;
+  @apply border border-transparent rounded-full p-2
+  hover:border-transparent hover:bg-neutral hover:text-neutral-content;
 }
 
 .input {
@@ -58,7 +59,7 @@ select {
 }
 
 .modal-box {
-  @apply w-full max-w-md;
+  @apply w-full max-w-md min-h-96 justify-between;
 }
 
 .gradient-1-geoblock {

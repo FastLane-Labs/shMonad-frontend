@@ -22,7 +22,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, onSav
 
   return (
     <ModalWrapper isVisible={isVisible} onClose={onClose} style={{ paddingBottom: '28px' }}>
-      <h3 className='label text-lg mb-4'>Transaction Settings</h3>
+      <h3 className='label text-lg my-4'>Transaction Settings</h3>
       <div className='mb-4'>
         <label className='label block mb-2 text-sm'>Slippage tolerance</label>
         <div className='flex space-x-2'>
