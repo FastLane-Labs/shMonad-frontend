@@ -96,7 +96,7 @@ select {
 .expandable-content {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.2s ease-in-out;
+  transition: max-height 0.15s ease-in-out;
 }
 
 .expandable-content.expanded {
