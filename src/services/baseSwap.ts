@@ -64,7 +64,7 @@ export class BaseSwapService implements IBaseSwapService {
 
   /**
    * Get the best quote from a list of candidates routes
-   * @param swapType The swap type (exact in or exact out)
+   * @param swapType The swap type (EXACT_IN or EXACT_OUT)
    * @param amount The amount in or out depending on the swap type
    * @param candidates The swap route candidates
    * @returns The best quote result or undefined in case of failure
@@ -84,8 +84,8 @@ export class BaseSwapService implements IBaseSwapService {
     if (candidates.length === 1) {
       // Single candidate, direct quote call
       const quoteRequest: QuoteRequest = {
-        swapType: swapType,
-        amount: amount,
+        swapType,
+        amount,
         swapRoute: candidates[0],
       }
 
@@ -98,8 +98,8 @@ export class BaseSwapService implements IBaseSwapService {
 
     for (const candidate of candidates) {
       const quoteRequest: QuoteRequest = {
-        swapType: swapType,
-        amount: amount,
+        swapType,
+        amount,
         swapRoute: candidate,
       }
 
@@ -125,18 +125,23 @@ export class BaseSwapService implements IBaseSwapService {
         results[i].result
       )
 
+      if (!quoteResult || !quoteResult.amountOut || !quoteResult.amountIn) {
+        continue
+      }
+
       switch (swapType) {
         case SwapType.EXACT_IN:
           if (quoteResult.amountOut > bestAmount) {
             bestAmount = quoteResult.amountOut
             bestQuoteResult = quoteResult
           }
-
+          break
         case SwapType.EXACT_OUT:
           if (quoteResult.amountIn < bestAmount || bestAmount === BigInt(0)) {
             bestAmount = quoteResult.amountIn
             bestQuoteResult = quoteResult
           }
+          break
       }
     }
 

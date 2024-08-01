@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { useAccount, useChainId } from 'wagmi'
+import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
+import { useAccount, useSwitchChain } from 'wagmi'
 import { useBalance } from '@/hooks/useBalance'
 import { useSwapContext } from '@/context/SwapContext'
 import { toBigInt } from '@/utils/format'
 import { SANCTIONED_ADDRESSES } from '@/constants'
-import { getDappAddress } from '@/utils/getContractAddress'
 import SwapModal from '@/components/Modals/SwapModal'
 import { approveErc20Token } from '@/utils/approveErc20Token'
 import { useEthersProviderContext } from '@/context/EthersProviderContext'
+import { useFastLaneOnline } from '@/hooks/useFastLaneOnline'
+import { SUPPORTED_CHAIN_IDS } from '@/constants'
 
 interface SwapButtonProps {
   handleSwap: () => Promise<boolean>
@@ -17,16 +18,23 @@ interface SwapButtonProps {
 
 const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
   const { openConnectModal } = useConnectModal()
-  const chainId = useChainId()
+  const { openChainModal } = useChainModal()
   const { fromToken, toToken, fromAmount, updateAllowance, setSufficientAllowance } = useSwapContext()
-  const { address: userAddress, status, isConnected } = useAccount()
+  const { address: userAddress, status, isConnected, chainId } = useAccount()
+  const [isSupportedChain, setIsSupportedChain] = useState(false)
   const [localLoading, setLocalLoading] = useState(false)
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false)
   const [initialized, setInitialized] = useState(false)
   const [userBlocked, setUserBlocked] = useState(false)
   const { data: balance, isLoading: balanceLoading } = useBalance({ token: fromToken!, userAddress: userAddress! })
   const { signer } = useEthersProviderContext()
-  const spenderAddress = getDappAddress(chainId)
+  const spenderAddress = useFastLaneOnline()
+
+  useEffect(() => {
+    if (chainId) {
+      setIsSupportedChain(SUPPORTED_CHAIN_IDS.includes(chainId))
+    }
+  }, [chainId])
 
   useEffect(() => {
     if (status !== 'connecting') {
@@ -62,18 +70,18 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
   const hasSufficientBalance =
     balance && fromToken && toBigInt(fromAmount, fromToken.decimals) <= BigInt(balance.toString())
 
+  const isMissingUserInput = !fromToken || !toToken || !fromAmount || !hasSufficientBalance
+
   const isDisabled =
     userBlocked ||
     status === 'reconnecting' ||
     !initialized ||
-    !fromToken ||
-    !toToken ||
-    !fromAmount ||
-    !hasSufficientBalance
+    (isSupportedChain && (isMissingUserInput || !hasSufficientBalance))
 
   const getButtonText = () => {
     if (userBlocked) return 'You are not allowed to use this app'
     if (!isConnected) return 'Connect wallet'
+    if (isConnected && !isSupportedChain) return 'Unsupported network'
     if (status === 'reconnecting') return 'Reconnecting to Wallet'
     if (!initialized) return 'Initializing'
     if (!fromToken || !toToken) return 'Select Tokens'
@@ -91,6 +99,8 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
   const handleButtonClick = () => {
     if (!isConnected) {
       openConnectModal?.()
+    } else if (isConnected && !isSupportedChain) {
+      openChainModal?.()
     } else if (!isDisabled) {
       setIsSwapModalOpen(true)
     }
@@ -98,7 +108,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
 
   return (
     <>
-      <button className='btn rounded-2xl w-full' onClick={handleButtonClick} disabled={isDisabled}>
+      <button className='btn' onClick={handleButtonClick} disabled={isDisabled}>
         {getButtonText()}
       </button>
       <SwapModal

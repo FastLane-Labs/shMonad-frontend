@@ -22,7 +22,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, onSav
 
   return (
     <ModalWrapper isVisible={isVisible} onClose={onClose} style={{ paddingBottom: '28px' }}>
-      <h3 className='label text-lg mb-4'>Transaction Settings</h3>
+      <h3 className='label text-lg my-4'>Transaction Settings</h3>
       <div className='mb-4'>
         <label className='label block mb-2 text-sm'>Slippage tolerance</label>
         <div className='flex space-x-2'>
@@ -30,7 +30,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, onSav
             <button
               key={tolerance}
               onClick={() => setSlippageTolerance(tolerance)}
-              className={`btn text-white px-3 py-1 rounded-md ${slippageTolerance === tolerance ? 'bg-secondary' : 'bg-gray-700'}`}>
+              className={`btn btn-settings ${slippageTolerance === tolerance ? 'bg-secondary' : 'bg-gray-700'}`}>
               {tolerance}%
             </button>
           ))}
@@ -56,12 +56,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, onSav
             value={transactionDeadline}
             placeholder='20'
             onChange={(e) => setTransactionDeadline(parseInt(e.target.value))}
-            className='input input-bordered bg-gray-700 text-white px-3 py-1 rounded-md w-20'
+            className='input input-bordered bg-gray-700 px-3 py-1 rounded-md w-20'
           />
           <span className='ml-2'>minutes</span>
         </div>
       </div>
-      <button onClick={handleSave} className='btn bg-secondary rounded-2xl w-full text-white'>
+      <button onClick={handleSave} className='btn'>
         Save
       </button>
     </ModalWrapper>

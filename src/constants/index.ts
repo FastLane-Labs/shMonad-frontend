@@ -1,6 +1,7 @@
 import { AppConfigState } from '@/store/useAppStore'
 import { Address } from 'viem'
 import SANCTIONED_ADDRS from './sanctioned_addresses_ofac.json'
+export * from './network'
 
 export enum ChainId {
   POLYGON = 137,

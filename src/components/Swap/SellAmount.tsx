@@ -1,17 +1,25 @@
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import TokenSelectModal from '../Modals/TokenSelectModal'
-import { Token } from '@/types'
+import { SwapDirection, Token } from '@/types'
 
 interface SellAmountProps {
   sellToken: Token | null
   setSellToken: (token: Token) => void
   sellAmount: string
   setSellAmount: (amount: string) => void
+  setSwapDirection: (direction: SwapDirection) => void
   address?: `0x${string}`
   balance: string
 }
 
-const SellAmount: React.FC<SellAmountProps> = ({ sellToken, setSellToken, sellAmount, setSellAmount, balance }) => {
+const SellAmount: React.FC<SellAmountProps> = ({
+  sellToken,
+  setSellToken,
+  sellAmount,
+  setSellAmount,
+  balance,
+  setSwapDirection,
+}) => {
   const [currentBalance, setCurrentBalance] = useState<string>(balance)
 
   useEffect(() => {
@@ -23,6 +31,7 @@ const SellAmount: React.FC<SellAmountProps> = ({ sellToken, setSellToken, sellAm
     // Ensure the input is valid (numbers and one decimal point)
     if (/^\d*\.?\d*$/.test(value)) {
       setSellAmount(value)
+      setSwapDirection('sell')
     }
   }
 
@@ -40,7 +49,7 @@ const SellAmount: React.FC<SellAmountProps> = ({ sellToken, setSellToken, sellAm
         placeholder='0'
       />
       {sellToken && parseFloat(currentBalance) > 0 && (
-        <button className='btn-outline text-primary' onClick={handleSetMax}>
+        <button className='btn-outline text-primary outline-none' onClick={handleSetMax}>
           MAX
         </button>
       )}
