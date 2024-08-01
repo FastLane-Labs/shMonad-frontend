@@ -49,7 +49,7 @@ const SellAmount: React.FC<SellAmountProps> = ({
         placeholder='0'
       />
       {sellToken && parseFloat(currentBalance) > 0 && (
-        <button className='btn-outline text-primary' onClick={handleSetMax}>
+        <button className='btn-outline text-primary outline-none' onClick={handleSetMax}>
           MAX
         </button>
       )}
