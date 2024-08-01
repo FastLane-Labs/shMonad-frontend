@@ -92,3 +92,13 @@ select {
   width: calc(100% + 100px);
   @apply border-t border-zinc-800 -ml-10;
 }
+
+.expandable-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-in-out;
+}
+
+.expandable-content.expanded {
+  max-height: 200px;
+}
