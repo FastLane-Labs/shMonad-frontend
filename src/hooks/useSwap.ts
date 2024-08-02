@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
-import { SwapDirection, Token } from '@/types'
+import { QuoteResult, SwapDirection, Token } from '@/types'
 import { useCurrentTokenList } from './useTokenList'
 import { useAccount } from 'wagmi'
 import { toBigInt } from '@/utils/format'
 import useAllowance from '@/hooks/useAllowance'
 import { useFastLaneOnline } from './useFastLaneOnline'
 import useDebounce from '@/hooks/useDebounce' // Adjust the path as necessary
-import { useBaselineQuote } from './useBaselineQuote'
 
 interface SwapState {
   // Token and Amount States
@@ -56,7 +55,7 @@ export const useSwap = (): SwapState => {
   const [fromAmount, setFromAmount] = useState<string>('')
   const [toAmount, setToAmount] = useState<string>('')
   const [swapDirection, setSwapDirection] = useState<SwapDirection>('sell')
-  const [quote, setQuote] = useState<any>(null)
+  const [quote, setQuote] = useState<QuoteResult | null>(null)
   const [quoteLoading, setQuoteLoading] = useState<boolean>(false)
   const [allowance, setAllowance] = useState<bigint>(BigInt(0))
   const [sufficientAllowance, setSufficientAllowance] = useState<boolean>(false)
@@ -66,7 +65,7 @@ export const useSwap = (): SwapState => {
   const { address: userAddress } = useAccount()
 
   // fastlane online contract address
-  const spenderAddress = useFastLaneOnline()
+  const { dappAddress: spenderAddress } = useFastLaneOnline()
 
   const debouncedFromAmount = useDebounce(fromAmount, 500) // 500ms delay
   const debouncedToAmount = useDebounce(toAmount, 500) // 500ms delay
@@ -88,13 +87,23 @@ export const useSwap = (): SwapState => {
     setAllowanceRefreshTrigger((prev) => prev + 1)
   }, [])
 
+  const resetSelections = useCallback(() => {
+    setFromToken(null)
+    setToToken(null)
+    setFromAmount('')
+    setToAmount('')
+    setQuote(null)
+    setAllowance(BigInt(0))
+    setSufficientAllowance(false)
+  }, [])
+
   useEffect(() => {
     if (chainId && tokens.length > 0) {
       resetSelections()
       setDefaultToken(tokens.find((token) => token.tags?.includes('default')) as Token)
       setFromToken(defaultToken)
     }
-  }, [chainId, tokens])
+  }, [chainId, tokens, defaultToken, resetSelections])
 
   useEffect(() => {
     setAllowance(fetchedAllowance ?? BigInt(0))
@@ -108,16 +117,6 @@ export const useSwap = (): SwapState => {
     setFromAmount(toAmount)
     setToAmount(fromAmount)
   }, [fromToken, toToken, fromAmount, toAmount])
-
-  const resetSelections = useCallback(() => {
-    setFromToken(null)
-    setToToken(null)
-    setFromAmount('')
-    setToAmount('')
-    setQuote(null)
-    setAllowance(BigInt(0))
-    setSufficientAllowance(false)
-  }, [])
 
   useEffect(() => {
     resetSelections()

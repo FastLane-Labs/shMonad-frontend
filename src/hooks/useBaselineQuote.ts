@@ -4,7 +4,7 @@ import { useSwapContext } from '@/context/SwapContext'
 import { BaseSwapService } from '@/services/baseSwap'
 import { SwapPathService } from '@/services/swapPath'
 import { useAccount } from 'wagmi'
-import { Exchange, SwapType } from '@/constants'
+import { Exchange } from '@/constants'
 import { formatBalance, toBigInt } from '@/utils/format'
 import useDebounce from '@/hooks/useDebounce'
 import { keys } from '@/core/queries/query-keys'
@@ -12,8 +12,17 @@ import { QuoteResult, SwapRoute, Token } from '@/types'
 
 const getTokenIdentifier = (token: Token | null) => (token ? token : ({} as Token))
 export const useBaselineQuote = (): boolean => {
-  const { fromToken, fromAmount, toToken, toAmount, setToAmount, setFromAmount, setQuoteLoading, swapDirection } =
-    useSwapContext()
+  const {
+    fromToken,
+    fromAmount,
+    toToken,
+    toAmount,
+    setToAmount,
+    setFromAmount,
+    setQuoteLoading,
+    swapDirection,
+    setQuote,
+  } = useSwapContext()
   const { address, chainId } = useAccount()
 
   const debouncedAmount = useDebounce(swapDirection === 'sell' ? fromAmount : toAmount, 500)
@@ -75,6 +84,7 @@ export const useBaselineQuote = (): boolean => {
       enabled: isSwapReady && !!swapRoutes && swapRoutes.length > 0,
       refetchOnWindowFocus: true,
       refetchInterval: 20000,
+      staleTime: 20000,
       refetchIntervalInBackground: false,
       keepPreviousData: true,
     }),
@@ -93,6 +103,7 @@ export const useBaselineQuote = (): boolean => {
 
   useEffect(() => {
     if (quoteResult && fromToken && toToken) {
+      setQuote(quoteResult)
       if (swapDirection === 'sell') {
         setToAmount(formatBalance(quoteResult.amountOut, toToken.decimals))
       } else {
@@ -109,7 +120,7 @@ export const useBaselineQuote = (): boolean => {
         }
       }
     }
-  }, [quoteResult, error, fromToken, toToken, swapDirection, setToAmount, setFromAmount, setQuoteLoading])
+  }, [quoteResult, error, fromToken, toToken, swapDirection, setToAmount, setFromAmount, setQuoteLoading, setQuote])
 
   return quoteLoading
 }

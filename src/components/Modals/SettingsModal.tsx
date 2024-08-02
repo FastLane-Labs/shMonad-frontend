@@ -1,67 +1,135 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import ModalWrapper from '@/components/Wrappers/ModalWrapper'
-import { Settings } from '@/types'
+import { useAppStore } from '@/store/useAppStore'
+import { basisPointsToPercent, percentToBasisPoints } from '@/utils/settings'
+
 interface SettingsModalProps {
   isVisible: boolean
   onClose: () => void
-  onSave: (settings: Settings) => void
 }
 
-const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, onSave }) => {
-  const [slippageTolerance, setSlippageTolerance] = useState<number>(0.5)
-  const [transactionDeadline, setTransactionDeadline] = useState<number>(20)
+const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose }) => {
+  const { config, updateConfig } = useAppStore()
+  const [localSlippage, setLocalSlippage] = useState<number>(config.slippage)
+  const [customSlippage, setCustomSlippage] = useState<string>('')
+  const [localDeadline, setLocalDeadline] = useState<number | undefined>(config.deadline)
 
-  const handleSave = () => {
-    if (slippageTolerance > 100) {
-      alert('Slippage tolerance cannot be more than 100%')
-      return
+  useEffect(() => {
+    setLocalSlippage(config.slippage)
+    setLocalDeadline(config.deadline)
+    setCustomSlippage('')
+  }, [config, isVisible])
+
+  const handleSlippageChange = useCallback((basisPoints: number) => {
+    setLocalSlippage(basisPoints)
+    setCustomSlippage('')
+  }, [])
+
+  const handleCustomSlippageChange = useCallback((value: string) => {
+    setCustomSlippage(value)
+    const numValue = parseFloat(value)
+    if (!isNaN(numValue) && numValue <= 10) {
+      setLocalSlippage(percentToBasisPoints(numValue))
     }
-    onSave({ slippageTolerance, transactionDeadline })
+  }, [])
+
+  const handleDeadlineChange = useCallback((value: string) => {
+    const deadline = parseInt(value)
+    setLocalDeadline(isNaN(deadline) ? undefined : deadline)
+  }, [])
+
+  const slippagePercent = useMemo(() => {
+    if (customSlippage) {
+      return parseFloat(customSlippage)
+    }
+    return basisPointsToPercent(localSlippage)
+  }, [localSlippage, customSlippage])
+
+  const isHighSlippage = slippagePercent > 5 // More than 5%
+  const isVeryHighSlippage = slippagePercent > 10 // More than 10%
+
+  const slippageWarning = useMemo(() => {
+    if (isVeryHighSlippage) return 'Slippage is too high, max allowed slippage is 10%'
+    if (isHighSlippage) return 'Slippage is high, transactions may be frontrun'
+    return ''
+  }, [isHighSlippage, isVeryHighSlippage])
+
+  const isSaveDisabled = isVeryHighSlippage
+
+  const closeModal = () => {
+    setLocalSlippage(config.slippage)
+    setLocalDeadline(config.deadline)
+    setCustomSlippage('')
     onClose()
   }
 
+  const handleSave = () => {
+    if (!isSaveDisabled) {
+      updateConfig({
+        slippage: localSlippage,
+        deadline: localDeadline,
+      })
+      onClose()
+    }
+  }
+
   return (
-    <ModalWrapper isVisible={isVisible} onClose={onClose} style={{ paddingBottom: '28px' }}>
+    <ModalWrapper isVisible={isVisible} onClose={closeModal} style={{ paddingBottom: '28px' }}>
       <h3 className='label text-lg my-4'>Transaction Settings</h3>
+
+      {/* Slippage Tolerance */}
       <div className='mb-4'>
         <label className='label block mb-2 text-sm'>Slippage tolerance</label>
         <div className='flex space-x-2'>
-          {[0.1, 0.5, 1].map((tolerance) => (
+          {[0.1, 0.5, 1].map((percent) => (
             <button
-              key={tolerance}
-              onClick={() => setSlippageTolerance(tolerance)}
-              className={`btn btn-settings ${slippageTolerance === tolerance ? 'bg-secondary' : 'bg-gray-700'}`}>
-              {tolerance}%
+              key={percent}
+              onClick={() => handleSlippageChange(percentToBasisPoints(percent))}
+              className={`btn btn-settings ${
+                localSlippage === percentToBasisPoints(percent) ? 'bg-secondary' : 'bg-gray-700'
+              }`}>
+              {percent}%
             </button>
           ))}
           <div className='relative flex items-center'>
             <input
               type='number'
               placeholder='0.50'
-              value={slippageTolerance}
-              onChange={(e) => setSlippageTolerance(parseFloat(e.target.value))}
-              className={`input !outline-none bg-neutral text-neutral-content px-3 py-1 rounded-md w-20 pr-6 ${
-                slippageTolerance > 100 ? 'text-red-500' : ''
+              value={customSlippage || slippagePercent || ''}
+              onChange={(e) => handleCustomSlippageChange(e.target.value)}
+              min='0'
+              max='10'
+              step='0.1'
+              className={`input !outline-none bg-neutral text-neutral-content px-3 py-1 rounded-md w-20 pr-6  ${
+                isHighSlippage ? 'text-yellow-500' : isVeryHighSlippage ? 'text-red-500' : ''
               }`}
             />
             <span className='absolute right-2 text-neutral-content'>%</span>
           </div>
         </div>
+        {slippageWarning && (
+          <p className={`mt-2 text-sm ${isVeryHighSlippage ? 'text-red-500' : 'text-yellow-500'}`}>{slippageWarning}</p>
+        )}
       </div>
+
+      {/* Transaction Deadline */}
       <div className='mb-4'>
         <label className='label block mb-2 text-sm'>Transaction deadline</label>
         <div className='flex items-center'>
           <input
             type='number'
-            value={transactionDeadline}
+            value={localDeadline || ''}
             placeholder='20'
-            onChange={(e) => setTransactionDeadline(parseInt(e.target.value))}
+            onChange={(e) => handleDeadlineChange(e.target.value)}
             className='input bg-neutral !outline-none px-3 py-1 rounded-md w-20'
           />
           <span className='ml-2'>minutes</span>
         </div>
       </div>
-      <button onClick={handleSave} className='btn'>
+      <button
+        onClick={handleSave}
+        className={`btn ${isSaveDisabled ? 'btn-disabled opacity-50 cursor-not-allowed' : ''}`}
+        disabled={isSaveDisabled}>
         Save
       </button>
     </ModalWrapper>

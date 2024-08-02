@@ -54,7 +54,8 @@ export const TOKEN_ADDRESSES: ITokenAddresses = {
 export const nativeEvmTokenAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 export const defaultValues: AppConfigState = {
   config: {
-    slippage: 0.5,
+    slippage: 50, // 0.5%
+    deadline: 10, // 10 minutes
     titles: {
       swap: 'Swap',
     },
@@ -64,3 +65,5 @@ export const defaultValues: AppConfigState = {
     },
   },
 }
+
+export const ATLAS_GAS_SURCHARGE = 10n
