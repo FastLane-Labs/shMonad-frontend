@@ -116,7 +116,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
             <input
               type='text'
               placeholder='Search tokens'
-              className='bg-neutral w-full p-2 pl-10 border border-base-100 rounded-xl focus:outline-none appearance-none'
+              className='bg-neutral w-full p-2 pl-10 rounded-xl focus:outline-none appearance-none'
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />

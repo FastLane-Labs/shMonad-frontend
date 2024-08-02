@@ -60,7 +60,7 @@ const config: Config = {
           'secondary-content': '#d7d7d7', // gray-orange
           accent: '#e07000', // darkest orange
           'accent-content': '#F3A042', // dark orange
-          neutral: '#e4e4e7', // zinc-200
+          neutral: '#d5d5d7', // zinc-200
           'neutral-content': '#000000', // black
           'base-100': '#888', // inverted zinc
           'base-200': 'ffffff', // white
