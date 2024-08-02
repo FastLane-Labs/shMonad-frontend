@@ -12,7 +12,7 @@ interface TokenItemProps {
 
 const TokenItem: React.FC<TokenItemProps> = ({ token, selectedToken, handleSelect, isLoading }) => (
   <li
-    className={`flex items-center py-2 px-4 cursor-pointer hover:bg-gray-700 rounded-xl font-medium ${
+    className={`flex items-center py-2 px-4 cursor-pointer hover:bg-base-100 rounded-xl font-medium ${
       token.address.toLowerCase() === selectedToken?.address?.toLowerCase() ? 'bg-primary text-white' : ''
     }`}
     onClick={() => handleSelect(token)}>
@@ -25,7 +25,7 @@ const TokenItem: React.FC<TokenItemProps> = ({ token, selectedToken, handleSelec
       <span>{token.symbol}</span>
       <span
         className={`text-sm 
-      ${token.address.toLowerCase() === selectedToken?.address?.toLowerCase() ? 'text-zinc-200' : 'text-zinc-500'}`}>
+      ${token.address.toLowerCase() === selectedToken?.address?.toLowerCase() ? 'text-zinc-300' : 'text-zinc-600'}`}>
         {token.name}
       </span>
     </div>

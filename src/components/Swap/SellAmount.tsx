@@ -45,11 +45,11 @@ const SellAmount: React.FC<SellAmountProps> = ({
         type='text'
         value={sellAmount}
         onChange={handleChange}
-        className='bg-neutral text-white p-2 rounded-2xl flex-grow text-4xl w-full focus:outline-none'
+        className='bg-theme text-neutral-content p-2 rounded-2xl flex-grow text-4xl w-full focus:outline-none'
         placeholder='0'
       />
       {sellToken && parseFloat(currentBalance) > 0 && (
-        <button className='btn-outline text-primary outline-none' onClick={handleSetMax}>
+        <button className='max-button btn-outline text-primary outline-none' onClick={handleSetMax}>
           MAX
         </button>
       )}

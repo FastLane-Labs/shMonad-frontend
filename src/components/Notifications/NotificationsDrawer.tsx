@@ -25,7 +25,7 @@ export function NotificationsDrawer() {
 
       <div className='drawer-side z-[1]'>
         <label htmlFor='my-drawer' aria-label='close sidebar' className='drawer-overlay'></label>
-        <div className='p-4 w-full md:w-1/2 min-h-full bg-base-100'>
+        <div className='p-4 w-full md:w-1/2 min-h-full bg-base-300'>
           <div className='flex justify-between'>
             {notifications.length === 0 && <h3 className='text-lg mb-4'>No notifications</h3>}
             {notifications.length > 0 && <h3 className='text-lg mb-4'>{notifications.length} Notification(s)</h3>}

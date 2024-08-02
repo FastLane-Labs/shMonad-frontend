@@ -10,7 +10,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .btn {
-  @apply border-none bg-primary text-neutral-content rounded-2xl w-full
+  @apply border-none bg-primary text-white rounded-2xl w-full
   hover:bg-primary-content hover:shadow-primary hover:shadow-sm;
 }
 
@@ -32,7 +32,11 @@ input[type='number']::-webkit-inner-spin-button {
 
 .btn-outline {
   @apply border border-transparent rounded-full p-2
-  hover:border-transparent hover:bg-neutral hover:text-neutral-content;
+  hover:border-transparent hover:bg-secondary-content hover:text-neutral-content;
+}
+
+.max-button {
+  @apply hover:bg-transparent hover:text-primary-content !important;
 }
 
 .input {
@@ -55,7 +59,7 @@ select {
 }
 
 .input-card {
-  @apply bg-neutral p-4 rounded-2xl border-accent-content hover:border-accent border;
+  @apply bg-theme p-4 rounded-2xl border-accent-content hover:border-accent border;
 }
 
 .modal-box {
@@ -90,7 +94,7 @@ select {
 
 .line-seperator {
   width: calc(100% + 100px);
-  @apply border-t border-zinc-800 -ml-10;
+  @apply border-t border-base-100 -ml-10;
 }
 
 .expandable-content {
