@@ -7,7 +7,7 @@ const ThemeToggle = () => {
       <div className='drawer-content'>
         <label className='btn btn-navbar btn-ghost btn-sm  drawer-button swap swap-rotate'>
           {/* this hidden checkbox controls the state */}
-          <input type='checkbox' className='theme-controller' value='retro' />
+          <input type='checkbox' className='theme-controller' value='bumblebee' />
 
           {/* sun icon */}
           <svg className='swap-off fill-current w-6 h-6' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>

@@ -70,7 +70,7 @@ export function NotificationProvider(props: PropsWithChildren) {
         limit={5}
         theme='dark'
         position='bottom-center'
-        toastClassName={() => 'flex relative bg-base-200 rounded-xl justify-between overflow-hidden p-2 mb-2'}
+        toastClassName={() => 'flex relative bg-secondary-content rounded-xl justify-between overflow-hidden p-2 mb-2'}
         bodyClassName={() => 'flex text-sm gap-2 px-4 py-2'}
       />
     </NotificationContext.Provider>

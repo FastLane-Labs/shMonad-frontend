@@ -40,11 +40,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, onSav
               placeholder='0.50'
               value={slippageTolerance}
               onChange={(e) => setSlippageTolerance(parseFloat(e.target.value))}
-              className={`input input-bordered bg-gray-700 text-white px-3 py-1 rounded-md w-20 pr-6 ${
+              className={`input input-bordered !outline-none bg-neutral text-neutral-content px-3 py-1 rounded-md w-20 pr-6 ${
                 slippageTolerance > 100 ? 'text-red-500' : ''
               }`}
             />
-            <span className='absolute right-2 text-white'>%</span>
+            <span className='absolute right-2 text-neutral-content'>%</span>
           </div>
         </div>
       </div>
@@ -56,7 +56,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, onSav
             value={transactionDeadline}
             placeholder='20'
             onChange={(e) => setTransactionDeadline(parseInt(e.target.value))}
-            className='input input-bordered bg-gray-700 px-3 py-1 rounded-md w-20'
+            className='input input-bordered bg-neutral !outline-none px-3 py-1 rounded-md w-20'
           />
           <span className='ml-2'>minutes</span>
         </div>

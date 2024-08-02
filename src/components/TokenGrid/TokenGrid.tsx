@@ -13,7 +13,7 @@ const TokenGrid: React.FC<TokenGridProps> = ({ tokens, selectedToken, handleSele
     {tokens.map((token) => (
       <div
         key={token.address}
-        className={`flex items-center justify-center p-2 cursor-pointer hover:bg-[#2e3038] border-zinc-800 border rounded-xl font-medium ${
+        className={`flex items-center justify-center p-2 cursor-pointer hover:bg-[#2e3038] border-base-100 border rounded-xl font-medium ${
           token.address.toLowerCase() === selectedToken?.address?.toLowerCase() ? 'bg-primary' : ''
         }`}
         onClick={() => handleSelect(token)}>

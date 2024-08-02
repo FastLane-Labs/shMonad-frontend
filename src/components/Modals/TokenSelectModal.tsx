@@ -85,7 +85,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   return (
     <div className='relative'>
       <button
-        className='h-[48px] hover:bg-base-100 text-neutral-content p-2 rounded-xl focus:outline-none appearance-none flex items-center text-nowrap w-max'
+        className='h-[48px] hover:bg-secondary-content text-neutral-content p-2 rounded-xl focus:outline-none appearance-none flex items-center text-nowrap w-max'
         onClick={() => setIsOpen(true)}>
         {selectedToken ? (
           <>
@@ -116,7 +116,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
             <input
               type='text'
               placeholder='Search tokens'
-              className='bg-neutral w-full p-2 pl-10 border border-zinc-800 rounded-xl focus:outline-none appearance-none'
+              className='bg-neutral w-full p-2 pl-10 border border-base-100 rounded-xl focus:outline-none appearance-none'
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -134,7 +134,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
         {!loading && !error && (
           <div className='scroll-bar flex flex-shrink flex-col overflow-y-scroll -mr-3 h-full'>
             <div className='h-full pr-2'>
-              {tokensWithUserBalances.length > 0 && <h3 className='font-medium py-4 text-zinc-400'>Your Tokens</h3>}
+              {tokensWithUserBalances.length > 0 && <h3 className='font-medium py-4 gray-text'>Your Tokens</h3>}
               <ul className='space-y-2'>
                 {tokensWithUserBalances.map((token) => (
                   <TokenItem
@@ -145,7 +145,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
                   />
                 ))}
               </ul>
-              <h3 className='font-medium py-4 text-zinc-400'>All Tokens</h3>
+              <h3 className='font-medium py-4 gray-text'>All Tokens</h3>
               <ul className='space-y-2'>
                 {remainingTokens
                   .filter((token) => token.address !== selectedToken?.address)
