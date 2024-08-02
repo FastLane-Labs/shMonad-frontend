@@ -36,7 +36,7 @@ const BuyAmount: React.FC<BuyAmountProps> = ({
           type='number'
           value={buyAmount}
           onChange={handleChange}
-          className='bg-neutral text-white p-2 rounded-xl flex-grow text-4xl w-full focus:outline-none'
+          className='bg-theme text-neutral-content p-2 rounded-xl flex-grow text-4xl w-full focus:outline-none'
           placeholder='0'
         />
         {quoteLoading && <span className='absolute right-4 loading loading-spinner loading-sm'></span>}

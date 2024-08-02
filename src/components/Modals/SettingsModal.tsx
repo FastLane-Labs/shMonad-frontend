@@ -100,11 +100,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose }) => 
               min='0'
               max='10'
               step='0.1'
-              className={`input input-bordered bg-gray-700 text-white px-3 py-1 rounded-md w-20 pr-6 ${
+              className={`input !outline-none bg-neutral text-neutral-content px-3 py-1 rounded-md w-20 pr-6  ${
                 isHighSlippage ? 'text-yellow-500' : isVeryHighSlippage ? 'text-red-500' : ''
               }`}
             />
-            <span className='absolute right-2 text-white'>%</span>
+            <span className='absolute right-2 text-neutral-content'>%</span>
           </div>
         </div>
         {slippageWarning && (
@@ -121,7 +121,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose }) => 
             value={localDeadline || ''}
             placeholder='20'
             onChange={(e) => handleDeadlineChange(e.target.value)}
-            className='input input-bordered bg-gray-700 px-3 py-1 rounded-md w-20'
+            className='input bg-neutral !outline-none px-3 py-1 rounded-md w-20'
           />
           <span className='ml-2'>minutes</span>
         </div>

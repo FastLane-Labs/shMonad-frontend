@@ -23,7 +23,7 @@ export function NetworkStatus() {
       )}
 
       {!explorerUrl && <p className='text-xs'># {block.data?.toString()}</p>}
-      <ThemeToggle2 />
+      {/* <ThemeToggle2 /> */}
     </div>
   )
 }

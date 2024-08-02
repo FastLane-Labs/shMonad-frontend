@@ -16,7 +16,7 @@ const SettingsButton: React.FC<SettingsButtonProps> = ({ setIsSettingsModalVisib
 
   return (
     <button
-      className='btn-outline text-neutral-content hover:text-neutral-content'
+      className='btn-outline text-neutral-content hover:text-neutral-content gear'
       onClick={() => setIsSettingsModalVisible(true)}>
       {slippagePercent !== null && slippagePercent !== 0.5 && (
         <span className='text-gray-6000 font-normal text-xs'>{slippagePercent}% slippage</span>

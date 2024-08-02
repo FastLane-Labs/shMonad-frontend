@@ -146,7 +146,7 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
       <button
         className='text-black items-center cursor-pointer px-4 text-center flex w-full h-7 my-1'
         onClick={toggleExpand}>
-        <div className='bg-white/[0.1] w-full h-px' />
+        <div className='bg-neutral-content/[0.1] w-full h-px' />
         <div className='items-center px-4 flex min-w-fit -mr-1.5'>
           <div className='text-neutral-400'>{isExpanded ? 'Show less' : 'Show more'}</div>
           <svg className='w-4 h-4' fill='none' height='16' viewBox='0 0 17 16' xmlns='http://www.w3.org/2000/svg'>
@@ -156,7 +156,7 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
             />
           </svg>
         </div>
-        <div className='bg-white/[0.1] w-full h-px' />
+        <div className='bg-neutral-content/[0.1] w-full h-px' />
       </button>
 
       <div className='flex w-full items-center justify-between'>
@@ -210,7 +210,7 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
           <div className='flex flex-grow flex-col w-full h-full justify-center items-center'>
             <div className='text-center mb-2'>
               <div className='w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4'>
-                <svg className='w-8 h-8 text-white' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                <svg className='w-8 h-8 text-neutral-content' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
                 </svg>
               </div>
