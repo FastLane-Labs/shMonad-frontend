@@ -146,7 +146,7 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
       <button
         className='text-black items-center cursor-pointer px-4 text-center flex w-full h-7 my-1'
         onClick={toggleExpand}>
-        <div className='bg-white/[0.1] w-full h-px' />
+        <div className='bg-neutral-content/[0.1] w-full h-px' />
         <div className='items-center px-4 flex min-w-fit -mr-1.5'>
           <div className='text-neutral-400'>{isExpanded ? 'Show less' : 'Show more'}</div>
           <svg className='w-4 h-4' fill='none' height='16' viewBox='0 0 17 16' xmlns='http://www.w3.org/2000/svg'>
@@ -156,7 +156,7 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
             />
           </svg>
         </div>
-        <div className='bg-white/[0.1] w-full h-px' />
+        <div className='bg-neutral-content/[0.1] w-full h-px' />
       </button>
 
       <div className='flex w-full items-center justify-between'>
