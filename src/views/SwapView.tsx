@@ -8,15 +8,18 @@ import SellComponent from '@/components/Swap/SellComponent'
 import BackgroundGradient from '@/components/Theme/BackgroundGradient'
 import { useHandleSwap } from '@/hooks/useHandleSwap'
 import { useBaselineQuote } from '@/hooks/useBaselineQuote'
+import IUXModal from '@/components/iUX/IUX'
 
 const SwapView: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
+  const [isIUXModalVisible, setIsIUXModalVisible] = useState<boolean>(true)
 
   const { handleSwap, isSwapping } = useHandleSwap()
   const isQuoteLoading = useBaselineQuote()
 
   return (
     <div className='relative max-w-md mx-auto'>
+      <IUXModal isVisible={isIUXModalVisible} onClose={() => setIsIUXModalVisible(false)} />
       <BackgroundGradient />
       <div
         className='relative rounded-3xl bg-base-200/30'
