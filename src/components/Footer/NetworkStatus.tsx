@@ -13,7 +13,7 @@ export function NetworkStatus() {
   const color = GetNetworkColor(networkName, 'bgVariant')
 
   return (
-    <div className='flex items-center gap-1 p-4'>
+    <div className='flex items-center gap-1 py-3'>
       <div className={`badge badge-info ${color}`}>{networkName}</div>
       {explorerUrl && (
         <LinkComponent href={explorerUrl}>
