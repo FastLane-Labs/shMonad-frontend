@@ -4,7 +4,6 @@ import React from 'react'
 import { useBlockNumber, useAccount } from 'wagmi'
 import { GetNetworkColor } from '@/utils/network'
 import { LinkComponent } from '../LinkComponent'
-import ThemeToggle2 from '@/components/Theme/ThemeToggle2'
 
 export function NetworkStatus() {
   const block = useBlockNumber({ watch: true })
@@ -14,7 +13,7 @@ export function NetworkStatus() {
   const color = GetNetworkColor(networkName, 'bgVariant')
 
   return (
-    <div className='flex items-center gap-2 p-4'>
+    <div className='flex items-center gap-1 py-3'>
       <div className={`badge badge-info ${color}`}>{networkName}</div>
       {explorerUrl && (
         <LinkComponent href={explorerUrl}>
@@ -23,7 +22,6 @@ export function NetworkStatus() {
       )}
 
       {!explorerUrl && <p className='text-xs'># {block.data?.toString()}</p>}
-      {/* <ThemeToggle2 /> */}
     </div>
   )
 }
