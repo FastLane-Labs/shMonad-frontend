@@ -141,7 +141,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
       <button className='btn' onClick={handleButtonClick} disabled={isDisabled}>
         {getButtonText()}
       </button>
-      {!isDisabled && <SwapDetails />}
+      <SwapDetails />
       <SwapModal
         isVisible={isSwapModalOpen}
         onClose={handleSwapModalClose}
