@@ -27,6 +27,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose }) => 
 
   const handleCustomSlippageChange = useCallback((value: string) => {
     setCustomSlippage(value)
+    if (value === '') {
+      setLocalSlippage(0)
+      return
+    }
     const numValue = parseFloat(value)
     if (!isNaN(numValue) && numValue <= 10) {
       setLocalSlippage(percentToBasisPoints(numValue))
@@ -73,13 +77,19 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose }) => 
     }
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleSave()
+    }
+  }
+
   return (
     <ModalWrapper isVisible={isVisible} onClose={closeModal} style={{ paddingBottom: '28px' }}>
-      <h3 className='label text-lg my-4'>Transaction Settings</h3>
+      <h3 className='text-lg mt-4 font-semibold text-center'>Transaction Settings</h3>
 
       {/* Slippage Tolerance */}
-      <div className='mb-4'>
-        <label className='label block mb-2 text-sm'>Slippage tolerance</label>
+      <div>
+        <h1 className='mb-2 text-sm'>Slippage tolerance</h1>
         <div className='flex space-x-2'>
           {[0.1, 0.5, 1].map((percent) => (
             <button
@@ -97,6 +107,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose }) => 
               placeholder='0.50'
               value={customSlippage || slippagePercent || ''}
               onChange={(e) => handleCustomSlippageChange(e.target.value)}
+              onKeyDown={handleKeyDown}
               min='0'
               max='10'
               step='0.1'
@@ -113,14 +124,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose }) => 
       </div>
 
       {/* Transaction Deadline */}
-      <div className='mb-4'>
-        <label className='label block mb-2 text-sm'>Transaction deadline</label>
+      <div>
+        <h1 className='mb-2 text-sm'>Transaction deadline</h1>
         <div className='flex items-center'>
           <input
             type='number'
             value={localDeadline || ''}
-            placeholder='20'
+            placeholder='10'
             onChange={(e) => handleDeadlineChange(e.target.value)}
+            onKeyDown={handleKeyDown}
             className='input bg-neutral !outline-none px-3 py-1 rounded-md w-20'
           />
           <span className='ml-2'>minutes</span>

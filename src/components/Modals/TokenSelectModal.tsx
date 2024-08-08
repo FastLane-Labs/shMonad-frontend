@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import ModalWrapper from '@/components/Wrappers/ModalWrapper'
 import { useCurrentTokenList } from '@/hooks/useTokenList'
 import { useAccount } from 'wagmi'
 import { Token } from '@/types'
 import { useBalances } from '@/hooks/useBalances'
-import { useSwapContext } from '@/context/SwapContext'
+import { useSwapStateContext } from '@/context/SwapStateContext'
 import TokenItem from '@/components/TokenItem/TokenItem'
 import TokenGrid from '@/components/TokenGrid/TokenGrid'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import UnknownToken from '@/assets/svg/unknownToken.svg'
+import { shortFormat, adjustAmount } from '@/utils/format'
 
 interface TokenSelectModalProps {
   selectedToken: Token | null
@@ -17,7 +18,7 @@ interface TokenSelectModalProps {
   defaultLabel: string
 }
 
-type TokenWithBalance = Token & { balance: string }
+type TokenWithBalance = Token & { balance: bigint; formattedBalance: string }
 
 const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   selectedToken,
@@ -29,7 +30,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   const { tokens, loading, error } = useCurrentTokenList()
   const [searchTerm, setSearchTerm] = useState('')
   const { address } = useAccount()
-  const { fromToken, toToken } = useSwapContext()
+  const { fromToken, toToken, fromAmount, toAmount, setFromAmount, setToAmount } = useSwapStateContext()
 
   const balancesQuery = useBalances({
     tokens: tokens,
@@ -38,9 +39,16 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
 
   const [hasAttemptedRefetch, setHasAttemptedRefetch] = useState(false)
 
+  const getFormattedBalance = useCallback(
+    (balance: bigint, token: Token) => shortFormat(balance, token.decimals, 4),
+    []
+  )
+
   const tokensWithBalances: TokenWithBalance[] = tokens.map((token, index) => ({
     ...token,
-    balance: balancesQuery.data && balancesQuery.data.length > 0 ? balancesQuery.data[index] : '0',
+    balance: balancesQuery.data && balancesQuery.data.length > 0 ? balancesQuery.data[index] : 0n,
+    formattedBalance:
+      balancesQuery.data && balancesQuery.data.length > 0 ? getFormattedBalance(balancesQuery.data[index], token) : '0',
   }))
 
   const filteredTokensWithBalances = tokensWithBalances.filter((token) => {
@@ -56,13 +64,11 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
     )
   })
 
-  const sortedTokensWithBalances = filteredTokensWithBalances.sort(
-    (a, b) => parseFloat(b.balance) - parseFloat(a.balance)
-  )
+  const sortedTokensWithBalances = filteredTokensWithBalances.sort((a, b) => Number(b.balance) - Number(a.balance))
 
   const popularTokens = tokensWithBalances.filter((token) => token.tags?.includes('popular'))
-  const tokensWithUserBalances = sortedTokensWithBalances.filter((token) => parseFloat(token.balance) > 0)
-  const remainingTokens = sortedTokensWithBalances.filter((token) => parseFloat(token.balance) === 0)
+  const tokensWithUserBalances = sortedTokensWithBalances.filter((token) => token.balance > 0n)
+  const remainingTokens = sortedTokensWithBalances.filter((token) => token.balance === 0n)
 
   useEffect(() => {
     if ((balancesQuery.error || balancesQuery.data === undefined) && !hasAttemptedRefetch) {
@@ -78,6 +84,17 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   }, [isOpen])
 
   const handleSelect = (token: Token) => {
+    if (direction === 'sell') {
+      if (fromToken && fromAmount && fromAmount !== '') {
+        const adjustedAmount = adjustAmount(fromAmount, fromToken.decimals, token.decimals)
+        setFromAmount(adjustedAmount)
+      }
+    } else if (direction === 'buy') {
+      if (toToken && toAmount && toAmount !== '') {
+        const adjustedAmount = adjustAmount(toAmount, toToken.decimals, token.decimals)
+        setToAmount(adjustedAmount)
+      }
+    }
     onSelectToken(token)
     setIsOpen(false)
   }

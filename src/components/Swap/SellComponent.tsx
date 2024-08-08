@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { TokenBalance } from '@/components/TokenBalance/TokenBalance'
 import SellAmount from './SellAmount'
-import { useSwapContext } from '@/context/SwapContext'
+import { useSwapStateContext } from '@/context/SwapStateContext'
 import { useAccount } from 'wagmi'
 import { useBalance } from '@/hooks/useBalance'
 import { Token } from '@/types'
 import { ethers } from 'ethers'
 import { useCurrentTokenList } from '@/hooks/useTokenList'
-import { SUPPORTED_CHAIN_IDS } from '@/constants'
 
 const SellComponent: React.FC = () => {
   const {
@@ -16,7 +15,7 @@ const SellComponent: React.FC = () => {
     fromAmount: sellAmount,
     setFromAmount: setSellAmount,
     setSwapDirection,
-  } = useSwapContext()
+  } = useSwapStateContext()
 
   const { address, chainId } = useAccount()
   const [balance, setBalance] = useState<string>('0')
@@ -54,7 +53,7 @@ const SellComponent: React.FC = () => {
         <span className='text-base-content'>Sell</span>
         <h1 className='text-base-content'>
           <span>Balance: </span>
-          <TokenBalance token={sellToken || undefined} toFixed={4} />
+          <TokenBalance token={sellToken || undefined} toFixed={3} />
         </h1>
       </div>
       <SellAmount

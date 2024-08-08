@@ -8,10 +8,10 @@ export interface SwapIntent {
 export interface BaselineCall {
   to: string
   data: string
-  success: boolean
+  value: bigint
 }
 
-export interface UserOperation {
+export interface UserOperationParams {
   from: string
   to: string
   value: bigint
@@ -21,8 +21,7 @@ export interface UserOperation {
   deadline: bigint
   dapp: string
   control: string
-  callConfig: number
   sessionKey: string
   data: string
-  signature: string
+  signature?: string
 }

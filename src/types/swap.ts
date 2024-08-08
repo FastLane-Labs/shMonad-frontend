@@ -1,5 +1,8 @@
 import { ChainId, Exchange, SwapType } from '@/constants'
 import { Token } from './token'
+import { UserOperation } from '@/core/operations'
+import { BaselineCall } from './atlas'
+import { TransactionParams } from './transactions'
 
 export interface SwapRoute {
   fromChainId?: number
@@ -36,4 +39,16 @@ export interface QuoteResult {
   amountOut: bigint
   swapRoute: SwapRoute
   validUntil: number
+}
+
+export interface SwapCallData {
+  userOperation: UserOperation
+  baselineCallData: BaselineCall
+  gasSurcharge: bigint
+  gasLimit: bigint
+  isSigned: boolean
+}
+
+export interface SwapResult {
+  transaction: TransactionParams
 }

@@ -1,96 +1,111 @@
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import { useAccount } from 'wagmi'
 import { useEthersProviderContext } from '@/context/EthersProviderContext'
-import { useSwapContext } from '@/context/SwapContext'
-import {
-  buildSwapIntent,
-  buildBaselineCallData,
-  buildUserOperation,
-  getUserOperationHash,
-  getExecutionEnvironment,
-} from '@/utils/atlas'
-import { useFastLaneOnline } from './useFastLaneOnline'
+import { useSwapStateContext } from '@/context/SwapStateContext'
+import { useFastLaneAddresses } from './useFastLaneAddresses'
+import { useAppStore } from '@/store/useAppStore'
+import { SOLVER_GAS_ESTIMATE, SWAP_GAS_ESTIMATE } from '@/constants'
+import { signUserOperation } from '@/core/atlas'
+import { getEip712Domain } from '@/utils/getContractAddress'
+import { getAtlasGasSurcharge, getFeeData } from '@/utils/gasFee'
 import { ethers } from 'ethers'
 import { FastlaneOnlineAbi } from '@/abis'
-import { Address } from 'viem'
-import { getFeeData } from '@/utils/gasFee'
-import { getAtlasGasSurcharge } from '@/utils/atlas'
-import { useAppStore } from '@/store/useAppStore'
-import { calculateDeadlineBlockNumber } from '@/utils/settings'
+import { TransactionParams, TransactionStatus } from '@/types'
 
 export const useHandleSwap = () => {
   const { signer, provider } = useEthersProviderContext()
   const { address, chainId } = useAccount()
-  const { quote, quoteLoading } = useSwapContext()
+  const {
+    quote,
+    isQuoteing,
+    swapData,
+    isSwapping,
+    setIsSwapping,
+    isSigning,
+    hasUserOperationSignature,
+    setIsSigning,
+    setSwapDataSigned,
+    setSwapResult,
+  } = useSwapStateContext()
   const { config } = useAppStore()
-  const [isSwapping, setIsSwapping] = useState(false)
-  const { atlasAddress, dappAddress, atlasVerificationAddress } = useFastLaneOnline()
+  const { atlasAddress, dappAddress, atlasVerificationAddress } = useFastLaneAddresses()
+
+  const handleSignature = useCallback(async () => {
+    if (!swapData?.userOperation || !signer || !chainId) {
+      console.error('Missing required data for signature')
+      return false
+    }
+
+    setIsSigning(true)
+    try {
+      await signUserOperation(swapData.userOperation, signer, getEip712Domain(chainId))
+      setSwapDataSigned(true)
+      return true
+    } catch (error) {
+      console.error('Signature generation failed', error)
+      setSwapDataSigned(false)
+      return false
+    } finally {
+      setIsSigning(false)
+    }
+  }, [swapData?.userOperation, signer, chainId, setIsSigning, setSwapDataSigned])
 
   const handleSwap = useCallback(async () => {
+    // Check if all required data is available
+    const hashMissingContractAddress = !atlasVerificationAddress || !dappAddress || !atlasAddress
+    const missingWeb3Provider = !address || !provider || !signer || !chainId
+    const missingQuote = !quote || isQuoteing
+    const missingUserOperation = !swapData?.userOperation
+
     if (
-      !address ||
-      !provider ||
-      !quote ||
-      quoteLoading ||
-      !atlasAddress ||
-      !dappAddress ||
-      !atlasVerificationAddress ||
-      !chainId
+      hashMissingContractAddress ||
+      missingWeb3Provider ||
+      missingQuote ||
+      missingUserOperation ||
+      !hasUserOperationSignature
     ) {
-      console.error('Missing required data for swap')
       return false
     }
 
     setIsSwapping(true)
     try {
-      // Build swap intent
-      const swapIntent = buildSwapIntent(quote)
-
-      const executionEnvironment = await getExecutionEnvironment(
-        atlasAddress as Address,
-        dappAddress as Address,
-        dappAddress as Address, // user is also the dapp address
-        provider
-      )
-
-      // Build baseline call data
-      const baselineCall = await buildBaselineCallData(quote, executionEnvironment, config.slippage)
-
-      const block = await provider.getBlock('latest')
       const feeData = await getFeeData(provider)
       if (!feeData.maxFeePerGas || !feeData.gasPrice) {
         console.error('Missing required data for swap')
+        console.log('feeData', feeData)
         return false
       }
 
-      const maxFeePerGas = feeData.maxFeePerGas * 2n
-      const deadline = calculateDeadlineBlockNumber(config.deadline, block?.number!, chainId)
-      const gas = 2000000n // Example gas limit, adjust as needed
-
-      // Build user operation
-      const userOperation = await buildUserOperation(
-        address,
-        swapIntent,
-        baselineCall,
-        deadline,
-        gas,
-        maxFeePerGas,
-        dappAddress,
-        provider
-      )
-      //Get user operation hash
-      const userOpHash = await getUserOperationHash(userOperation, atlasVerificationAddress, provider)
+      const maxFeePerGas = feeData.maxFeePerGas
+      const gas = SWAP_GAS_ESTIMATE + SOLVER_GAS_ESTIMATE
 
       const contract = new ethers.Contract(dappAddress, FastlaneOnlineAbi, signer)
-      const tx = await contract.fastOnlineSwap(swapIntent, baselineCall, deadline, gas, maxFeePerGas, userOpHash, {
+      const tx = await contract.fastOnlineSwap(swapData.userOperation.toStruct(), {
         gasLimit: gas,
-        maxFeePerGas: maxFeePerGas,
         value: getAtlasGasSurcharge(gas * maxFeePerGas),
       })
+
+      const transactionParams: TransactionParams = {
+        routeType: 'swap', // Assuming this is a swap transaction
+        chainId: chainId,
+        txHash: tx.hash,
+        timestamp: Date.now(),
+        status: 'pending' as TransactionStatus,
+        fromAddress: address,
+      }
+
+      setSwapResult({ transaction: transactionParams })
 
       console.log('Swap transaction submitted:', tx.hash)
       await tx.wait()
       console.log('Swap transaction confirmed')
+
+      // Update transaction status to 'success'
+      const updatedTransactionParams: TransactionParams = {
+        ...transactionParams,
+        status: 'success' as TransactionStatus,
+      }
+      setSwapResult({ transaction: updatedTransactionParams })
 
       return true
     } catch (error) {
@@ -99,10 +114,26 @@ export const useHandleSwap = () => {
     } finally {
       setIsSwapping(false)
     }
-  }, [address, provider, quote, quoteLoading, dappAddress, atlasVerificationAddress, config.slippage, config.deadline])
+  }, [
+    address,
+    quote,
+    isQuoteing,
+    dappAddress,
+    atlasVerificationAddress,
+    swapData?.userOperation,
+    atlasAddress,
+    chainId,
+    signer,
+    provider,
+    setIsSwapping,
+    setSwapResult,
+    hasUserOperationSignature,
+  ])
 
   return {
+    handleSignature,
     handleSwap,
     isSwapping,
+    isSigning,
   }
 }

@@ -8,6 +8,7 @@ import { NotificationProvider } from '@/context/Notifications'
 import '../assets/globals.css'
 import React from 'react'
 import GeoBlock from '@/components/GeoBlock/GeoBlock'
+import { AppStateProvider } from '@/context/AppStateContext'
 
 export const metadata: Metadata = {
   applicationName: SITE_NAME,
@@ -44,8 +45,9 @@ export const viewport: Viewport = {
 export default function RootLayout(props: PropsWithChildren) {
   let isRestricted: boolean = false
   let country: string = 'US'
+
   return (
-    <html lang='en'>
+    <html lang='en' className='bg-base-300'>
       <head>
         <link
           rel='icon'
@@ -58,9 +60,11 @@ export default function RootLayout(props: PropsWithChildren) {
         ) : (
           <ClientWeb3Provider>
             <NotificationProvider>
-              <AppRouter>
-                <Layout>{props.children}</Layout>
-              </AppRouter>
+              <AppStateProvider>
+                <AppRouter>
+                  <Layout>{props.children}</Layout>
+                </AppRouter>
+              </AppStateProvider>
             </NotificationProvider>
           </ClientWeb3Provider>
         )}
