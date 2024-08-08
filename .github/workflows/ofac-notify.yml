@@ -20,8 +20,7 @@ jobs:
       - name: Get file changes
         id: file_changes
         run: |
-          #git diff --stat HEAD~1 HEAD src/constants/sanctioned_addresses_ofac.json > changes.txt
-          git diff --stat HEAD~1 HEAD test.txt > changes.txt
+          git diff --stat HEAD~1 HEAD src/constants/sanctioned_addresses_ofac.json > changes.txt
           echo "CHANGES<<EOF" >> $GITHUB_OUTPUT
           cat changes.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -101,7 +100,7 @@ jobs:
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Branch:*\ntest"
+                    "text": "*Branch:*\ndevelop"
                   },
                   {
                     "type": "mrkdwn",
