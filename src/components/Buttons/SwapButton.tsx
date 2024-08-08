@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi'
 import { useBalance } from '@/hooks/useBalance'
 import { useSwapStateContext } from '@/context/SwapStateContext'
 import { toBigInt } from '@/utils/format'
+import { SANCTIONED_ADDRESSES } from '@/constants'
 import SwapModal from '@/components/Modals/SwapModal'
 import { SUPPORTED_CHAIN_IDS } from '@/constants'
 import { useAllowanceManager } from '@/hooks/useAllowanceManager'
@@ -28,6 +29,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
   const [localLoading, setLocalLoading] = useState(false)
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false)
   const [initialized, setInitialized] = useState(false)
+  const [userBlocked, setUserBlocked] = useState(false)
   const { data: balance, isLoading: balanceLoading } = useBalance({ token: fromToken!, userAddress: userAddress! })
   const { atlasAddress: spenderAddress } = useFastLaneAddresses()
   const { updateAllowance, checkAllowance } = useAllowanceManager()
@@ -44,6 +46,10 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
       setInitialized(true)
     }
   }, [status])
+
+  useEffect(() => {
+    setUserBlocked(SANCTIONED_ADDRESSES.includes(userAddress!))
+  }, [userAddress])
 
   const handleApprove = useCallback(async () => {
     if (!fromToken || !userAddress || !spenderAddress) return false
@@ -94,6 +100,10 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
   }, [swapData])
 
   const isDisabled = useMemo(() => {
+    if (userBlocked) {
+      console.log('Button disabled because user is blocked')
+      return true
+    }
     if (status === 'reconnecting') {
       console.log('Button disabled because status is reconnecting')
       return true
@@ -120,6 +130,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
   }, [status, initialized, isSupportedChain, isMissingUserInput, hasSufficientBalance, isMissingSwapData])
 
   const getButtonText = useCallback(() => {
+    if (userBlocked) return 'You are not allowed to use this app'
     if (!isConnected) return 'Connect wallet'
     if (isConnected && !isSupportedChain) return 'Unsupported network'
     if (status === 'reconnecting') return 'Reconnecting to Wallet'
@@ -130,6 +141,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
     if (localLoading) return <>{LOADING_SPINNER} Initiating swap</>
     return 'Swap'
   }, [
+    userBlocked,
     isConnected,
     isSupportedChain,
     status,

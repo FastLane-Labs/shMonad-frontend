@@ -1,5 +1,6 @@
 import { AppConfigState } from '@/store/useAppStore'
 import { Address } from 'viem'
+import SANCTIONED_ADDRS from './sanctioned_addresses_ofac.json'
 export * from './network'
 
 export enum ChainId {
@@ -66,6 +67,7 @@ export const defaultValues: AppConfigState = {
   },
 }
 
+export const SANCTIONED_ADDRESSES = SANCTIONED_ADDRS as Address[]
 export const ATLAS_GAS_SURCHARGE_PERCENTAGE = 12n
 // Constants for gas estimates for swap and solver
 export const SWAP_GAS_ESTIMATE = 350_000n
