@@ -1,0 +1,134 @@
+name: Notify on OFAC list changes
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'src/constants/sanctioned_addresses_ofac.json'
+
+jobs:
+  ofac_notification:
+    runs-on: pfl-main-ubuntu
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Get file changes
+        id: file_changes
+        run: |
+          #git diff --stat HEAD~1 HEAD src/constants/sanctioned_addresses_ofac.json > changes.txt
+          git diff --stat HEAD~1 HEAD test.txt > changes.txt
+          echo "CHANGES<<EOF" >> $GITHUB_OUTPUT
+          cat changes.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Trello Card
+        id: create_trello_card
+        env:
+          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+          TRELLO_LIST_ID: ${{ secrets.TRELLO_LIST_ID }}
+          TRELLO_MEMBER_IDS: ${{ secrets.TRELLO_MEMBER_IDS }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          CARD_NAME="OFAC List Updated - $(date +'%Y-%m-%d')"
+          
+          CARD_DESC="OFAC Sanctioned Addresses list was updated.\n\nRepository: $GITHUB_REPOSITORY\nUpdated by: $GITHUB_ACTOR\nCommit: ${GITHUB_SHA:0:7}\n\nPlease review the changes and take necessary actions."
+          COMMIT_URL="https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
+
+          RESPONSE=$(curl -s -X POST "https://api.trello.com/1/cards" \
+            -H "Content-Type: application/json" \
+            -d @- <<EOF
+          {
+            "key": "$TRELLO_API_KEY",
+            "token": "$TRELLO_TOKEN",
+            "idList": "$TRELLO_LIST_ID",
+            "name": "$CARD_NAME",
+            "desc": "$CARD_DESC",
+            "urlSource": "$COMMIT_URL",
+            "idMembers": "$TRELLO_MEMBER_IDS"
+          }
+          EOF
+          )
+          
+          CARD_ID=$(echo $RESPONSE | jq -r '.id')
+          CARD_URL=$(echo $RESPONSE | jq -r '.shortUrl')
+          
+          if [ -n "$CARD_ID" ]; then
+            echo "Trello card created successfully with ID: $CARD_ID"
+            echo "card_url=$CARD_URL" >> $GITHUB_OUTPUT
+          else
+            echo "Failed to create Trello card. API response: $RESPONSE"
+            exit 1
+          fi
+  
+
+
+      - name: Send message to Slack
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_NOTIFICATION_CHANNEL }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          FILE_CHANGES: ${{ steps.file_changes.outputs.CHANGES }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "blocks": [
+              {
+                "type": "header",
+                "text": {
+                  "type": "plain_text",
+                  "text": "🚨 OFAC Sanctioned Addresses List Updated 🚨",
+                  "emoji": true
+                }
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Repository:*\n'"$GITHUB_REPOSITORY"'"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Updated by:*\n'"$GITHUB_ACTOR"'"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Branch:*\ntest"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Commit:*\n'"${GITHUB_SHA:0:7}"'"
+                  }
+                ]
+              },
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "*File:* src/constants/sanctioned_addresses_ofac.json\n*Changes:*\n```'"$FILE_CHANGES"'```"
+                }
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {
+                    "type": "button",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "View Commit",
+                      "emoji": true
+                    },
+                    "url": "https://github.com/'"$GITHUB_REPOSITORY"'/commit/'"$GITHUB_SHA"'"
+                  }
+                ]
+              }
+            ]
+          }' $SLACK_WEBHOOK
