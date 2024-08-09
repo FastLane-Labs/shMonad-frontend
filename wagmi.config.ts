@@ -1,7 +1,15 @@
-import { defineConfig } from '@wagmi/cli'
+import { http, createConfig } from 'wagmi'
+import { createPublicClient } from 'viem'
+import { polygon } from 'wagmi/chains'
 
-export default defineConfig({
-  out: 'src/abis.ts',
-  contracts: [],
-  plugins: [],
+export const config = createConfig({
+  chains: [polygon],
+  transports: {
+    [polygon.id]: http(),
+  },
+})
+
+export const publicClient = createPublicClient({
+  chain: polygon,
+  transport: http(),
 })

@@ -1,12 +1,14 @@
-import React, { ChangeEvent } from 'react'
-import TokenSelect from './TokenSelect'
+import React, { ChangeEvent, useEffect, useState } from 'react'
+import TokenSelectModal from '../Modals/TokenSelectModal'
+import { SwapDirection, Token } from '@/types'
 
 interface SellAmountProps {
-  sellToken: string
-  setSellToken: (token: string) => void
+  sellToken: Token | null
+  setSellToken: (token: Token) => void
   sellAmount: string
   setSellAmount: (amount: string) => void
-  address: `0x${string}`
+  setSwapDirection: (direction: SwapDirection) => void
+  address?: `0x${string}`
   balance: string
 }
 
@@ -15,19 +17,27 @@ const SellAmount: React.FC<SellAmountProps> = ({
   setSellToken,
   sellAmount,
   setSellAmount,
-  address,
   balance,
+  setSwapDirection,
 }) => {
+  const [currentBalance, setCurrentBalance] = useState<string>(balance)
+
+  useEffect(() => {
+    setCurrentBalance(balance)
+  }, [balance, sellToken])
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     // Ensure the input is valid (numbers and one decimal point)
     if (/^\d*\.?\d*$/.test(value)) {
       setSellAmount(value)
+      setSwapDirection('sell')
     }
   }
 
   const handleSetMax = () => {
-    setSellAmount(balance)
+    setSellAmount(currentBalance)
+    setSwapDirection('sell')
   }
 
   return (
@@ -36,13 +46,20 @@ const SellAmount: React.FC<SellAmountProps> = ({
         type='text'
         value={sellAmount}
         onChange={handleChange}
-        className='bg-neutral text-white p-2 rounded-2xl flex-grow text-4xl w-full focus:outline-none'
+        className='bg-theme text-neutral-content p-2 rounded-2xl flex-grow text-4xl w-full focus:outline-none'
         placeholder='0'
       />
-      <button className='btn bg-secondary text-primary' onClick={handleSetMax}>
-        MAX
-      </button>
-      <TokenSelect value={sellToken} onChange={setSellToken} address={address} defaultLabel={'Select a token'} />
+      {sellToken && parseFloat(currentBalance) > 0 && (
+        <button className='max-button btn-outline text-primary outline-none' onClick={handleSetMax}>
+          MAX
+        </button>
+      )}
+      <TokenSelectModal
+        selectedToken={sellToken}
+        onSelectToken={setSellToken}
+        defaultLabel='Select a token'
+        direction='sell'
+      />
     </div>
   )
 }

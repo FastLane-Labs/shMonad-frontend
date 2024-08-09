@@ -9,6 +9,40 @@ input[type='number']::-webkit-inner-spin-button {
   margin: 0;
 }
 
+.btn {
+  @apply border-none bg-primary text-white rounded-2xl w-full
+  hover:bg-primary-content hover:shadow-primary hover:shadow-sm;
+}
+
+.btn-settings {
+  @apply w-14 rounded-lg !important;
+}
+
+.btn-navbar {
+  @apply bg-[#1a1b1f] h-10 shadow-black rounded-xl !important;
+}
+
+.btn-explorer {
+  @apply bg-purple-600 hover:bg-purple-700 hover:shadow-purple-600 !important;
+}
+
+.btn-navbar:hover {
+  @apply scale-105 !important;
+}
+
+.btn-outline {
+  @apply border border-transparent rounded-full p-2
+  hover:border-transparent hover:bg-secondary-content hover:text-neutral-content;
+}
+
+.max-button {
+  @apply hover:bg-transparent hover:text-primary-content !important;
+}
+
+.input {
+  @apply rounded-lg;
+}
+
 /* Hide number input spinners in Firefox */
 input[type='number'] {
   -moz-appearance: textfield;
@@ -18,4 +52,57 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}
+
+.backdrop-filter {
+  backdrop-filter: blur(8px);
+}
+
+.input-card {
+  @apply bg-theme p-4 rounded-2xl border-accent-content hover:border-accent border;
+}
+
+.modal-box {
+  @apply w-full max-w-md min-h-96 justify-between;
+}
+
+.gradient-1-geoblock {
+  background: radial-gradient(50% 50% at 50% 50%, rgb(241, 35, 121) 0px, rgba(243, 160, 66, 0) 100%);
+  opacity: 0.1;
+
+  bottom: -20rem;
+  left: -15.5rem;
+  position: absolute;
+  width: 63rem;
+  height: 65rem;
+}
+
+.gradient-2-geoblock {
+  background: radial-gradient(50% 50% at 50% 50%, rgb(243, 160, 66) 0px, rgba(0, 9, 91, 0) 100%);
+  opacity: 0.14;
+  position: absolute;
+  right: -12rem;
+  top: -12rem;
+  width: 50rem;
+  height: 43rem;
+}
+
+.scroll-bar {
+  scrollbar-width: thin;
+  scrollbar-color: #888 transparent;
+}
+
+.line-seperator {
+  width: calc(100% + 100px);
+  @apply border-t border-base-100 -ml-10;
+}
+
+.expandable-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+}
+
+.expandable-content.expanded {
+  max-height: 400px;
 }

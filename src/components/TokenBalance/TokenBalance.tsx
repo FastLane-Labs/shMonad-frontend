@@ -1,51 +1,61 @@
 'use client'
-import { useBalance, useReadContract } from 'wagmi'
-import { toBigInt } from 'ethers'
-import { useEffect } from 'react'
-import { formatBalance } from '@/utils/formatBalance'
-import { erc20Abi } from 'viem'
+import { useAccount } from 'wagmi'
+import { useEffect, useCallback } from 'react'
+import { Token } from '@/types'
+import { useBalance } from '@/hooks/useBalance'
+import { shortFormat } from '@/utils/format'
 
 interface TokenBalanceProps {
-  readonly address: string
-  readonly tokenAddress?: string
+  readonly token?: Token
   readonly className?: string
   readonly toFixed?: number
   readonly onBalanceChange?: ({ balance, formattedBalance }: { balance: bigint; formattedBalance?: string }) => void
 }
 
-export const TokenBalance: React.FC<TokenBalanceProps> = ({
-  address,
-  tokenAddress,
-  toFixed,
-  onBalanceChange,
-  className,
-}) => {
-  const ETHBalance = useBalance({ address: address as `0x${string}` })
+// set default value for toFixed to 2
+export const TokenBalance: React.FC<TokenBalanceProps> = ({ token, toFixed = 2, onBalanceChange, className }) => {
+  const { address } = useAccount()
 
-  const tokenBalance = useReadContract({
-    abi: erc20Abi,
-    address: tokenAddress as `0x${string}`,
-    functionName: 'balanceOf',
-    args: [address as `0x${string}`],
+  // Use the useBalance hook to fetch the balance in BigInt
+  const balanceQuery = useBalance({
+    token,
+    userAddress: address as string,
+    enabled: !!token && !!address,
   })
 
-  useEffect(() => {
-    // Pass the value of the balance to the parent component on change
-    if (tokenBalance.data && onBalanceChange) {
-      onBalanceChange({ balance: tokenBalance.data, formattedBalance: formatBalance(tokenBalance.data, toFixed) })
-      return
-    } else if (ETHBalance.data && onBalanceChange) {
-      onBalanceChange({
-        balance: ETHBalance.data.value,
-        formattedBalance: formatBalance(ETHBalance.data.value, toFixed),
-      })
-      return
-    }
-  }, [ETHBalance.data, tokenBalance.data, onBalanceChange, toFixed])
+  // Function to format the balance
+  const getFormattedBalance = useCallback(
+    (balance: bigint) => {
+      return token ? shortFormat(balance, token.decimals, toFixed) : '0'
+    },
+    [token, toFixed]
+  )
 
-  if (!ETHBalance.data && !tokenBalance.data) return null
-  if (tokenAddress && tokenBalance.data) {
-    return <span className={`stat-value ${className}`}>{formatBalance(tokenBalance.data, toFixed)}</span>
+  // call onBalanceChange with the balance and formatted balance when the balance changes
+  useEffect(() => {
+    if (balanceQuery.data && onBalanceChange && token) {
+      onBalanceChange({
+        balance: balanceQuery.data,
+        formattedBalance: getFormattedBalance(balanceQuery.data),
+      })
+    }
+  }, [balanceQuery.data, onBalanceChange, token, getFormattedBalance])
+
+  // Render the loading state
+  if (balanceQuery.isLoading) {
+    return <span className={`${className} loading loading-spinner`}></span>
   }
-  return <span className={` ${className}`}>{formatBalance(ETHBalance.data?.value ?? toBigInt(0), toFixed)}</span>
+
+  // Render the error state
+  if (balanceQuery.error) {
+    return <span className={`${className}`}>0</span>
+  }
+
+  // Render the balance or default to 0 if no data
+  if (!balanceQuery.data || !token) {
+    return <span className={`${className}`}>0</span>
+  }
+
+  // Render the formatted balance
+  return <span className={`${className}`}>{getFormattedBalance(balanceQuery.data || 0n)}</span>
 }

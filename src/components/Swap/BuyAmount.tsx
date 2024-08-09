@@ -1,14 +1,16 @@
 import React, { ChangeEvent } from 'react'
-import TokenSelect from './TokenSelect'
+import TokenSelectModal from '../Modals/TokenSelectModal'
+import { SwapDirection, Token } from '@/types'
 
 // Define the types for the props
 interface BuyAmountProps {
-  buyToken: string
-  setBuyToken: (token: string) => void
+  buyToken: Token | null
+  setBuyToken: (token: Token) => void
   buyAmount: string
   setBuyAmount: (amount: string) => void
-  address: `0x${string}`
   quoteLoading: boolean
+  setSwapDirection: (direction: SwapDirection) => void
+  disabled: boolean
 }
 
 const BuyAmount: React.FC<BuyAmountProps> = ({
@@ -16,14 +18,16 @@ const BuyAmount: React.FC<BuyAmountProps> = ({
   setBuyToken,
   buyAmount,
   setBuyAmount,
-  address,
   quoteLoading,
+  setSwapDirection,
+  disabled = true,
 }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     // Ensure the input is valid (numbers and one decimal point)
     if (/^\d*\.?\d*$/.test(value)) {
       setBuyAmount(value)
+      setSwapDirection('buy')
     }
   }
 
@@ -34,12 +38,20 @@ const BuyAmount: React.FC<BuyAmountProps> = ({
           type='number'
           value={buyAmount}
           onChange={handleChange}
-          className='bg-neutral text-white p-2 rounded-xl flex-grow text-4xl w-full focus:outline-none'
+          className={`bg-theme text-neutral-content p-2 rounded-xl flex-grow text-4xl w-full focus:outline-none ${
+            disabled ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
           placeholder='0'
+          disabled={disabled}
         />
         {quoteLoading && <span className='absolute right-4 loading loading-spinner loading-sm'></span>}
       </div>
-      <TokenSelect value={buyToken} onChange={setBuyToken} address={address} defaultLabel='Select a token' />
+      <TokenSelectModal
+        selectedToken={buyToken}
+        onSelectToken={setBuyToken}
+        defaultLabel='Select a token'
+        direction='buy'
+      />
     </div>
   )
 }

@@ -1,14 +1,15 @@
 import '@rainbow-me/rainbowkit/styles.css'
 import type { Metadata, Viewport } from 'next'
-import { PropsWithChildren } from 'react'
+import { Fragment, PropsWithChildren } from 'react'
 import { SITE_DESCRIPTION, SITE_EMOJI, SITE_INFO, SITE_NAME, SITE_URL } from '@/utils/siteInfo'
 import { Layout } from '@/components/Layout'
 import ClientWeb3Provider from '../context/ClientWeb3Provider'
 import { NotificationProvider } from '@/context/Notifications'
-import { cookieToInitialState } from 'wagmi'
-import { WALLETCONNECT_CONFIG } from '@/utils/web3'
 import '../assets/globals.css'
 import React from 'react'
+import GeoBlock from '@/components/GeoBlock/GeoBlock'
+import { AppStateProvider } from '@/context/AppStateContext'
+import { TokenPriceProvider } from '@/context/TokenPriceProvider'
 
 export const metadata: Metadata = {
   applicationName: SITE_NAME,
@@ -43,8 +44,11 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout(props: PropsWithChildren) {
+  let isRestricted: boolean = false
+  let country: string = 'US'
+
   return (
-    <html lang='en'>
+    <html lang='en' className='bg-base-300'>
       <head>
         <link
           rel='icon'
@@ -52,12 +56,27 @@ export default function RootLayout(props: PropsWithChildren) {
         />
       </head>
       <body>
-        <ClientWeb3Provider>
-          <NotificationProvider>
-            <Layout>{props.children}</Layout>
-          </NotificationProvider>
-        </ClientWeb3Provider>
+        {isRestricted ? (
+          <GeoBlock country={country} />
+        ) : (
+          <ClientWeb3Provider>
+            <TokenPriceProvider>
+              <NotificationProvider>
+                <AppStateProvider>
+                  <AppRouter>
+                    <Layout>{props.children}</Layout>
+                  </AppRouter>
+                </AppStateProvider>
+              </NotificationProvider>
+            </TokenPriceProvider>
+          </ClientWeb3Provider>
+        )}
       </body>
     </html>
   )
+}
+
+export const AppRouter: React.FC<PropsWithChildren<{}>> = ({ children }) => {
+  const Router = Fragment
+  return <Router>{children}</Router>
 }

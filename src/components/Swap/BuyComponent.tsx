@@ -1,36 +1,50 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import BuyAmount from './BuyAmount'
+import { useSwapStateContext } from '@/context/SwapStateContext'
+import { TokenBalance } from '@/components/TokenBalance/TokenBalance'
+import { useTokenUsdPrice } from '@/hooks/useTokenUsdPrice'
 
-interface BuyComponentProps {
-  buyToken: any
-  setBuyToken: (token: any) => void
-  buyAmount: any
-  setBuyAmount: (amount: any) => void
-  address: `0x${string}`
-  quoteLoading: boolean
-}
+const BuyComponent: React.FC = () => {
+  const {
+    toToken: buyToken,
+    setToToken: setBuyToken,
+    toAmount: buyAmount,
+    setToAmount: setBuyAmount,
+    isQuoteing,
+    setSwapDirection,
+  } = useSwapStateContext()
 
-const BuyComponent: React.FC<BuyComponentProps> = ({
-  buyToken,
-  setBuyToken,
-  buyAmount,
-  setBuyAmount,
-  address,
-  quoteLoading,
-}) => {
+  const { data: tokenPrice } = useTokenUsdPrice(buyToken)
+
+  const usdValue = useMemo(() => {
+    if (!tokenPrice || tokenPrice === 0 || !buyAmount || buyAmount === '') return null
+    const amount = parseFloat(buyAmount)
+    return isNaN(amount) ? null : amount * tokenPrice
+  }, [tokenPrice, buyAmount])
+
   return (
-    <div className='bg-neutral p-4 rounded-2xl mb-4 border-neutral hover:border-neutral-700 border'>
+    <div className='input-card mb-4'>
       <div className='flex justify-between items-center mb-2 text-sm'>
-        <span className='text-gray-400'>To</span>
+        <span className='text-base-content'>To</span>
+        <div className='flex flex-col items-end'>
+          <h1 className='text-base-content'>
+            <span>Balance: </span>
+            <TokenBalance token={buyToken || undefined} toFixed={3} />
+          </h1>
+        </div>
       </div>
       <BuyAmount
         buyToken={buyToken}
         setBuyToken={setBuyToken}
         buyAmount={buyAmount}
         setBuyAmount={setBuyAmount}
-        address={address}
-        quoteLoading={quoteLoading}
+        quoteLoading={isQuoteing}
+        setSwapDirection={setSwapDirection}
+        disabled={true}
       />
+      <div className='text-left mt-2 text-sm text-base-content h-5'>
+        {usdValue !== null ? `$${usdValue.toFixed(2)}` : '\u00A0'}
+      </div>
     </div>
   )
 }
