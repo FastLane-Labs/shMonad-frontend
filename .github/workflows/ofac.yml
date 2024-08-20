@@ -37,8 +37,8 @@ jobs:
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git checkout develop
-          mv ./ofac_data/ofac_sdn.json ./src/constants/sanctioned_addresses_ofac.json
           git checkout -b ofac-update-$WF_TIMESTAMP
+          mv ./ofac_data/ofac_sdn.json ./src/constants/sanctioned_addresses_ofac.json
           git add ./src/constants/sanctioned_addresses_ofac.json
           git commit -m "automatic ofac update: $WF_DATE" -a || true
           gh pr create --title "Automatic OFAC update: $WF_DATE" --body "Automatically updated OFAC list" --base develop --head ofac-update-$WF_TIMESTAMP
