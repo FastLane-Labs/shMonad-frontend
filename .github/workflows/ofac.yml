@@ -40,5 +40,5 @@ jobs:
           git checkout -b ofac-update-$WF_TIMESTAMP
           mv ./ofac_data/ofac_sdn.json ./src/constants/sanctioned_addresses_ofac.json
           git add ./src/constants/sanctioned_addresses_ofac.json
-          git commit -m "automatic ofac update: $WF_DATE" -a || true
+          git commit -m "automatic ofac update: $WF_DATE"
           gh pr create --title "Automatic OFAC update: $WF_DATE" --body "Automatically updated OFAC list" --base develop --head ofac-update-$WF_TIMESTAMP
