@@ -39,23 +39,17 @@ jobs:
           git checkout ofac-fix
           mv ./ofac_data/ofac_sdn.json ./src/constants/sanctioned_addresses_ofac.json
           git add ./src/constants/sanctioned_addresses_ofac.json
-          git commit -m "automatic ofac update: $WF_DATE"
-      - name: Push branch
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ofac-update-$WF_TIMESTAMP
+          git commit -m "automatic ofac update: ${WF_DATE}"
       - name: Create PR
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'automatic ofac update: $WF_DATE'
-          title: 'Automatic OFAC update: $WF_DATE'
+          commit-message: 'automatic ofac update: ${WF_DATE}'
+          title: 'Automatic OFAC update: ${WF_DATE}'
           body: 'This PR was automatically generated to update the OFAC list.'
-          branch: ofac-update-$WF_TIMESTAMP
-          base: develop
+          branch: ofac-update-${WF_TIMESTAMP}
+          base: ofac-fix
           labels: 'ofac'
           assignees: 'github-actions[bot]'
           reviewers: 'github-actions[bot]'
-          milestone: '1'
           draft: false
