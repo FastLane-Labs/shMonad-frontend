@@ -310,17 +310,18 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
               gravity={0.1}
               style={{
                 position: 'fixed',
-                top: '-20vh', // Start above the viewport
-                left: '-20vw', // Start left of the viewport
-                width: '140vw', // Extend beyond the right edge
-                height: '140vh', // Extend beyond the bottom edge
+                top: '-20vh',
+                left: '-20vw',
+                width: '140vw',
+                height: '140vh',
                 zIndex: 1000,
                 pointerEvents: 'none',
               }}
             />
           )}
           <div className='text-center mb-2 relative z-10'>
-            <div className='w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4'>
+            <div
+              className={`w-16 h-16 ${isBoosted ? 'bg-gray-700' : 'bg-green-500'} rounded-full flex items-center justify-center mx-auto mb-4`}>
               {isBoosted ? (
                 <Image
                   src='/rocketboost-logo-extracted.png'
