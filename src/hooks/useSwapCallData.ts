@@ -6,7 +6,7 @@ import { Address } from 'viem'
 import { buildBaselineCallData, buildUserOperation, getExecutionEnvironment } from '@/core/atlas'
 import { calculateDeadlineBlockNumber } from '@/utils/settings'
 import { getAtlasGasSurcharge, getFeeData } from '@/utils/gasFee'
-import { SOLVER_GAS_ESTIMATE, SWAP_GAS_ESTIMATE } from '@/constants'
+import { SOLVER_GAS_ESTIMATE, SWAP_GAS_ESTIMATE, SwapType, WRAP_GAS_ESTIMATE } from '@/constants'
 import { BaseSwapService } from '@/services/baseSwap'
 
 export const useSwapCallData = (
@@ -25,7 +25,7 @@ export const useSwapCallData = (
   config: any,
   chainId: number | undefined
 ) => {
-  const swapDataOptions: UseQueryOptions<SwapCallData, Error> = useMemo(
+  const swapDataOptions: UseQueryOptions<any, Error> = useMemo(
     () => ({
       queryKey: [
         ...keys({ address }).all,
@@ -35,7 +35,7 @@ export const useSwapCallData = (
         swapDirection,
         debouncedAmount,
       ],
-      queryFn: async (): Promise<any> => {
+      queryFn: async (): Promise<SwapCallData | null> => {
         if (
           !isReadyForCallDataGeneration ||
           !quoteResult ||
@@ -48,7 +48,6 @@ export const useSwapCallData = (
         ) {
           return null
         }
-        console.log('quoteResult', quoteResult)
 
         const swapIntent = BaseSwapService.getInstance().getSwapIntent(quoteResult, config.slippage)
         const { isFromNative } = quoteResult.swapRoute
@@ -62,8 +61,19 @@ export const useSwapCallData = (
 
         const maxFeePerGas = feeData.maxFeePerGas * 2n
         const deadline = calculateDeadlineBlockNumber(config.deadline, block?.number ?? 0, chainId!)
-        const gas = SWAP_GAS_ESTIMATE + SOLVER_GAS_ESTIMATE
 
+        if (quoteResult.swapType === SwapType.WRAP || quoteResult.swapType === SwapType.UNWRAP) {
+          return {
+            type: 'wrap',
+            baselineCall,
+            minAmountOut: quoteResult.amountOut,
+            gasLimit: WRAP_GAS_ESTIMATE,
+            isSigned: false,
+            gasSurcharge: 0n,
+          }
+        }
+
+        const gas = SWAP_GAS_ESTIMATE + SOLVER_GAS_ESTIMATE
         const userOperation = await buildUserOperation(
           address,
           swapIntent,
@@ -80,6 +90,7 @@ export const useSwapCallData = (
         }
 
         return {
+          type: 'swap',
           baselineCall,
           gasLimit: gas,
           userOperation,
@@ -89,7 +100,8 @@ export const useSwapCallData = (
         }
       },
       enabled: isReadyForCallDataGeneration && !!quoteResult,
-      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+      refetchOnWindowFocus: true,
     }),
     [
       address,
@@ -105,8 +117,9 @@ export const useSwapCallData = (
       atlasVerificationAddress,
       config,
       chainId,
+      executionEnvironment,
     ]
   )
 
-  return useQuery<any, Error>(swapDataOptions)
+  return useQuery<SwapCallData | null, Error>(swapDataOptions)
 }
