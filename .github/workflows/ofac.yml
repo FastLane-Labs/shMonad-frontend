@@ -26,6 +26,10 @@ jobs:
       - name: Generate OFAC list
         run: |
           python3 scripts/ofac_sdn.py ./ofac_data/sdn.xml ./ofac_data/ofac_sdn.json
+      - name: Set current timestamp
+        run: |
+          echo "WF_TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
+          echo "WF_DATE=$(date)" >> $GITHUB_ENV
       - name: Apply updated list
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -35,9 +39,6 @@ jobs:
           rm -rf ./ofac_data
       - name: Create PR
         uses: peter-evans/create-pull-request@v3
-        env:
-          WF_TIMESTAMP: $(date +%s)
-          WF_DATE: $(date)
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'automatic ofac update: ${{ env.WF_DATE }}'
