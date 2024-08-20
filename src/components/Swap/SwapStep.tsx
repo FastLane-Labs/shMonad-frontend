@@ -303,7 +303,6 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
         <div className='flex flex-grow flex-col w-full h-full justify-center items-center'>
           {isBoosted && (
             <Confetti
-              className=' top-0 left-0'
               width={window.innerWidth}
               height={window.innerHeight}
               recycle={false}
