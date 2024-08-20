@@ -30,16 +30,13 @@ jobs:
         run: |
           echo "WF_TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
           echo "WF_DATE=$(date)" >> $GITHUB_ENV
-      - name: Create branch and PR
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Apply updated list
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git checkout ofac-fix
           mv ./ofac_data/ofac_sdn.json ./src/constants/sanctioned_addresses_ofac.json
-          git add ./src/constants/sanctioned_addresses_ofac.json
-          git commit -m "automatic ofac update: ${WF_DATE}"
+          rm -rf ./ofac_data
       - name: Create PR
         uses: peter-evans/create-pull-request@v3
         with:
