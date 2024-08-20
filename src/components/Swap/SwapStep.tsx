@@ -33,6 +33,7 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
     hasUserOperationSignature,
     swapData,
     quote,
+    swapResult,
   } = useSwapStateContext()
 
   const { data: estimatedFees } = useEstimatedSwapFees()
@@ -297,22 +298,58 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
         </>
       )
     } else if (step === 'success') {
+      const isBoosted = swapResult?.transaction.boosted || false
       return (
-        <div className='flex flex-grow flex-col w-full h-full justify-center items-center'>
-          <Confetti width={width} height={height} recycle={false} numberOfPieces={200} gravity={0.1} />
-          <div className='text-center mb-2'>
+        <div className='flex flex-grow flex-col w-full h-full justify-center items-center relative'>
+          {isBoosted && (
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              recycle={false}
+              numberOfPieces={200}
+              gravity={0.1}
+              style={{
+                position: 'fixed',
+                top: '-20vh', // Start above the viewport
+                left: '-20vw', // Start left of the viewport
+                width: '140vw', // Extend beyond the right edge
+                height: '140vh', // Extend beyond the bottom edge
+                zIndex: 1000,
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+          <div className='text-center mb-2 relative z-10'>
             <div className='w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4'>
-              <Image
-                src='/rocketboost-logo-extracted.png'
-                alt='Boosted'
-                width={40}
-                height={40}
-                className='opacity-70'
-              />
+              {isBoosted ? (
+                <Image
+                  src='/rocketboost-logo-extracted.png'
+                  alt='Boosted'
+                  width={40}
+                  height={40}
+                  className='opacity-70'
+                />
+              ) : (
+                <svg
+                  className='w-8 h-8 text-white'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                  xmlns='http://www.w3.org/2000/svg'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+                </svg>
+              )}
             </div>
-            <h2 className='text-lg font-semibold'>Swap successful - Boosted!</h2>
+            <h2 className='text-lg font-semibold'>{isBoosted ? 'Swap successful - Boosted!' : 'Swap successful'}</h2>
           </div>
-          {renderSwapDetailsCompact()}
+          <div className='relative z-10'>
+            {renderSwapDetailsCompact()}
+            {isBoosted && swapResult?.transaction.boostedAmount && (
+              <div className='mt-2 text-sm text-green-500'>
+                Boosted amount: {swapResult.transaction.boostedAmount} {toToken?.symbol}
+              </div>
+            )}
+          </div>
         </div>
       )
     }
