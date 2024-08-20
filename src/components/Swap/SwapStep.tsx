@@ -300,9 +300,10 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
     } else if (step === 'success') {
       const isBoosted = swapResult?.transaction.boosted || false
       return (
-        <div className='flex flex-grow flex-col w-full h-full justify-center items-center relative'>
+        <div className='flex flex-grow flex-col w-full h-full justify-center items-center'>
           {isBoosted && (
             <Confetti
+              className=' top-0 left-0'
               width={window.innerWidth}
               height={window.innerHeight}
               recycle={false}
@@ -310,9 +311,9 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
               gravity={0.1}
               style={{
                 position: 'fixed',
-                top: '-20vh',
-                left: '-20vw',
-                width: '140vw',
+                top: '-35vh',
+                left: '-50vw',
+                width: '170vw',
                 height: '140vh',
                 zIndex: 1000,
                 pointerEvents: 'none',
@@ -321,13 +322,13 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
           )}
           <div className='text-center mb-2 relative z-10'>
             <div
-              className={`w-16 h-16 ${isBoosted ? 'bg-gray-700' : 'bg-green-500'} rounded-full flex items-center justify-center mx-auto mb-4`}>
+              className={`w-16 h-16 ${isBoosted ? 'bg-base-300' : 'bg-green-500'} rounded-full flex items-center justify-center mx-auto mb-4`}>
               {isBoosted ? (
                 <Image
                   src='/rocketboost-logo-extracted.png'
                   alt='Boosted'
-                  width={40}
-                  height={40}
+                  width={80}
+                  height={80}
                   className='opacity-70'
                 />
               ) : (
@@ -346,8 +347,11 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
           <div className='relative z-10'>
             {renderSwapDetailsCompact()}
             {isBoosted && swapResult?.transaction.boostedAmount && (
-              <div className='mt-2 text-sm text-green-500'>
-                Boosted amount: {swapResult.transaction.boostedAmount} {toToken?.symbol}
+              <div className='text-sm text-center'>
+                <h1 className='text-4xl font-medium bg-gradient-to-br from-primary-content to-secondary bg-clip-text text-transparent outline-none'>
+                  {swapResult.transaction.boostedAmount} {toToken?.symbol}
+                </h1>
+                <p className='gray-text'>Boosted amount</p>
               </div>
             )}
           </div>
