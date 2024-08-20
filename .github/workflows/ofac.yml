@@ -3,9 +3,6 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
-  pull_request:
-    branches:
-      - '**'
 
 jobs:
   update-list:
@@ -34,7 +31,7 @@ jobs:
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git checkout ofac-fix
+          git checkout develop
           mv ./ofac_data/ofac_sdn.json ./src/constants/sanctioned_addresses_ofac.json
           rm -rf ./ofac_data
       - name: Create PR
@@ -45,6 +42,6 @@ jobs:
           title: 'Automatic OFAC update: ${{ env.WF_DATE }}'
           body: This PR was automatically generated to update the OFAC list.
           branch: ofac-update-${{ env.WF_TIMESTAMP }}
-          base: ofac-fix
+          base: develop
           labels: OFAC
           draft: false
