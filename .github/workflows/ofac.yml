@@ -50,6 +50,4 @@ jobs:
           branch: ofac-update-${WF_TIMESTAMP}
           base: ofac-fix
           labels: 'ofac'
-          assignees: 'github-actions[bot]'
-          reviewers: 'github-actions[bot]'
           draft: false
