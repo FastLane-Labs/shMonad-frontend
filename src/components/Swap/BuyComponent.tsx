@@ -12,6 +12,7 @@ const BuyComponent: React.FC = () => {
     setToAmount: setBuyAmount,
     isQuoteing,
     setSwapDirection,
+    quote,
   } = useSwapStateContext()
 
   const { data: tokenPrice } = useTokenUsdPrice(buyToken)
@@ -22,15 +23,19 @@ const BuyComponent: React.FC = () => {
     return isNaN(amount) ? null : amount * tokenPrice
   }, [tokenPrice, buyAmount])
 
+  const priceImpact = useMemo(() => {
+    if (!quote) return null
+    const amount = parseFloat(quote.priceImpact)
+    return amount
+  }, [quote])
+
   return (
     <div className='input-card mb-4'>
       <div className='flex justify-between items-center mb-2 text-sm'>
         <span className='text-base-content'>To</span>
-        <div className='flex flex-col items-end'>
-          <h1 className='text-base-content'>
-            <span>Balance: </span>
-            <TokenBalance token={buyToken || undefined} toFixed={3} />
-          </h1>
+        <div className='flex text-base-content gap-0.5 items-center justify-center'>
+          <span>Balance: </span>
+          <TokenBalance token={buyToken || undefined} toFixed={3} />
         </div>
       </div>
       <BuyAmount
@@ -43,7 +48,8 @@ const BuyComponent: React.FC = () => {
         disabled={true}
       />
       <div className='text-left mt-2 text-sm text-base-content h-5'>
-        {usdValue !== null ? `$${usdValue.toFixed(2)}` : '\u00A0'}
+        {usdValue !== null ? `$${usdValue.toFixed(2)} ` : '\u00A0'}
+        {priceImpact !== null ? `(${priceImpact.toFixed(4)}%)` : '\u00A0'}
       </div>
     </div>
   )

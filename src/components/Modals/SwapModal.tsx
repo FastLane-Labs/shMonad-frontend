@@ -2,8 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react'
 import ModalWrapper from '@/components/Wrappers/ModalWrapper'
 import SwapStep from '@/components/Swap/SwapStep'
 import { useSwapStateContext } from '@/context/SwapStateContext'
-import { getBlockExplorerUrl } from '@/utils/getBlockExploer'
-import { useErrorNotification } from '@/hooks/useErrorNotification'
+import { getBlockExplorerUrl } from '@/utils/getBlockExplorerUrl'
 
 interface SwapModalProps {
   isVisible: boolean
@@ -28,10 +27,8 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
     swapResult,
     setSwapData,
     setHasUserOperationSignature,
+    swapMode,
   } = useSwapStateContext()
-
-  // error notifications
-  useErrorNotification(error)
 
   useEffect(() => {
     if (swapResult?.transaction?.txHash) {
@@ -65,10 +62,8 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
             }
             break
         }
-        if (!success) throw new Error(`${action} failed`)
       } catch (err) {
         setError(err instanceof Error ? err : new Error('An unknown error occurred'))
-        // error notifications can also be created here instead of in the useEffect
       } finally {
         setIsApproving(false)
         setIsSigning(false)
@@ -83,13 +78,16 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
     if (step === 'success') {
       setStep('approve')
       setSwapData(null)
+      setError(null)
       setHasUserOperationSignature(false)
+    } else {
+      setError(null)
     }
     onClose()
   }, [step, onClose, setSwapData, setHasUserOperationSignature])
 
   return (
-    <ModalWrapper isVisible={isVisible} onClose={handleClose} style={{ paddingBottom: '28px' }}>
+    <ModalWrapper isVisible={isVisible} onClose={handleClose} style={{ paddingBottom: '28px', overflow: 'visible' }}>
       <SwapStep
         step={step}
         setStep={setStep}

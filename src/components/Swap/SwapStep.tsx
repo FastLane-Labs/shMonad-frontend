@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Token } from '@/types'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
-import { formatEther } from 'ethers'
+import { formatEther, formatUnits } from 'ethers'
 import { useEstimatedSwapFees } from '@/hooks/useEstimatedSwapFees'
 import { useSwapStateContext } from '@/context/SwapStateContext'
 import UnknownToken from '@/assets/svg/unknownToken.svg'
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
+import Image from 'next/image'
+import Confetti from 'react-confetti'
+import { useWindowSize } from 'react-use'
+import { calculateExchangeRate } from '@/utils/exchangeRate'
+import { useAppStore } from '@/store/useAppStore'
+import { capitalize } from '@/utils/helpers/formatTools'
 
 interface SwapStepProps {
   step: 'approve' | 'sign' | 'swap' | 'success'
@@ -25,10 +32,36 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
     hasSufficientAllowance,
     isSwapping,
     hasUserOperationSignature,
+    swapData,
+    quote,
+    swapResult,
+    swapMode,
   } = useSwapStateContext()
 
   const { data: estimatedFees } = useEstimatedSwapFees()
   const [isExpanded, setIsExpanded] = useState(false)
+
+  const { config } = useAppStore()
+  const slippage = config.slippage
+
+  const exchangeRate = useMemo(() => {
+    if (fromToken && toToken && fromAmount && toAmount) {
+      return calculateExchangeRate(fromToken, toToken, fromAmount, toAmount)
+    }
+    return '0'
+  }, [fromToken, toToken, fromAmount, toAmount])
+
+  const minimumReceived = useMemo(() => {
+    if (swapData && swapData.minAmountOut && toToken) {
+      return formatUnits(swapData.minAmountOut, toToken.decimals)
+    }
+    return '0'
+  }, [toToken, swapData])
+
+  const priceImpact = useMemo(() => {
+    if (!quote) return null
+    return parseFloat(quote.priceImpact)
+  }, [quote])
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded)
@@ -37,12 +70,14 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
   useEffect(() => {
     if (!hasSufficientAllowance) {
       setStep('approve')
+    } else if (swapMode === 'wrap' || swapMode === 'unwrap') {
+      setStep('swap')
     } else if (!hasUserOperationSignature) {
       setStep('sign')
     } else {
       setStep('swap')
     }
-  }, [hasSufficientAllowance, hasUserOperationSignature, setStep])
+  }, [hasSufficientAllowance, hasUserOperationSignature, setStep, swapMode])
 
   const renderTokenInfo = (token: Token | null | undefined, amount: string, label: string) => (
     <div className='items-end justify-between flex w-full gap-3'>
@@ -103,7 +138,7 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
   )
 
   const renderShowMore = () => (
-    <div className='flex flex-col w-full justify-start pb-6 gap-2 text-sm'>
+    <div className='flex flex-col w-full justify-start pb-2 gap-2 text-sm'>
       <button
         className='text-black items-center cursor-pointer px-4 text-center flex w-full h-7 my-1'
         onClick={toggleExpand}>
@@ -123,30 +158,34 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
       <div className='flex w-full items-center justify-between'>
         <h3 className='gray-text'>Rate</h3>
         <span className='text-end text-neutral-content'>
-          1 {fromToken?.symbol} = 2.02827 {toToken?.symbol}
+          1 {fromToken?.symbol} = {exchangeRate} {toToken?.symbol}
         </span>
       </div>
 
       <div className='flex w-full items-center justify-between'>
         <h3 className='gray-text'>Slippage</h3>
-        <span className='text-end text-neutral-content'>{`0.5%`}</span>
+        <span className='text-end text-neutral-content'>{`${slippage / 100}%`}</span>
       </div>
 
       <div className='flex w-full items-center justify-between'>
         <h3 className='gray-text'>Network cost</h3>
-        <div className='flex items-center justify-start gap-1 gray-text'>
-          <svg className='w-4 h-4' fill='none' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
-            <path
-              clipRule='evenodd'
-              d='M15.3078 1.77827C15.7064 1.39599 16.3395 1.40923 16.7217 1.80783L20.9689 6.23633C21.2428 6.47474 21.4729 6.76205 21.6459 7.08464C21.8481 7.43172 22 7.84819 22 8.32698V16.7012C22 18.2484 20.7455 19.5 19.2 19.5C17.6536 19.5 16.4 18.2464 16.4 16.7V14.3999C16.4 13.8476 15.9523 13.3999 15.4 13.3999H14V20.5C14 20.569 13.9965 20.6372 13.9897 20.7045C13.9515 21.08 13.8095 21.4249 13.5927 21.7098C13.2274 22.19 12.6499 22.5 12 22.5H4C3.30964 22.5 2.70098 22.1502 2.34157 21.6182C2.12592 21.299 2.00001 20.9142 2 20.5V5.4999C2 3.84305 3.34315 2.4999 5 2.4999H11C12.6569 2.4999 14 3.84305 14 5.4999V11.3999H15.4C17.0569 11.3999 18.4 12.7431 18.4 14.3999V16.7C18.4 17.1418 18.7582 17.5 19.2 17.5C19.6427 17.5 20 17.1422 20 16.7012V11.3292C19.6872 11.4397 19.3506 11.4999 19 11.4999C17.3431 11.4999 16 10.1568 16 8.4999C16 7.28851 16.718 6.24482 17.7517 5.77117L15.2783 3.19217C14.896 2.79357 14.9092 2.16055 15.3078 1.77827ZM19.6098 7.70731C19.441 7.57725 19.2296 7.4999 19 7.4999C18.4477 7.4999 18 7.94762 18 8.4999C18 9.05219 18.4477 9.4999 19 9.4999C19.5523 9.4999 20 9.05219 20 8.4999C20 8.34084 19.9629 8.19045 19.8968 8.05693C19.8303 7.95164 19.7349 7.83559 19.6098 7.70731ZM5.21572 4.72463C4.66343 4.72463 4.21572 5.17235 4.21572 5.72463V9.72463C4.21572 10.2769 4.66343 10.7246 5.21572 10.7246H10.7157C11.268 10.7246 11.7157 10.2769 11.7157 9.72463V5.72463C11.7157 5.17235 11.268 4.72463 10.7157 4.72463H5.21572Z'
-              fill='rgb(94, 94, 94)'
-              fillRule='evenodd'
-            />
-          </svg>
-          <span className='text-end gray-text'>
-            {estimatedFees ? formatEther(estimatedFees.totalFeesInWei) : '0'}{' '}
-            {nativeToken?.symbol ? nativeToken.symbol : ''}
-          </span>
+        <div
+          className='md:tooltip md:tooltip-left lg:tooltip-right'
+          data-tip='You may get a refund on gas in some of your swaps when a solver picks up your order.'>
+          <div className='flex items-center justify-start gap-1 gray-text'>
+            <svg className='w-4 h-4' fill='none' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+              <path
+                clipRule='evenodd'
+                d='M15.3078 1.77827C15.7064 1.39599 16.3395 1.40923 16.7217 1.80783L20.9689 6.23633C21.2428 6.47474 21.4729 6.76205 21.6459 7.08464C21.8481 7.43172 22 7.84819 22 8.32698V16.7012C22 18.2484 20.7455 19.5 19.2 19.5C17.6536 19.5 16.4 18.2464 16.4 16.7V14.3999C16.4 13.8476 15.9523 13.3999 15.4 13.3999H14V20.5C14 20.569 13.9965 20.6372 13.9897 20.7045C13.9515 21.08 13.8095 21.4249 13.5927 21.7098C13.2274 22.19 12.6499 22.5 12 22.5H4C3.30964 22.5 2.70098 22.1502 2.34157 21.6182C2.12592 21.299 2.00001 20.9142 2 20.5V5.4999C2 3.84305 3.34315 2.4999 5 2.4999H11C12.6569 2.4999 14 3.84305 14 5.4999V11.3999H15.4C17.0569 11.3999 18.4 12.7431 18.4 14.3999V16.7C18.4 17.1418 18.7582 17.5 19.2 17.5C19.6427 17.5 20 17.1422 20 16.7012V11.3292C19.6872 11.4397 19.3506 11.4999 19 11.4999C17.3431 11.4999 16 10.1568 16 8.4999C16 7.28851 16.718 6.24482 17.7517 5.77117L15.2783 3.19217C14.896 2.79357 14.9092 2.16055 15.3078 1.77827ZM19.6098 7.70731C19.441 7.57725 19.2296 7.4999 19 7.4999C18.4477 7.4999 18 7.94762 18 8.4999C18 9.05219 18.4477 9.4999 19 9.4999C19.5523 9.4999 20 9.05219 20 8.4999C20 8.34084 19.9629 8.19045 19.8968 8.05693C19.8303 7.95164 19.7349 7.83559 19.6098 7.70731ZM5.21572 4.72463C4.66343 4.72463 4.21572 5.17235 4.21572 5.72463V9.72463C4.21572 10.2769 4.66343 10.7246 5.21572 10.7246H10.7157C11.268 10.7246 11.7157 10.2769 11.7157 9.72463V5.72463C11.7157 5.17235 11.268 4.72463 10.7157 4.72463H5.21572Z'
+                fill='rgb(94, 94, 94)'
+                fillRule='evenodd'
+              />
+            </svg>
+            <span className='text-end gray-text'>
+              {estimatedFees ? formatEther(estimatedFees.totalFeesInWei) : '0'}{' '}
+              {nativeToken?.symbol ? nativeToken.symbol : ''}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -154,12 +193,16 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
         className={`expandable-content flex flex-col w-full gap-2 ${isExpanded ? 'expanding expanded' : 'collapsing'}`}>
         <div className='flex w-full items-center justify-between'>
           <h3 className='gray-text'>Price impact</h3>
-          <span className='text-end text-neutral-content'>{`<$0.01`}</span>
+          <span className='text-end text-neutral-content'>{`${priceImpact?.toFixed(3)}%`}</span>
         </div>
 
         <div className='flex w-full items-center justify-between'>
           <h3 className='gray-text'>Receive at least</h3>
-          <span className='text-end text-neutral-content'>{`0.00021 MATIC`}</span>
+          <div
+            className='md:tooltip md:tooltip-left lg:tooltip-right'
+            data-tip='Your swaps are gossipped permissionlessly to searchers who compete to give you the best price in the form of Rocketboost rebates.'>
+            <span className='text-end text-neutral-content'>{`${minimumReceived} ${toToken?.symbol}`}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -188,7 +231,7 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
         `Approve ${fromToken?.symbol} for spending`
       )
       action = 'approve'
-    } else if (step === 'sign') {
+    } else if (step === 'sign' && swapMode !== 'wrap') {
       buttonText = isLoading ? (
         <span className='flex items-center justify-center'>
           <svg className='animate-spin h-5 w-5 mr-3' viewBox='0 0 24 24'>
@@ -205,7 +248,7 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
       )
       action = 'sign'
     } else if (step === 'swap') {
-      buttonText = 'Confirm Swap'
+      buttonText = `Confirm ${capitalize(swapMode)}`
       action = 'swap'
     } else if (step === 'success') {
       buttonText = 'View on Explorer'
@@ -234,7 +277,7 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
           <div className='flex flex-grow flex-col w-full h-full justify-center items-center'>
             <div className='text-center mb-2'>
               <div className='w-16 h-16 rounded-full border-4 border-gray-300 border-t-pink-500 animate-spin mx-auto mb-4'></div>
-              <h2 className='text-lg font-semibold'>Confirm swap</h2>
+              <h2 className='text-lg font-semibold'>Confirm {capitalize(swapMode)}</h2>
             </div>
             {renderSwapDetailsCompact()}
           </div>
@@ -249,26 +292,79 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
           </div>
         </>
       )
-    } else if (step === 'sign' || step === 'swap') {
+    } else if (step === 'sign' && swapMode !== 'wrap' && swapMode !== 'unwrap') {
       return (
         <>
-          <h2 className='text-lg font-semibold mb-4 text-center'>{step === 'sign' ? 'Sign Swap' : 'Confirm Swap'}</h2>
+          <h2 className='text-lg font-semibold mb-4 text-center'>Sign Swap</h2>
+          {renderSwapDetails()}
+          {renderShowMore()}
+        </>
+      )
+    } else if (step === 'swap') {
+      return (
+        <>
+          <h2 className='text-lg font-semibold mb-4 text-center'>Confirm {capitalize(swapMode)}</h2>
           {renderSwapDetails()}
           {renderShowMore()}
         </>
       )
     } else if (step === 'success') {
+      const isBoosted = swapResult?.transaction.boosted || false
       return (
         <div className='flex flex-grow flex-col w-full h-full justify-center items-center'>
-          <div className='text-center mb-2'>
-            <div className='w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4'>
-              <svg className='w-8 h-8 text-white' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
-              </svg>
+          {isBoosted && (
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              recycle={false}
+              numberOfPieces={200}
+              gravity={0.1}
+              style={{
+                position: 'fixed',
+                top: '-35vh',
+                left: '-50vw',
+                width: '170vw',
+                height: '140vh',
+                zIndex: 1000,
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+          <div className='text-center mb-2 relative z-10'>
+            <div
+              className={`w-16 h-16 ${isBoosted ? 'bg-base-300' : 'bg-green-500'} rounded-full flex items-center justify-center mx-auto mb-4`}>
+              {isBoosted ? (
+                <Image
+                  src='/rocketboost-logo-extracted.png'
+                  alt='Boosted'
+                  width={80}
+                  height={80}
+                  className='opacity-70'
+                />
+              ) : (
+                <svg
+                  className='w-8 h-8 text-white'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                  xmlns='http://www.w3.org/2000/svg'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+                </svg>
+              )}
             </div>
-            <h2 className='text-lg font-semibold'>Swap success!</h2>
+            <h2 className='text-lg font-semibold'>{isBoosted ? 'Swap successful - Boosted!' : 'Swap successful'}</h2>
           </div>
-          {renderSwapDetailsCompact()}
+          <div className='relative z-10'>
+            {renderSwapDetailsCompact()}
+            {isBoosted && swapResult?.transaction.boostedAmount && (
+              <div className='text-sm text-center'>
+                <h1 className='text-4xl font-medium bg-gradient-to-br from-primary-content to-secondary bg-clip-text text-transparent outline-none'>
+                  {swapResult.transaction.boostedAmount} {toToken?.symbol}
+                </h1>
+                <p className='gray-text'>Boosted amount</p>
+              </div>
+            )}
+          </div>
         </div>
       )
     }
@@ -277,8 +373,14 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
   return (
     <div className='text-neutral-content flex flex-col min-h-96 w-full items-center justify-between mt-4'>
       {renderStepContent()}
-      {/* {error && <p className='text-red-500 mt-2'>{error.message}</p>} */}
-      <div className='w-full mt-4'>{renderButton()}</div>
+
+      <div className='w-full mt-0'>{renderButton()}</div>
+      {error && (
+        <div className='flex w-full items-center justify-center text-secondary mt-4 gap-[3px] text-sm -mb-1'>
+          <p className='w-fit'>{error.message}</p>
+          <ExclamationCircleIcon className='h-[1.2rem] w-[1.2rem]' />
+        </div>
+      )}
     </div>
   )
 }

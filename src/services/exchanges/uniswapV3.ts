@@ -1,10 +1,9 @@
 import { publicClient } from '../../../wagmi.config'
 import { Exchange } from './base'
-import { Token, SwapStep, SwapRoute, QuoteRequest, QuoteResult } from '@/types'
+import { Token, SwapStep, SwapRoute, QuoteRequest, QuoteResult, QuoteResults } from '@/types'
 import { SwapType, CONTRACT_ADDRRESSES } from '@/constants'
 import { QUOTERV2_ABI, SWAPROUTER02_ABI } from '@/constants/uniswap/v3'
-import { Address, Hex, ContractFunctionParameters, encodeFunctionData, encodePacked } from 'viem'
-import { SwapIntent } from '@/types/atlas'
+import { Address, Hex, ContractFunctionParameters, encodeFunctionData, encodePacked, zeroAddress } from 'viem'
 
 const POOL_FEES = [500, 3000, 10000]
 
@@ -45,12 +44,22 @@ export class UniswapV3 extends Exchange {
   /**
    * inherited and overriden from Exchange
    */
-  public static async getQuote(quoteRequest: QuoteRequest): Promise<QuoteResult | undefined> {
+  public static async getQuote(quoteRequest: QuoteRequest): Promise<QuoteResults | undefined> {
     try {
-      const { result } = await publicClient.simulateContract(this.getQuoteContractCall(quoteRequest))
-      return this.getFormattedQuoteResult(quoteRequest, result)
+      const calls = this.getQuoteContractCalls(quoteRequest)
+      const results = await Promise.all(calls.map((call) => publicClient.simulateContract(call)))
+
+      const processQuote = (amount: bigint, result: any) =>
+        this.getFormattedQuoteResult({ ...quoteRequest, amount }, result)
+
+      const [regularQuote, smallQuote] = results.map((res, index) =>
+        processQuote(index === 0 ? quoteRequest.amount : quoteRequest.smallAmount, res.result)
+      )
+
+      return { regularQuote, smallQuote }
     } catch (error: any) {
-      // Let the function return undefined in case of an error
+      // consider more granular error handling here
+      return undefined
     }
   }
 
@@ -70,13 +79,20 @@ export class UniswapV3 extends Exchange {
   /**
    * inherited and overriden from Exchange
    */
-  public static getQuoteContractCall(quoteRequest: QuoteRequest): ContractFunctionParameters {
-    return {
-      address: CONTRACT_ADDRRESSES[quoteRequest.swapRoute.chainId].UNISWAPV3.quoter,
+  public static getQuoteContractCalls(quoteRequest: QuoteRequest): ContractFunctionParameters[] {
+    const regularCall = {
+      address: CONTRACT_ADDRRESSES[quoteRequest.swapRoute.chainId].UNISWAPV3.quoter as Address,
       abi: QUOTERV2_ABI,
       functionName: this._getQuoteFunctionName(quoteRequest),
       args: this._getQuoteFunctionParameters(quoteRequest),
     }
+
+    const smallCall = {
+      ...regularCall,
+      args: this._getQuoteFunctionParameters({ ...quoteRequest, amount: quoteRequest.smallAmount }),
+    }
+
+    return [regularCall, smallCall]
   }
 
   /**
@@ -88,21 +104,6 @@ export class UniswapV3 extends Exchange {
       functionName: this._getSwapFunctionName(quoteResult),
       args: this._getSwapFunctionParameters(quoteResult, recipient, slippage),
     })
-  }
-
-  /**
-   * Get the swap intent from a quote result
-   * @param quoteResult The quote result
-   * @param slippage The allowed slippage in basis points
-   * @returns The swap intent
-   */
-  public static getSwapIntent(quoteResult: QuoteResult, slippage: number): SwapIntent {
-    return {
-      tokenUserBuys: quoteResult.swapRoute.swapSteps[quoteResult.swapRoute.swapSteps.length - 1].tokenOut.address,
-      minAmountUserBuys: this._amountWithSlippage(quoteResult.amountOut, slippage, false),
-      tokenUserSells: quoteResult.swapRoute.swapSteps[0].tokenIn.address,
-      amountUserSells: quoteResult.amountIn,
-    }
   }
 
   /**
@@ -121,6 +122,10 @@ export class UniswapV3 extends Exchange {
         return quoteRequest.swapRoute.swapSteps.length === 1
           ? QuoteFunctionName.quoteExactOutputSingle
           : QuoteFunctionName.quoteExactOutput
+
+      case SwapType.WRAP:
+      case SwapType.UNWRAP:
+        throw new Error('Unwrap is not supported for Uniswap V3')
     }
   }
 
@@ -140,6 +145,10 @@ export class UniswapV3 extends Exchange {
         return quoteResult.swapRoute.swapSteps.length === 1
           ? SwapFunctionName.exactOutputSingle
           : SwapFunctionName.exactOutput
+
+      case SwapType.WRAP:
+      case SwapType.UNWRAP:
+        throw new Error('Unwrap is not supported for Uniswap V3')
     }
   }
 
@@ -329,16 +338,5 @@ export class UniswapV3 extends Exchange {
     }
 
     return encodePacked(types, values)
-  }
-
-  /**
-   * Compute the slippage amount
-   * @param amount The amount
-   * @param slippage The slippage in basis points
-   * @returns The slippage amount
-   */
-  protected static _amountWithSlippage(amount: bigint, slippage: number, positive: boolean): bigint {
-    const _slippage = (amount * BigInt(slippage)) / BigInt(10000)
-    return positive ? amount + _slippage : amount - _slippage
   }
 }

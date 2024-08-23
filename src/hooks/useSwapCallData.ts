@@ -6,7 +6,7 @@ import { Address } from 'viem'
 import { buildBaselineCallData, buildUserOperation, getExecutionEnvironment } from '@/core/atlas'
 import { calculateDeadlineBlockNumber } from '@/utils/settings'
 import { getAtlasGasSurcharge, getFeeData } from '@/utils/gasFee'
-import { SOLVER_GAS_ESTIMATE, SWAP_GAS_ESTIMATE } from '@/constants'
+import { SOLVER_GAS_ESTIMATE, SWAP_GAS_ESTIMATE, SwapType, WRAP_GAS_ESTIMATE } from '@/constants'
 import { BaseSwapService } from '@/services/baseSwap'
 
 export const useSwapCallData = (
@@ -17,6 +17,7 @@ export const useSwapCallData = (
   debouncedAmount: string,
   quoteResult: QuoteResult | null | undefined,
   isReadyForCallDataGeneration: boolean,
+  executionEnvironment: Address | null,
   provider: any,
   atlasAddress: string,
   dappAddress: string,
@@ -24,7 +25,7 @@ export const useSwapCallData = (
   config: any,
   chainId: number | undefined
 ) => {
-  const swapDataOptions: UseQueryOptions<SwapCallData, Error> = useMemo(
+  const swapDataOptions: UseQueryOptions<any, Error> = useMemo(
     () => ({
       queryKey: [
         ...keys({ address }).all,
@@ -34,7 +35,7 @@ export const useSwapCallData = (
         swapDirection,
         debouncedAmount,
       ],
-      queryFn: async (): Promise<any> => {
+      queryFn: async (): Promise<SwapCallData | null> => {
         if (
           !isReadyForCallDataGeneration ||
           !quoteResult ||
@@ -42,19 +43,14 @@ export const useSwapCallData = (
           !atlasAddress ||
           !dappAddress ||
           !address ||
-          !atlasVerificationAddress
+          !atlasVerificationAddress ||
+          !executionEnvironment
         ) {
           return null
         }
 
         const swapIntent = BaseSwapService.getInstance().getSwapIntent(quoteResult, config.slippage)
-        const executionEnvironment = await getExecutionEnvironment(
-          atlasAddress as Address,
-          address as Address,
-          dappAddress as Address,
-          provider
-        )
-
+        const { isFromNative } = quoteResult.swapRoute
         const baselineCall = await buildBaselineCallData(quoteResult, executionEnvironment, config.slippage)
 
         const block = await provider.getBlock('latest')
@@ -65,8 +61,19 @@ export const useSwapCallData = (
 
         const maxFeePerGas = feeData.maxFeePerGas * 2n
         const deadline = calculateDeadlineBlockNumber(config.deadline, block?.number ?? 0, chainId!)
-        const gas = SWAP_GAS_ESTIMATE + SOLVER_GAS_ESTIMATE
 
+        if (quoteResult.swapType === SwapType.WRAP || quoteResult.swapType === SwapType.UNWRAP) {
+          return {
+            type: 'wrap',
+            baselineCall,
+            minAmountOut: quoteResult.amountOut,
+            gasLimit: WRAP_GAS_ESTIMATE,
+            isSigned: false,
+            gasSurcharge: 0n,
+          }
+        }
+
+        const gas = SWAP_GAS_ESTIMATE + SOLVER_GAS_ESTIMATE
         const userOperation = await buildUserOperation(
           address,
           swapIntent,
@@ -77,20 +84,24 @@ export const useSwapCallData = (
           dappAddress,
           provider
         )
-        // fix incorrect from address in userOperation helper contract
-        // TODO: discuss with Atlas team
-        userOperation.setField('from', address)
+
+        if (isFromNative) {
+          userOperation.setField('value', swapIntent.amountUserSells)
+        }
 
         return {
+          type: 'swap',
           baselineCall,
           gasLimit: gas,
           userOperation,
+          minAmountOut: swapIntent.minAmountUserBuys,
           isSigned: false,
           gasSurcharge: getAtlasGasSurcharge(gas * maxFeePerGas),
         }
       },
       enabled: isReadyForCallDataGeneration && !!quoteResult,
-      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+      refetchOnWindowFocus: true,
     }),
     [
       address,
@@ -106,8 +117,9 @@ export const useSwapCallData = (
       atlasVerificationAddress,
       config,
       chainId,
+      executionEnvironment,
     ]
   )
 
-  return useQuery<any, Error>(swapDataOptions)
+  return useQuery<SwapCallData | null, Error>(swapDataOptions)
 }

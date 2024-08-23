@@ -1,10 +1,10 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import type { AppRoute } from '@/core/routes'
-import type { SwapRoute } from '@/types/swap'
-import type { TransactionHistoryStore, TransactionParams } from '@/types'
+import type { TransactionHistoryStore, TransactionParams, TransactionStatus } from '@/types/transactions'
 import { defaultValues } from '@/constants'
 import { AppConfig } from '@/types/config'
+import { AppNotification } from '@/types/notification'
 
 export interface AppConfigState {
   fromPrice?: string
@@ -14,10 +14,36 @@ export interface AppConfigState {
   config: AppConfig
 }
 
+// Separate interface for NotificationStore
+interface NotificationStore {
+  notifications: AppNotification[]
+  addNotification: (notification: AppNotification) => void
+  clearNotifications: () => void
+}
+
+// Updated TransactionStore interface
+interface TransactionStore {
+  transactions: TransactionHistoryStore
+  addTransaction: (transaction: TransactionParams) => void
+  updateTransaction: (
+    txHash: string,
+    updates: {
+      status?: TransactionStatus
+      toAmount?: string
+      boosted?: boolean
+      boostedAmount?: string
+    }
+  ) => void
+  clearTransactions: () => void
+}
+
 export const useAppStore = create<AppConfigState & { updateConfig: (newConfig: Partial<AppConfig>) => void }>()(
   persist(
     (set) => ({
       ...defaultValues,
+      config: {
+        ...defaultValues.config,
+      },
       updateConfig: (newConfig) =>
         set((state) => ({
           ...state,
@@ -28,12 +54,12 @@ export const useAppStore = create<AppConfigState & { updateConfig: (newConfig: P
         })),
     }),
     {
-      name: 'app-config-storage',
+      name: 'app.config.storage',
+      version: 1,
     }
   )
 )
 
-// The rest of your store definitions remain unchanged
 export interface AppRouter {
   history: {
     route: AppRoute
@@ -54,36 +80,27 @@ export const useAppRouterStore = create<AppRouter>((_) => ({
   ],
 }))
 
-export const usePersistStore = create(
-  persist<{
-    transactionsHistory?: TransactionHistoryStore[]
-  }>(
-    (_) => {
-      return {
-        transactionsHistory: [],
-      }
-    },
+// Persisted Transaction store
+export const useTransactionStore = create<TransactionStore>()(
+  persist(
+    (set) => ({
+      transactions: [],
+      addTransaction: (transaction: TransactionParams) =>
+        set((state) => ({
+          transactions: [...state.transactions, transaction],
+        })),
+      updateTransaction: (txHash: string, updates) =>
+        set((state) => ({
+          transactions: state.transactions.map((t) =>
+            t.txHash === txHash ? { ...t, ...updates, timestamp: Date.now() } : t
+          ),
+        })),
+      clearTransactions: () => set({ transactions: [] }),
+    }),
     {
-      name: 'atlas.history.store',
-    }
-  )
-)
-
-export const useSwapRoutePersistStore = create(
-  persist<{
-    swapRoute?: SwapRoute
-    destinationAddressHasBeenUpdated?: {
-      updated: boolean
-      filledFromWallet: boolean
-    }
-  }>(
-    (_) => {
-      return {
-        swapRoute: undefined,
-      }
-    },
-    {
-      name: 'atlas.swaproute.store',
+      name: 'app.transaction.store',
+      version: 1,
+      storage: createJSONStorage(() => localStorage),
     }
   )
 )

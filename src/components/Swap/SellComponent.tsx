@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { TokenBalance } from '@/components/TokenBalance/TokenBalance'
 import SellAmount from './SellAmount'
 import { useSwapStateContext } from '@/context/SwapStateContext'
@@ -13,14 +13,14 @@ const SellComponent: React.FC = () => {
   const {
     fromToken: sellToken,
     setFromToken: setSellToken,
+    toToken: buyToken,
     fromAmount: sellAmount,
     setFromAmount: setSellAmount,
     setSwapDirection,
+    isQuoteing,
   } = useSwapStateContext()
 
   const { address, chainId } = useAccount()
-  const [balance, setBalance] = useState<string>('0')
-
   const { tokens } = useCurrentTokenList()
 
   const {
@@ -44,27 +44,36 @@ const SellComponent: React.FC = () => {
   useEffect(() => {
     if (chainId && !sellToken && tokens.length > 0) {
       const defaultToken = tokens.find((token) => token.tags?.includes('default'))
-      if (defaultToken && defaultToken.chainId === chainId) {
+      if (defaultToken && defaultToken.chainId === chainId && defaultToken.address !== buyToken?.address) {
         setSellToken(defaultToken)
       }
     }
-  }, [chainId, sellToken, tokens, setSellToken])
+  }, [chainId, sellToken, tokens, setSellToken, buyToken])
 
-  useEffect(() => {
-    if (sellToken && !balanceLoading && !balanceError) {
-      setBalance(ethers.formatUnits(fetchedBalance ?? 0n, sellToken.decimals))
+  const balance = useMemo(() => {
+    if (sellToken && !balanceLoading && !balanceError && fetchedBalance !== undefined) {
+      return ethers.formatUnits(fetchedBalance, sellToken.decimals)
     }
+    return '0'
   }, [fetchedBalance, sellToken, balanceLoading, balanceError])
+
+  const handleSetMax = () => {
+    if (balance) {
+      setSellAmount(balance)
+      setSwapDirection('sell')
+    }
+  }
 
   return (
     <div className='input-card mb-0'>
       <div className='flex justify-between items-center mb-2 text-sm'>
         <span className='text-base-content'>Sell</span>
-        <div className='flex flex-col items-end'>
-          <h1 className='text-base-content'>
-            <span>Balance: </span>
-            <TokenBalance token={sellToken || undefined} toFixed={3} />
-          </h1>
+        <div className='flex text-base-content gap-0.5 items-center justify-center'>
+          <span>Balance: </span>
+          <TokenBalance token={sellToken || undefined} toFixed={3} />
+          <button className='max-button text-[15px]' onClick={handleSetMax}>
+            MAX
+          </button>
         </div>
       </div>
       <SellAmount
@@ -72,8 +81,8 @@ const SellComponent: React.FC = () => {
         setSellToken={setSellToken}
         sellAmount={sellAmount}
         setSellAmount={setSellAmount}
+        quoteLoading={isQuoteing}
         setSwapDirection={setSwapDirection}
-        balance={balance}
       />
       <div className='text-left mt-2 text-sm text-base-content h-5'>
         {usdValue !== null ? `$${usdValue.toFixed(2)}` : '\u00A0'}

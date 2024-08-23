@@ -11,7 +11,10 @@ import {
 
 export const FastlaneOnlineAbi = [
   {
-    inputs: [{ internalType: 'address', name: '_atlas', type: 'address' }],
+    inputs: [
+      { internalType: 'address', name: 'atlas', type: 'address' },
+      { internalType: 'address', name: 'protocolGuildWallet', type: 'address' },
+    ],
     stateMutability: 'nonpayable',
     type: 'constructor',
   },
@@ -55,12 +58,22 @@ export const FastlaneOnlineAbi = [
   { inputs: [], name: 'OnlyAtlas', type: 'error' },
   { inputs: [], name: 'OnlyGovernance', type: 'error' },
   { inputs: [], name: 'OuterHelpers_NotMadJustDisappointed', type: 'error' },
+  { inputs: [], name: 'SolverGateway_AddSolverOp_BidTooHigh', type: 'error' },
+  { inputs: [], name: 'SolverGateway_AddSolverOp_ScoreTooLow', type: 'error' },
   { inputs: [], name: 'SolverGateway_AddSolverOp_SimulationFail', type: 'error' },
   { inputs: [], name: 'SolverGateway_AddSolverOp_SolverMustBeSender', type: 'error' },
-  { inputs: [], name: 'SolverGateway_AddSolverOp_ValueTooLow', type: 'error' },
   { inputs: [], name: 'SolverGateway_RefundCongestionBuyIns_DeadlineNotPassed', type: 'error' },
   { inputs: [], name: 'Unauthorized', type: 'error' },
   { inputs: [], name: 'WrongPhase', type: 'error' },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: false, internalType: 'uint256', name: 'userMinAmountOut', type: 'uint256' },
+      { indexed: false, internalType: 'uint256', name: 'baselineAmountOut', type: 'uint256' },
+    ],
+    name: 'BaselineEstablished',
+    type: 'event',
+  },
   {
     anonymous: false,
     inputs: [
@@ -124,8 +137,8 @@ export const FastlaneOnlineAbi = [
   },
   {
     inputs: [],
-    name: 'METACALL_GAS_BUFFER',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    name: 'PROTOCOL_GUILD_WALLET',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function',
   },
@@ -140,61 +153,6 @@ export const FastlaneOnlineAbi = [
     inputs: [],
     name: 'SOURCE',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
-    name: 'S_aggCongestionBuyIn',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
-    name: 'S_congestionBuyIn',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
-    name: 'S_solverOpCache',
-    outputs: [
-      { internalType: 'address', name: 'from', type: 'address' },
-      { internalType: 'address', name: 'to', type: 'address' },
-      { internalType: 'uint256', name: 'value', type: 'uint256' },
-      { internalType: 'uint256', name: 'gas', type: 'uint256' },
-      { internalType: 'uint256', name: 'maxFeePerGas', type: 'uint256' },
-      { internalType: 'uint256', name: 'deadline', type: 'uint256' },
-      { internalType: 'address', name: 'solver', type: 'address' },
-      { internalType: 'address', name: 'control', type: 'address' },
-      { internalType: 'bytes32', name: 'userOpHash', type: 'bytes32' },
-      { internalType: 'address', name: 'bidToken', type: 'address' },
-      { internalType: 'uint256', name: 'bidAmount', type: 'uint256' },
-      { internalType: 'bytes', name: 'data', type: 'bytes' },
-      { internalType: 'bytes', name: 'signature', type: 'bytes' },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'bytes32', name: '', type: 'bytes32' },
-      { internalType: 'uint256', name: '', type: 'uint256' },
-    ],
-    name: 'S_solverOpHashes',
-    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
-    name: 'S_solverReputations',
-    outputs: [
-      { internalType: 'uint128', name: 'successCost', type: 'uint128' },
-      { internalType: 'uint128', name: 'failureCost', type: 'uint128' },
-    ],
     stateMutability: 'view',
     type: 'function',
   },
@@ -255,6 +213,13 @@ export const FastlaneOnlineAbi = [
     type: 'function',
   },
   {
+    inputs: [{ internalType: 'bytes32', name: 'userOpHash', type: 'bytes32' }],
+    name: 'aggCongestionBuyIn',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       { internalType: 'address', name: 'bidToken', type: 'address' },
       { internalType: 'uint256', name: 'bidAmount', type: 'uint256' },
@@ -292,6 +257,13 @@ export const FastlaneOnlineAbi = [
     name: 'baselineSwapTryCatcher',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'bytes32', name: 'solverOpHash', type: 'bytes32' }],
+    name: 'congestionBuyIn',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -502,6 +474,7 @@ export const FastlaneOnlineAbi = [
       { internalType: 'uint256', name: 'deadline', type: 'uint256' },
       { internalType: 'uint256', name: 'gas', type: 'uint256' },
       { internalType: 'uint256', name: 'maxFeePerGas', type: 'uint256' },
+      { internalType: 'uint256', name: 'msgValue', type: 'uint256' },
     ],
     name: 'getUserOpHash',
     outputs: [{ internalType: 'bytes32', name: 'userOpHash', type: 'bytes32' }],
@@ -535,6 +508,7 @@ export const FastlaneOnlineAbi = [
       { internalType: 'uint256', name: 'deadline', type: 'uint256' },
       { internalType: 'uint256', name: 'gas', type: 'uint256' },
       { internalType: 'uint256', name: 'maxFeePerGas', type: 'uint256' },
+      { internalType: 'uint256', name: 'msgValue', type: 'uint256' },
     ],
     name: 'getUserOperation',
     outputs: [
@@ -589,6 +563,7 @@ export const FastlaneOnlineAbi = [
       { internalType: 'uint256', name: 'deadline', type: 'uint256' },
       { internalType: 'uint256', name: 'gas', type: 'uint256' },
       { internalType: 'uint256', name: 'maxFeePerGas', type: 'uint256' },
+      { internalType: 'uint256', name: 'msgValue', type: 'uint256' },
     ],
     name: 'getUserOperationAndHash',
     outputs: [
@@ -784,6 +759,65 @@ export const FastlaneOnlineAbi = [
     inputs: [],
     name: 'requireSequentialUserNonces',
     outputs: [{ internalType: 'bool', name: 'isSequential', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'winningSolver', type: 'address' }],
+    name: 'setWinningSolver',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'bytes32', name: 'solverOpHash', type: 'bytes32' }],
+    name: 'solverOpCache',
+    outputs: [
+      {
+        components: [
+          { internalType: 'address', name: 'from', type: 'address' },
+          { internalType: 'address', name: 'to', type: 'address' },
+          { internalType: 'uint256', name: 'value', type: 'uint256' },
+          { internalType: 'uint256', name: 'gas', type: 'uint256' },
+          { internalType: 'uint256', name: 'maxFeePerGas', type: 'uint256' },
+          { internalType: 'uint256', name: 'deadline', type: 'uint256' },
+          { internalType: 'address', name: 'solver', type: 'address' },
+          { internalType: 'address', name: 'control', type: 'address' },
+          { internalType: 'bytes32', name: 'userOpHash', type: 'bytes32' },
+          { internalType: 'address', name: 'bidToken', type: 'address' },
+          { internalType: 'uint256', name: 'bidAmount', type: 'uint256' },
+          { internalType: 'bytes', name: 'data', type: 'bytes' },
+          { internalType: 'bytes', name: 'signature', type: 'bytes' },
+        ],
+        internalType: 'struct SolverOperation',
+        name: '',
+        type: 'tuple',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'bytes32', name: 'userOpHash', type: 'bytes32' }],
+    name: 'solverOpHashes',
+    outputs: [{ internalType: 'bytes32[]', name: '', type: 'bytes32[]' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'solver', type: 'address' }],
+    name: 'solverReputation',
+    outputs: [
+      {
+        components: [
+          { internalType: 'uint128', name: 'successCost', type: 'uint128' },
+          { internalType: 'uint128', name: 'failureCost', type: 'uint128' },
+        ],
+        internalType: 'struct Reputation',
+        name: '',
+        type: 'tuple',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
@@ -1021,8 +1055,17 @@ export const atlasAbi = [
   { inputs: [], name: 'PreOpsFail', type: 'error' },
   { inputs: [], name: 'PreOpsSimFail', type: 'error' },
   { inputs: [], name: 'PreSolverFailed', type: 'error' },
+  {
+    inputs: [
+      { internalType: 'uint8', name: 'bits', type: 'uint8' },
+      { internalType: 'uint256', name: 'value', type: 'uint256' },
+    ],
+    name: 'SafeCastOverflowedUintDowncast',
+    type: 'error',
+  },
   { inputs: [], name: 'SignatoryActive', type: 'error' },
   { inputs: [], name: 'SimulationPassed', type: 'error' },
+  { inputs: [], name: 'SimulatorBalanceTooLow', type: 'error' },
   { inputs: [], name: 'SolverMustReconcile', type: 'error' },
   { inputs: [], name: 'SolverOpReverted', type: 'error' },
   {
@@ -1291,7 +1334,7 @@ export const atlasAbi = [
       { internalType: 'uint32', name: 'lastAccessedBlock', type: 'uint32' },
       { internalType: 'uint24', name: 'auctionWins', type: 'uint24' },
       { internalType: 'uint24', name: 'auctionFails', type: 'uint24' },
-      { internalType: 'uint64', name: 'totalGasUsed', type: 'uint64' },
+      { internalType: 'uint64', name: 'totalGasValueUsed', type: 'uint64' },
     ],
     stateMutability: 'view',
     type: 'function',
@@ -1348,7 +1391,10 @@ export const atlasAbi = [
   },
   { inputs: [], name: 'contribute', outputs: [], stateMutability: 'payable', type: 'function' },
   {
-    inputs: [{ internalType: 'address', name: 'control', type: 'address' }],
+    inputs: [
+      { internalType: 'address', name: 'user', type: 'address' },
+      { internalType: 'address', name: 'control', type: 'address' },
+    ],
     name: 'createExecutionEnvironment',
     outputs: [{ internalType: 'address', name: 'executionEnvironment', type: 'address' }],
     stateMutability: 'nonpayable',
@@ -1432,6 +1478,7 @@ export const atlasAbi = [
       { internalType: 'address', name: 'executionEnvironment', type: 'address' },
       { internalType: 'address', name: 'bundler', type: 'address' },
       { internalType: 'bytes32', name: 'userOpHash', type: 'bytes32' },
+      { internalType: 'bool', name: 'isSimulation', type: 'bool' },
     ],
     name: 'execute',
     outputs: [
@@ -1757,9 +1804,11 @@ export const atlasVerificationAbi = [
   { inputs: [], name: 'AtlasLockActive', type: 'error' },
   { inputs: [], name: 'DAppNotEnabled', type: 'error' },
   { inputs: [], name: 'InvalidCaller', type: 'error' },
+  { inputs: [], name: 'InvalidShortString', type: 'error' },
   { inputs: [], name: 'InvalidSignatory', type: 'error' },
   { inputs: [], name: 'OnlyGovernance', type: 'error' },
   { inputs: [], name: 'SignatoryActive', type: 'error' },
+  { inputs: [{ internalType: 'string', name: 'str', type: 'string' }], name: 'StringTooLong', type: 'error' },
   {
     anonymous: false,
     inputs: [
@@ -1781,6 +1830,7 @@ export const atlasVerificationAbi = [
     name: 'DAppGovernanceChanged',
     type: 'event',
   },
+  { anonymous: false, inputs: [], name: 'EIP712DomainChanged', type: 'event' },
   {
     anonymous: false,
     inputs: [
@@ -1849,6 +1899,21 @@ export const atlasVerificationAbi = [
     name: 'disableDApp',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'eip712Domain',
+    outputs: [
+      { internalType: 'bytes1', name: 'fields', type: 'bytes1' },
+      { internalType: 'string', name: 'name', type: 'string' },
+      { internalType: 'string', name: 'version', type: 'string' },
+      { internalType: 'uint256', name: 'chainId', type: 'uint256' },
+      { internalType: 'address', name: 'verifyingContract', type: 'address' },
+      { internalType: 'bytes32', name: 'salt', type: 'bytes32' },
+      { internalType: 'uint256[]', name: 'extensions', type: 'uint256[]' },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {

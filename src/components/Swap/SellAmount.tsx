@@ -1,15 +1,14 @@
-import React, { ChangeEvent, useEffect, useState } from 'react'
-import TokenSelectModal from '../Modals/TokenSelectModal'
+import React from 'react'
 import { SwapDirection, Token } from '@/types'
+import TokenInputComponent from './TokenInputComponent'
 
 interface SellAmountProps {
   sellToken: Token | null
-  setSellToken: (token: Token) => void
+  setSellToken: (token: Token | null) => void
   sellAmount: string
   setSellAmount: (amount: string) => void
+  quoteLoading: boolean
   setSwapDirection: (direction: SwapDirection) => void
-  address?: `0x${string}`
-  balance: string
 }
 
 const SellAmount: React.FC<SellAmountProps> = ({
@@ -17,50 +16,19 @@ const SellAmount: React.FC<SellAmountProps> = ({
   setSellToken,
   sellAmount,
   setSellAmount,
-  balance,
+  quoteLoading,
   setSwapDirection,
 }) => {
-  const [currentBalance, setCurrentBalance] = useState<string>(balance)
-
-  useEffect(() => {
-    setCurrentBalance(balance)
-  }, [balance, sellToken])
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    // Ensure the input is valid (numbers and one decimal point)
-    if (/^\d*\.?\d*$/.test(value)) {
-      setSellAmount(value)
-      setSwapDirection('sell')
-    }
-  }
-
-  const handleSetMax = () => {
-    setSellAmount(currentBalance)
-    setSwapDirection('sell')
-  }
-
   return (
-    <div className='flex items-center space-x-2'>
-      <input
-        type='text'
-        value={sellAmount}
-        onChange={handleChange}
-        className='bg-theme text-neutral-content p-2 rounded-2xl flex-grow text-4xl w-full focus:outline-none'
-        placeholder='0'
-      />
-      {sellToken && parseFloat(currentBalance) > 0 && (
-        <button className='max-button btn-outline text-primary outline-none' onClick={handleSetMax}>
-          MAX
-        </button>
-      )}
-      <TokenSelectModal
-        selectedToken={sellToken}
-        onSelectToken={setSellToken}
-        defaultLabel='Select a token'
-        direction='sell'
-      />
-    </div>
+    <TokenInputComponent
+      token={sellToken}
+      setToken={setSellToken}
+      amount={sellAmount}
+      setAmount={setSellAmount}
+      quoteLoading={quoteLoading}
+      setSwapDirection={setSwapDirection}
+      direction='sell'
+    />
   )
 }
 

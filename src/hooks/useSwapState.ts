@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { QuoteResult, SwapCallData, SwapDirection, SwapResult, Token } from '@/types'
+import { QuoteResultWithPriceImpact, SwapCallData, SwapDirection, SwapMode, SwapResult, Token } from '@/types'
 import { useCurrentTokenList } from './useTokenList'
 import { useAccount } from 'wagmi'
 import { toBigInt } from '@/utils/format'
@@ -22,13 +22,17 @@ export interface SwapState {
   swapDirection: SwapDirection
 
   // Quote States
-  quote: QuoteResult | null
+  quote: QuoteResultWithPriceImpact | null
   isQuoteing: boolean
   allowQuoteUpdate: boolean
+
+  // New property
+  discardNextQuoteUpdate: boolean
 
   // Swap Data
   swapData: SwapCallData | null
   swapResult: SwapResult | null
+  swapMode: SwapMode | 'swap'
 
   // Allowance State
   hasSufficientAllowance: boolean
@@ -45,7 +49,7 @@ export interface SwapState {
   setFromAmount: (amount: string) => void
   setToAmount: (amount: string) => void
   setSwapDirection: (direction: SwapDirection) => void
-  setQuote: (quote: QuoteResult | null) => void
+  setQuote: (quote: QuoteResultWithPriceImpact | null) => void
   setIsQuoteing: (isQuoteing: boolean) => void
   setAllowQuoteUpdate: (allowQuoteUpdate: boolean) => void
   setSwapData: (data: SwapCallData | null) => void
@@ -55,6 +59,9 @@ export interface SwapState {
   setIsSigning: (isSigning: boolean) => void
   setHasUserOperationSignature: (hasUserOperationSignature: boolean) => void
   setSwapDataSigned: (isSigned: boolean) => void
+  resetSwapData: () => void
+  // New setter
+  setDiscardNextQuoteUpdate: (discard: boolean) => void
 
   // Actions
   swapTokens: () => void
@@ -69,7 +76,7 @@ export const useSwapState = (): SwapState => {
   // External hooks and derived values
   const { chainId, address: userAddress } = useAccount()
   const { tokens } = useCurrentTokenList()
-  const { atlasAddress: spenderAddress } = useFastLaneAddresses()
+  const { atlasAddress } = useFastLaneAddresses()
   const allowanceManager = useAllowanceManager()
 
   // Derived token values
@@ -92,9 +99,12 @@ export const useSwapState = (): SwapState => {
   const [swapDirection, setSwapDirection] = useState<SwapDirection>('sell')
 
   // Quote states
-  const [quote, setQuote] = useState<QuoteResult | null>(null)
+  const [quote, setQuote] = useState<QuoteResultWithPriceImpact | null>(null)
   const [isQuoteing, setIsQuoteing] = useState<boolean>(false)
   const [allowQuoteUpdate, setAllowQuoteUpdate] = useState<boolean>(true)
+
+  // New state for discarding next quote update
+  const [discardNextQuoteUpdate, setDiscardNextQuoteUpdate] = useState<boolean>(false)
 
   // Swap data and result
   const [swapData, setSwapData] = useState<SwapCallData | null>(null)
@@ -109,15 +119,45 @@ export const useSwapState = (): SwapState => {
   // Allowance state
   const [hasSufficientAllowance, setHasSufficientAllowance] = useState<boolean>(false)
 
+  const swapMode = useMemo(() => {
+    if (quote?.swapType === 'WRAP') {
+      return 'wrap'
+    } else if (quote?.swapType === 'UNWRAP') {
+      return 'unwrap'
+    }
+    return 'swap'
+  }, [quote?.swapType])
+
   useEffect(() => {
     const checkAllowance = async () => {
-      if (!fromToken || !userAddress || !spenderAddress || !debouncedFromAmount) {
+      if (!fromToken || !userAddress || !atlasAddress || !debouncedFromAmount || !quote) {
         setHasSufficientAllowance(false)
         return
       }
-      const requiredAmount = toBigInt(debouncedFromAmount, fromToken.decimals)
+
+      let spenderAddress: string
+      let tokenToCheck: Token
+
+      if (quote.swapType === 'WRAP') {
+        spenderAddress = quote.swapRoute.swapSteps[0].tokenOut.address
+        tokenToCheck = fromToken
+      } else if (quote.swapType === 'UNWRAP') {
+        spenderAddress = quote.swapRoute.swapSteps[0].tokenIn.address
+        tokenToCheck = toToken!
+      } else {
+        spenderAddress = atlasAddress
+        tokenToCheck = fromToken
+      }
+
+      // Skip allowance check for native token
+      if (tokenToCheck.address === nativeEvmTokenAddress) {
+        setHasSufficientAllowance(true)
+        return
+      }
+
+      const requiredAmount = toBigInt(debouncedFromAmount, tokenToCheck.decimals)
       const isAllowanceSufficient = await allowanceManager.isSufficientAllowance(
-        fromToken,
+        tokenToCheck,
         userAddress,
         spenderAddress,
         requiredAmount
@@ -128,9 +168,12 @@ export const useSwapState = (): SwapState => {
     checkAllowance()
   }, [
     fromToken,
+    toToken,
     userAddress,
-    spenderAddress,
+    atlasAddress,
+    quote,
     debouncedFromAmount,
+    allowanceManager,
     allowanceManager.isSufficientAllowance,
     allowanceManager.allowanceUpdateTrigger,
   ])
@@ -143,6 +186,15 @@ export const useSwapState = (): SwapState => {
     setQuote(null)
     setSwapData(null)
   }, [defaultToken])
+
+  const resetSwapData = useCallback(() => {
+    setQuote(null)
+    setIsQuoteing(false)
+    setSwapResult(null)
+    setIsSwapping(false)
+    setIsSigning(false)
+    setHasUserOperationSignature(false)
+  }, [])
 
   useEffect(() => {
     if (chainId && tokens.length > 0) {
@@ -170,9 +222,6 @@ export const useSwapState = (): SwapState => {
     const signature = swapData.userOperation.toStruct().signature
     const isValid = signature !== undefined && signature !== '0x'
     setHasUserOperationSignature(isValid)
-    if (isValid) {
-      console.log(signature)
-    }
   }, [swapData])
 
   useEffect(() => {
@@ -200,7 +249,7 @@ export const useSwapState = (): SwapState => {
     quote,
     isQuoteing,
     allowQuoteUpdate,
-
+    discardNextQuoteUpdate,
     // Approve State
     isApproving,
 
@@ -211,6 +260,7 @@ export const useSwapState = (): SwapState => {
     swapData,
     hasUserOperationSignature,
     swapResult,
+    swapMode,
 
     // Allowance State
     hasSufficientAllowance,
@@ -231,7 +281,8 @@ export const useSwapState = (): SwapState => {
     setIsSigning,
     setIsSwapping,
     setIsApproving,
-
+    resetSwapData,
+    setDiscardNextQuoteUpdate,
     // Actions
     swapTokens: handleSwapTokens,
     resetSelections,

@@ -35,8 +35,26 @@ input[type='number']::-webkit-inner-spin-button {
   hover:border-transparent hover:bg-secondary-content hover:text-neutral-content;
 }
 
+.btn-menu {
+  border: 1px solid !important;
+  @apply bg-transparent border-accent rounded-2xl text-neutral-content hover:shadow-accent-content !important;
+}
+
+.btn-clear-activity {
+  border: 1px solid !important;
+  height: 2.5rem /* 32px */;
+  min-height: 2rem /* 32px */;
+  @apply bg-transparent border-accent rounded-xl text-white hover:shadow-accent-content  !important;
+}
+
 .max-button {
-  @apply hover:bg-transparent hover:text-primary-content !important;
+  @apply px-[5px] bg-gradient-to-r from-primary-content via-primary-content to-secondary bg-clip-text text-transparent outline-none
+   hover:from-secondary hover:to-primary hover:bg-clip-text;
+}
+
+.btn-close-drawer {
+  @apply rounded-bl-2xl rounded-tl-2xl cursor-pointer opacity-60 py-6 pl-3.5 pr-7 h-full bg-transparent z-0 mr-0 text-gray-100
+  hover:bg-slate-400/[0.12] hover:-mr-2 hover:text-gray-300 transition-all duration-300 ease-in-out;
 }
 
 .input {
@@ -99,10 +117,49 @@ select {
 
 .expandable-content {
   max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease-in-out;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.4s ease-in-out,
+    opacity 0.25s ease-in-out,
+    visibility 0s 0.25s;
 }
 
 .expandable-content.expanded {
   max-height: 400px;
+  visibility: visible;
+  opacity: 1;
+  transition:
+    max-height 0.4s ease-in-out,
+    opacity 0.4s ease-in-out,
+    visibility 0s 0s;
+}
+
+.custom-tooltip::before {
+  background-color: transparent !important;
+  color: #a19898 !important;
+  border: 1px solid #706b6b !important;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  max-width: 20rem !important;
+  white-space: normal !important;
+}
+
+.custom-tooltip::after {
+  border-color: #706b6b transparent transparent transparent !important;
+}
+
+.logo-margins {
+  @apply mt-4 mb-12
+  md:mt-16 md:mb-12
+  xl:mt-0 xl:mb-5
+  2xl:mt-12 2xl:mb-12;
+}
+/* 2 xl screens */
+@media (min-width: 1300px) and (max-width: 1535px) {
+  .logo-margins {
+    @apply mt-9 mb-9;
+  }
 }

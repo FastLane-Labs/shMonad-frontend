@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import ModalWrapper from '@/components/Wrappers/ModalWrapper'
 import { useCurrentTokenList } from '@/hooks/useTokenList'
 import { useAccount } from 'wagmi'
-import { Token } from '@/types'
+import { Token, TokenWithBalance } from '@/types'
 import { useBalances } from '@/hooks/useBalances'
 import { useSwapStateContext } from '@/context/SwapStateContext'
 import TokenItem from '@/components/TokenItem/TokenItem'
@@ -18,8 +18,6 @@ interface TokenSelectModalProps {
   defaultLabel: string
 }
 
-type TokenWithBalance = Token & { balance: bigint; formattedBalance: string }
-
 const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   selectedToken,
   onSelectToken,
@@ -30,7 +28,18 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   const { tokens, loading, error } = useCurrentTokenList()
   const [searchTerm, setSearchTerm] = useState('')
   const { address } = useAccount()
-  const { fromToken, toToken, fromAmount, toAmount, setFromAmount, setToAmount } = useSwapStateContext()
+  const {
+    fromToken,
+    toToken,
+    fromAmount,
+    toAmount,
+    setFromAmount,
+    setToAmount,
+    setFromToken,
+    setToToken,
+    resetSwapData,
+    setDiscardNextQuoteUpdate,
+  } = useSwapStateContext()
 
   const balancesQuery = useBalances({
     tokens: tokens,
@@ -46,34 +55,32 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
 
   const tokensWithBalances: TokenWithBalance[] = tokens.map((token, index) => ({
     ...token,
-    balance: balancesQuery.data && balancesQuery.data.length > 0 ? balancesQuery.data[index] : 0n,
+    balance: balancesQuery.data && balancesQuery.data.length > 0 ? balancesQuery.data[index].toString() : '0',
     formattedBalance:
       balancesQuery.data && balancesQuery.data.length > 0 ? getFormattedBalance(balancesQuery.data[index], token) : '0',
   }))
 
-  const filteredTokensWithBalances = tokensWithBalances.filter((token) => {
-    if (direction === 'sell' && toToken && token.address.toLowerCase() === toToken.address.toLowerCase()) {
-      return false
-    }
-    if (direction === 'buy' && fromToken && token.address.toLowerCase() === fromToken.address.toLowerCase()) {
-      return false
-    }
-    return (
+  const filteredTokensWithBalances = tokensWithBalances.filter(
+    (token) =>
       token.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
       token.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+  )
+
+  // Sort tokens by balance
+  const sortedTokensWithBalances = filteredTokensWithBalances.sort((a, b) => {
+    const balanceA = BigInt(a.balance)
+    const balanceB = BigInt(b.balance)
+    return balanceB > balanceA ? 1 : balanceB < balanceA ? -1 : 0
   })
 
-  const sortedTokensWithBalances = filteredTokensWithBalances.sort((a, b) => Number(b.balance) - Number(a.balance))
-
   const popularTokens = tokensWithBalances.filter((token) => token.tags?.includes('popular'))
-  const tokensWithUserBalances = sortedTokensWithBalances.filter((token) => token.balance > 0n)
-  const remainingTokens = sortedTokensWithBalances.filter((token) => token.balance === 0n)
+  const tokensWithUserBalances = sortedTokensWithBalances.filter((token) => BigInt(token.balance) > 0n)
+  const remainingTokens = sortedTokensWithBalances.filter((token) => BigInt(token.balance) === 0n)
 
   useEffect(() => {
     if ((balancesQuery.error || balancesQuery.data === undefined) && !hasAttemptedRefetch) {
       balancesQuery.refetch({ cancelRefetch: true })
-      setHasAttemptedRefetch(true) // Mark refetch attempt
+      setHasAttemptedRefetch(true)
     }
   }, [balancesQuery, balancesQuery.error, balancesQuery.data, hasAttemptedRefetch])
 
@@ -85,16 +92,37 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
 
   const handleSelect = (token: Token) => {
     if (direction === 'sell') {
-      if (fromToken && fromAmount && fromAmount !== '') {
-        const adjustedAmount = adjustAmount(fromAmount, fromToken.decimals, token.decimals)
-        setFromAmount(adjustedAmount)
+      if (token.address === toToken?.address) {
+        // If selected sell token is the same as current buy token
+        setToToken(null)
+        setToAmount('')
+        setFromAmount('')
+        resetSwapData()
+      } else {
+        if (fromToken && fromAmount && fromAmount !== '') {
+          // Adjust amount if there's an existing fromAmount
+          const adjustedAmount = adjustAmount(fromAmount, fromToken.decimals, token.decimals)
+          setFromAmount(adjustedAmount)
+        }
+        setFromToken(token)
       }
     } else if (direction === 'buy') {
-      if (toToken && toAmount && toAmount !== '') {
-        const adjustedAmount = adjustAmount(toAmount, toToken.decimals, token.decimals)
-        setToAmount(adjustedAmount)
+      if (token.address === fromToken?.address) {
+        // If selected buy token is the same as current sell token
+        setFromToken(null)
+        setFromAmount('')
+        setToAmount('')
+        resetSwapData()
+      } else {
+        if (toToken && toAmount && toAmount !== '') {
+          // Adjust amount if there's an existing toAmount
+          const adjustedAmount = adjustAmount(toAmount, toToken.decimals, token.decimals)
+          setToAmount(adjustedAmount)
+        }
+        setToToken(token)
       }
     }
+    setDiscardNextQuoteUpdate(true)
     onSelectToken(token)
     setIsOpen(false)
   }
@@ -126,7 +154,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
       <ModalWrapper
         isVisible={isOpen}
         onClose={() => setIsOpen(false)}
-        style={{ maxHeight: '90vh', minHeight: '90vh', paddingBottom: '0px' }}>
+        style={{ maxHeight: '90vh', minHeight: '90vh', paddingBottom: '0px', overflow: 'hidden' }}>
         <div className='h-fit'>
           <h2 className='text-2xl font-bold my-4 text-center'>Select a token</h2>
           <div className='relative w-full mb-4'>

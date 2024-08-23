@@ -20,13 +20,14 @@ export async function buildBaselineCallData(
   recipient: Address,
   slippage: number
 ): Promise<BaselineCall> {
-  const exchangeRouter = getExchangeRouter(quoteResult.swapRoute.chainId, quoteResult.swapRoute.exchange)
+  const { chainId, exchange, isFromNative } = quoteResult.swapRoute
+  const exchangeRouter = getExchangeRouter(chainId, exchange)
   const calldata = baseSwapService.getSwapCalldataFromQuoteResult(quoteResult, recipient, slippage)
 
   return {
     to: exchangeRouter,
     data: calldata,
-    value: 0n,
+    value: isFromNative ? quoteResult.amountIn : 0n, // If the user is swapping from ETH, no need to send ETH
   }
 }
 
@@ -55,7 +56,7 @@ export async function buildUserOperation(
   const fastlaneOnline = new ethers.Contract(fastlaneOnlineAddress, FastlaneOnlineAbi, provider)
 
   const userOp = await fastlaneOnline
-    .getUserOperation(swapper, swapIntent, baselineCall, deadline, gas, maxFeePerGas)
+    .getUserOperation(swapper, swapIntent, baselineCall, deadline, gas, maxFeePerGas, baselineCall.value)
     .catch((error) => {
       console.error('Error getting user operation:', error)
       throw error

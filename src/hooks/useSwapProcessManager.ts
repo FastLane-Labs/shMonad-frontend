@@ -8,6 +8,8 @@ import { useFastLaneAddresses } from './useFastLaneAddresses'
 import { useAppStore } from '@/store/useAppStore'
 import { useBaselineQuote } from './useBaselineQuote'
 import { useSwapCallData } from './useSwapCallData'
+import { useExecutionEnvironment } from './useExecutionEnvironment'
+import { Address } from 'viem'
 
 export const useSwapProcessManager = () => {
   const {
@@ -24,11 +26,18 @@ export const useSwapProcessManager = () => {
     isSwapping,
     isSigning,
     allowQuoteUpdate,
+    discardNextQuoteUpdate,
+    setDiscardNextQuoteUpdate,
   } = useSwapStateContext()
   const { address, chainId } = useAccount()
   const { provider } = useEthersProviderContext()
   const { atlasAddress, dappAddress, atlasVerificationAddress } = useFastLaneAddresses()
   const { config } = useAppStore()
+  const { data: executionEnvironment } = useExecutionEnvironment({
+    atlasAddress: atlasAddress as Address,
+    userAddress: address as Address,
+    dAppControlAddress: dappAddress as Address,
+  })
 
   const debouncedAmount = useDebounce(swapDirection === 'sell' ? fromAmount : toAmount, 500)
 
@@ -59,6 +68,7 @@ export const useSwapProcessManager = () => {
     debouncedAmount,
     quoteResult,
     isReadyForCallDataGeneration,
+    executionEnvironment as Address,
     provider,
     atlasAddress,
     dappAddress,
@@ -68,31 +78,56 @@ export const useSwapProcessManager = () => {
   )
 
   const updateQuoteLoading = useCallback(() => {
-    console.log('isQuoteReady', isQuoteReady)
-    console.log('quoteLoading', quoteLoading)
     setIsQuoteing(isQuoteReady && quoteLoading)
   }, [isQuoteReady, quoteLoading, setIsQuoteing])
 
   const updateQuoteResult = useCallback(() => {
     if (quoteResult && fromToken && toToken) {
-      setQuote(quoteResult)
-      if (swapDirection === 'sell') {
-        setToAmount(formatBalance(quoteResult.amountOut, toToken.decimals))
+      if (discardNextQuoteUpdate) {
+        // Discard this update and reset the flag
+        setDiscardNextQuoteUpdate(false)
+        // Reset quote and amounts
+        setQuote(null)
+        if (swapDirection === 'sell') {
+          setToAmount('')
+        } else {
+          setFromAmount('')
+        }
       } else {
-        setFromAmount(formatBalance(quoteResult.amountIn, fromToken.decimals))
+        // Process the quote normally
+        setQuote(quoteResult)
+        if (swapDirection === 'sell') {
+          setToAmount(formatBalance(quoteResult.amountOut, toToken.decimals))
+        } else {
+          setFromAmount(formatBalance(quoteResult.amountIn, fromToken.decimals))
+        }
       }
     } else if (quoteError) {
       console.error('Error fetching quote:', quoteError)
       setIsQuoteing(false)
+      setQuote(null)
       if (fromToken && toToken) {
         if (swapDirection === 'sell') {
-          setToAmount(formatBalance(0n, toToken.decimals))
+          setToAmount('')
         } else {
-          setFromAmount(formatBalance(0n, fromToken.decimals))
+          setFromAmount('')
         }
       }
     }
-  }, [quoteResult, quoteError, fromToken, toToken, swapDirection, setToAmount, setFromAmount, setIsQuoteing, setQuote])
+    // We don't reset discardNextQuoteUpdate here, as it's only reset when actually discarding a quote
+  }, [
+    quoteResult,
+    quoteError,
+    fromToken,
+    toToken,
+    swapDirection,
+    setToAmount,
+    setFromAmount,
+    setIsQuoteing,
+    setQuote,
+    discardNextQuoteUpdate,
+    setDiscardNextQuoteUpdate,
+  ])
 
   const updateSwapData = useCallback(() => {
     if (swapCallData) {
@@ -105,7 +140,7 @@ export const useSwapProcessManager = () => {
 
   useEffect(() => {
     updateQuoteLoading()
-  }, [updateQuoteLoading])
+  }, [updateQuoteLoading, swapDataLoading])
 
   useEffect(() => {
     updateQuoteResult()
