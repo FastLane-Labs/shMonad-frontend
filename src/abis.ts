@@ -11,7 +11,10 @@ import {
 
 export const FastlaneOnlineAbi = [
   {
-    inputs: [{ internalType: 'address', name: '_atlas', type: 'address' }],
+    inputs: [
+      { internalType: 'address', name: 'atlas', type: 'address' },
+      { internalType: 'address', name: 'protocolGuildWallet', type: 'address' },
+    ],
     stateMutability: 'nonpayable',
     type: 'constructor',
   },
@@ -56,9 +59,9 @@ export const FastlaneOnlineAbi = [
   { inputs: [], name: 'OnlyGovernance', type: 'error' },
   { inputs: [], name: 'OuterHelpers_NotMadJustDisappointed', type: 'error' },
   { inputs: [], name: 'SolverGateway_AddSolverOp_BidTooHigh', type: 'error' },
+  { inputs: [], name: 'SolverGateway_AddSolverOp_ScoreTooLow', type: 'error' },
   { inputs: [], name: 'SolverGateway_AddSolverOp_SimulationFail', type: 'error' },
   { inputs: [], name: 'SolverGateway_AddSolverOp_SolverMustBeSender', type: 'error' },
-  { inputs: [], name: 'SolverGateway_AddSolverOp_ValueTooLow', type: 'error' },
   { inputs: [], name: 'SolverGateway_RefundCongestionBuyIns_DeadlineNotPassed', type: 'error' },
   { inputs: [], name: 'Unauthorized', type: 'error' },
   { inputs: [], name: 'WrongPhase', type: 'error' },
@@ -134,8 +137,8 @@ export const FastlaneOnlineAbi = [
   },
   {
     inputs: [],
-    name: 'METACALL_GAS_BUFFER',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    name: 'PROTOCOL_GUILD_WALLET',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function',
   },
@@ -1052,6 +1055,14 @@ export const atlasAbi = [
   { inputs: [], name: 'PreOpsFail', type: 'error' },
   { inputs: [], name: 'PreOpsSimFail', type: 'error' },
   { inputs: [], name: 'PreSolverFailed', type: 'error' },
+  {
+    inputs: [
+      { internalType: 'uint8', name: 'bits', type: 'uint8' },
+      { internalType: 'uint256', name: 'value', type: 'uint256' },
+    ],
+    name: 'SafeCastOverflowedUintDowncast',
+    type: 'error',
+  },
   { inputs: [], name: 'SignatoryActive', type: 'error' },
   { inputs: [], name: 'SimulationPassed', type: 'error' },
   { inputs: [], name: 'SimulatorBalanceTooLow', type: 'error' },
@@ -1793,9 +1804,11 @@ export const atlasVerificationAbi = [
   { inputs: [], name: 'AtlasLockActive', type: 'error' },
   { inputs: [], name: 'DAppNotEnabled', type: 'error' },
   { inputs: [], name: 'InvalidCaller', type: 'error' },
+  { inputs: [], name: 'InvalidShortString', type: 'error' },
   { inputs: [], name: 'InvalidSignatory', type: 'error' },
   { inputs: [], name: 'OnlyGovernance', type: 'error' },
   { inputs: [], name: 'SignatoryActive', type: 'error' },
+  { inputs: [{ internalType: 'string', name: 'str', type: 'string' }], name: 'StringTooLong', type: 'error' },
   {
     anonymous: false,
     inputs: [
@@ -1817,6 +1830,7 @@ export const atlasVerificationAbi = [
     name: 'DAppGovernanceChanged',
     type: 'event',
   },
+  { anonymous: false, inputs: [], name: 'EIP712DomainChanged', type: 'event' },
   {
     anonymous: false,
     inputs: [
@@ -1885,6 +1899,21 @@ export const atlasVerificationAbi = [
     name: 'disableDApp',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'eip712Domain',
+    outputs: [
+      { internalType: 'bytes1', name: 'fields', type: 'bytes1' },
+      { internalType: 'string', name: 'name', type: 'string' },
+      { internalType: 'string', name: 'version', type: 'string' },
+      { internalType: 'uint256', name: 'chainId', type: 'uint256' },
+      { internalType: 'address', name: 'verifyingContract', type: 'address' },
+      { internalType: 'bytes32', name: 'salt', type: 'bytes32' },
+      { internalType: 'uint256[]', name: 'extensions', type: 'uint256[]' },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
