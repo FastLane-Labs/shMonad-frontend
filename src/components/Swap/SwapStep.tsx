@@ -8,7 +8,6 @@ import UnknownToken from '@/assets/svg/unknownToken.svg'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Confetti from 'react-confetti'
-import { useWindowSize } from 'react-use'
 import { calculateExchangeRate } from '@/utils/exchangeRate'
 import { useAppStore } from '@/store/useAppStore'
 import { capitalize } from '@/utils/helpers/formatTools'
@@ -359,7 +358,7 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
             {isBoosted && swapResult?.transaction.boostedAmount && (
               <div className='text-sm text-center'>
                 <h1 className='text-4xl font-medium bg-gradient-to-br from-primary-content to-secondary bg-clip-text text-transparent outline-none'>
-                  {swapResult.transaction.boostedAmount} {toToken?.symbol}
+                  {formatUnits(swapResult.transaction.boostedAmount, toToken?.decimals)} {toToken?.symbol}
                 </h1>
                 <p className='gray-text'>Boosted amount</p>
               </div>
