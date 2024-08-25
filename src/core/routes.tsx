@@ -48,7 +48,7 @@ export const FastlaneApp: React.FC = () => {
   return (
     <div
       id='fastlane-widget'
-      className='flex-grow h-full min-h-full mx-auto max-w-3xl'
+      className='flex-grow h-full min-h-full mx-auto max-w-3xl px-2 md:px-0'
       style={{ width: '100%', minHeight: '400px' }}>
       <div className='fastlane-container'>
         <AppRoutes />
