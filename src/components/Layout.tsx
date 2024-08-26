@@ -11,9 +11,7 @@ export function Layout(props: PropsWithChildren) {
         backgroundSize: '200px 100px',
         backgroundPosition: 'center',
       }}>
-      <Header />
-      <main className='flex-grow px-4 container max-w-3xl mx-auto'>{props.children}</main>
-      <Footer />
+      <main className='flex flex-grow h-full flex-col'>{props.children}</main>
     </div>
   )
 }
