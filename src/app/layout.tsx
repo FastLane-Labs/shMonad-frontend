@@ -43,7 +43,7 @@ export default function RootLayout(props: PropsWithChildren) {
           name='twitter:description'
           content='Rocketboost Swaps are powered by the DRFQ Atlas module built by FastLane Labs.'
         />
-        <meta name='twitter:image' content='https://rocketboost.me/og/rb-beta.png' />
+        <meta property='og:image' content='https://blocked-custom-page.vercel.app/rocketboost-beta-og.png' />
         <meta property='og:title' content='Rocketboost' />
         <meta
           property='og:description'
@@ -51,7 +51,7 @@ export default function RootLayout(props: PropsWithChildren) {
         />
         <meta property='og:type' content='website' />
         <meta property='og:url' content='https://rocketboost.me' />
-        <meta property='og:image' content='https://rocketboost.me/og/rb-beta.png' />
+        <meta property='og:image' content='https://blocked-custom-page.vercel.app/rocketboost-beta-og.png' />
         <meta property='og:image:alt' content='Rocketboost beta' />
         <meta property='og:site_name' content='Rocketboost' />
         <meta property='og:locale' content='en_US' />
