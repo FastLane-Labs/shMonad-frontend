@@ -19,7 +19,7 @@ jobs:
       - name: Download the SDN file
         run: |
           mkdir ofac_data
-          curl -L -o ./ofac_data/sdn.xml https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.XML
+          curl -L -o ./ofac_data/sdn.xml https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.XML -v
       - name: Generate OFAC list
         run: |
           python3 scripts/ofac_sdn.py ./ofac_data/sdn.xml ./ofac_data/ofac_sdn.json
