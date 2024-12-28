@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'main'
+      - 'oface-update-**'
   pull_request:
     branches:
       - '**'
