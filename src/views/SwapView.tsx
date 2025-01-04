@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import FlipButton from '@/components/Buttons/FlipButton'
 import SettingsButton from '@/components/Buttons/SettingsButton'
 import SwapButton from '@/components/Buttons/SwapButton'
@@ -21,9 +21,11 @@ const SwapView: React.FC = () => {
         className='relative rounded-3xl bg-base-200/30'
         style={{ boxShadow: 'rgba(241, 32, 116, .2) 0px 5px 90px 4px' }}>
         <div className='gradient-bg relative max-w-md mx-auto p-4 rounded-3xl border border-accent'>
-          <div className='flex justify-between items-center mb-2'>
-            <div>
-              <button className='btn btn-menu'>Swap</button>
+          <div className='flex justify-between items-center mb-2 space-x-2'>
+            <div className='flex w-full space-x-2'>
+              <button className='btn btn-menu !w-2/5'>Mint</button>
+              <button className='btn btn-menu !w-2/5'>Bond / Unbond</button>
+              
             </div>
             <SettingsButton setIsSettingsModalVisible={setIsSettingsModalVisible} />
           </div>
