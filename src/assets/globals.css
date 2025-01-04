@@ -77,7 +77,7 @@ select {
 }
 
 .input-card {
-  @apply bg-theme p-4 rounded-2xl border-accent-content hover:border-accent border;
+  @apply bg-neutral p-4 rounded-2xl border-accent-content hover:border-accent border;
 }
 
 .modal-box {

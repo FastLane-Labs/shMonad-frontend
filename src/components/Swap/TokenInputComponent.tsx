@@ -47,7 +47,7 @@ const TokenInputComponent: React.FC<TokenInputComponentProps> = ({
           type='text'
           value={amount}
           onChange={handleChange}
-          className={`bg-theme text-neutral-content p-2 rounded-xl flex-grow text-4xl w-full focus:outline-none ${
+          className={`bg-neutral text-neutral-content p-2 rounded-xl flex-grow text-4xl w-full focus:outline-none ${
             disabled ? 'opacity-50 cursor-not-allowed' : ''
           }`}
           placeholder='0'
