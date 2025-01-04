@@ -21,7 +21,7 @@ const ThemeToggle = () => {
       document.documentElement.setAttribute('data-theme', 'shmonad') // here
       localStorage.setItem('theme', 'bumblebee')
     } else {
-      document.documentElement.setAttribute('data-theme', 'night')
+      document.documentElement.setAttribute('data-theme', 'shmonad2')
       localStorage.setItem('theme', 'dark')
     }
     setIsDarkMode(!isDarkMode)
