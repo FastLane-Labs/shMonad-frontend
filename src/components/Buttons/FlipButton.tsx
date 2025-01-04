@@ -40,7 +40,7 @@ const FlipButton: React.FC = () => {
     <div className='relative flex justify-center mb-1'>
       <button
         onClick={handleSwapArrow}
-        className='absolute bg-gradient-to-br from-primary to-secondary from-35% text-white border-none p-[0.3rem] rounded-lg -top-3
+        className='absolute bg-gradient-to-br from-primary to-[#9333ea] from-35% text-white border-none p-[0.3rem] rounded-lg -top-3
           bg-[length:150%_150%] bg-[position:0_100%] hover:bg-[position:15%_15%] transition-all duration-500 ease-in-out'
         disabled={(!sellToken && !buyToken) || isQuoteing}>
         <svg

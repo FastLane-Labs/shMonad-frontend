@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const ThemeToggle = () => {
   const [isDarkMode, setIsDarkMode] = useState(true)
@@ -18,10 +18,10 @@ const ThemeToggle = () => {
 
   const toggleTheme = () => {
     if (isDarkMode) {
-      document.documentElement.setAttribute('data-theme', 'bumblebee')
+      document.documentElement.setAttribute('data-theme', 'shmonad') // here
       localStorage.setItem('theme', 'bumblebee')
     } else {
-      document.documentElement.setAttribute('data-theme', 'dark')
+      document.documentElement.setAttribute('data-theme', 'night')
       localStorage.setItem('theme', 'dark')
     }
     setIsDarkMode(!isDarkMode)
