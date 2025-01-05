@@ -8,6 +8,7 @@ import SellComponent from '@/components/Swap/SellComponent'
 import BackgroundGradient from '@/components/Theme/BackgroundGradient'
 import { useHandleSwap } from '@/hooks/useHandleSwap'
 import { useSwapProcessManager } from '@/hooks/useSwapProcessManager'
+import WalletBalances from '@/components/WalletBalances/WalletBalances'
 
 const SwapView: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
@@ -17,21 +18,22 @@ const SwapView: React.FC = () => {
   return (
     <div className='relative max-w-md mx-auto'>
       <BackgroundGradient />
+      <WalletBalances />
       <div
         className='relative rounded-3xl bg-base-200/30'
         style={{ boxShadow: 'rgba(241, 32, 116, .2) 0px 5px 90px 4px' }}>
         <div className='gradient-bg relative max-w-md mx-auto p-4 rounded-3xl border border-accent'>
-          <div className='flex justify-between items-center mb-2 space-x-2'>
+          {/* <div className='flex justify-between items-center mb-2 space-x-2'>
             <div className='flex w-full space-x-2'>
               <button className='btn btn-menu !w-2/5'>Mint</button>
               <button className='btn btn-menu !w-2/5'>Bond / Unbond</button>
               
             </div>
             <SettingsButton setIsSettingsModalVisible={setIsSettingsModalVisible} />
-          </div>
+          </div> */}
           <SellComponent />
-          <FlipButton />
-          <BuyComponent />
+          {/* <FlipButton /> */}
+          {/* <BuyComponent /> */}
           <SwapButton handleSwap={handleSwap} isLoading={quoteLoading} />
           <SettingsModal isVisible={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
         </div>
