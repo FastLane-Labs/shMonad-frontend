@@ -9,7 +9,7 @@ const myCustomTheme: Theme = {
     actionButtonSecondaryBackground: 'hsl(0, 0%, 100%)',
     closeButton: 'hsl(226, 11%, 64%)',
     closeButtonBackground: 'hsl(228, 5%, 18%)',
-    connectButtonBackground: '#1a1b1f', // Navbar Buttons: Dark Gray
+    connectButtonBackground: 'rgba(13, 14, 21, 0.5)', // Navbar Buttons: Dark Gray
     connectButtonBackgroundError: 'hsl(360,100%,64%)',
     connectButtonInnerBackground: 'hsl(225, 4%, 21%)',
     connectButtonText: 'hsl(0, 0%, 100%)',
@@ -37,13 +37,13 @@ const myCustomTheme: Theme = {
   },
   radii: {
     actionButton: '9999px',
-    connectButton: '12px',
+    connectButton: '14px',
     menuButton: '12px',
     modal: '24px',
     modalMobile: '24px',
   },
   shadows: {
-    connectButton: '0px 8px 32px rgba(0, 0, 0, 0.32)',
+    connectButton: '',
     dialog: '0px 8px 32px rgba(0, 0, 0, 0.32)',
     profileDetailsAction: '0px 2px 6px rgba(37, 41, 46, 0.04)',
     selectedOption: '0px 2px 6px rgba(0, 0, 0, 0.24)',
