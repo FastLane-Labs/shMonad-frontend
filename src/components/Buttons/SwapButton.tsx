@@ -190,8 +190,13 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
 
   return (
     <>
-      <button className='btn' onClick={handleButtonClick} disabled={isDisabled}>
-        {getButtonText()}
+      <button
+        className='btn'
+        onClick={handleButtonClick}
+        // disabled={isDisabled}
+      >
+        {/* {getButtonText()} */}
+        Mint
       </button>
       <SwapDetails />
       <SwapModal
