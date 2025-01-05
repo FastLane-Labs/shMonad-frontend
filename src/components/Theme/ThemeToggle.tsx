@@ -9,20 +9,20 @@ const ThemeToggle = () => {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme) {
       document.documentElement.setAttribute('data-theme', savedTheme)
-      setIsDarkMode(savedTheme !== 'bumblebee')
+      setIsDarkMode(savedTheme !== 'shmonad')
     } else {
       // Default to dark mode
-      document.documentElement.setAttribute('data-theme', 'dark')
+      document.documentElement.setAttribute('data-theme', 'shmonad')
     }
   }, [])
 
   const toggleTheme = () => {
     if (isDarkMode) {
       document.documentElement.setAttribute('data-theme', 'shmonad') // here
-      localStorage.setItem('theme', 'bumblebee')
+      localStorage.setItem('theme', 'shmonad')
     } else {
       document.documentElement.setAttribute('data-theme', 'shmonad2')
-      localStorage.setItem('theme', 'dark')
+      localStorage.setItem('theme', 'shmonad')
     }
     setIsDarkMode(!isDarkMode)
   }

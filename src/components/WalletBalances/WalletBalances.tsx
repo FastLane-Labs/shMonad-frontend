@@ -81,11 +81,11 @@ const WalletBalances: React.FC = () => {
           <SettingsButton setIsSettingsModalVisible={setIsSettingsModalVisible} />
         </div>
         <SettingsModal isVisible={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
-        <div className=''>
+        <div className='text-white'>
           <div className='pt-2 flex justify-between item-center'>
             <div>
               <span className='text-xs'>Available to Mint: </span>
-              <div className='text-lg font-extrabold'>
+              <div className='text-lg font-bold'>
                 <TokenBalance token={sellToken || undefined} toFixed={3} />
                 <span> MONAD</span>
               </div>
@@ -97,7 +97,7 @@ const WalletBalances: React.FC = () => {
 
           <div className='pt-2'>
             <span className='text-xs'>SHMONAD Balance: </span>
-            <div className='text-lg font-extrabold'>
+            <div className='text-lg font-bold'>
               <TokenBalance token={sellToken || undefined} toFixed={3} />
               <span> SHMONAD</span>
             </div>
