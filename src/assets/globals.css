@@ -48,7 +48,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .max-button {
-  @apply px-[5px] bg-gradient-to-r from-primary-content via-primary-content to-secondary bg-clip-text text-transparent outline-none
+  @apply px-[5px] bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent outline-none
    hover:from-secondary hover:to-primary hover:bg-clip-text;
 }
 
@@ -119,7 +119,6 @@ select {
   width: calc(90%);
   @apply border-t border-gray-400 ml-5;
 }
-
 
 .expandable-content {
   max-height: 0;

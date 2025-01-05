@@ -6,38 +6,38 @@ const config: Config = {
   plugins: [require('@tailwindcss/typography'), require('daisyui')],
   daisyui: {
     themes: [
-      "synthwave", // wacky
-      "night", // similar to sunset
-      "coffee", // I like the neutrals. 2nd favorite
-      "dim", // I like the neutral color from this
-      "sunset", // might be my favorite
+      'synthwave', // wacky
+      'night', // similar to sunset
+      'coffee', // I like the neutrals. 2nd favorite
+      'dim', // I like the neutral color from this
+      'sunset', // might be my favorite
       {
         shmonad: {
           ...require('daisyui/src/theming/themes')['sunset'],
           // "neutral":           "#1c212b", // dark gray (input boxes)
           // "neutral":           "#120c12", // coffee (input boxes)
-          "neutral":           "#0d0e15", // coffee blue (input boxes)
-          "neutral-content":   "#ffffff", // white text
-          "primary":           "#4f46e5", // (purple) only used in flip button
-          "accent" :          "#836EF9", // Monad Purple
-          "secondary":         "#A0055D", // Monad Berry
-          "secondary-content": "#090a0f", // Dark blue (hover button bg)
+          neutral: '#0d0e15', // coffee blue (input boxes)
+          'neutral-content': '#ffffff', // white text
+          primary: '#4f46e5', // (purple) only used in flip button
+          accent: '#836EF9', // Monad Purple
+          secondary: '#A0055D', // Monad Berry
+          'secondary-content': '#090a0f', // Dark blue (hover button bg)
           // "secondary":         "#EB6876", // FastLane Orange
           // "base-content": '#c59f60', // coffee yellow secondary text
-          "base-content": '#ffffff', // coffee yellow secondary text
+          'base-content': '#ffffff', // coffee yellow secondary text
         },
         shmonad2: {
           ...require('daisyui/src/theming/themes')['sunset'],
           // "neutral":           "#1c212b", // dark gray (input boxes)
           // "neutral":           "#120c12", // coffee (input boxes)
-          "neutral":           "#0d0e15", // coffee blue (input boxes)
-          "neutral-content":   "#ffffff", // white text
-          "primary":           "#4f46e5", // (purple) only used in flip button
-          "accent" :          "#836EF9", // Monad Purple
+          neutral: '#0d0e15', // coffee blue (input boxes)
+          'neutral-content': '#ffffff', // white text
+          primary: '#4f46e5', // (purple) only used in flip button
+          accent: '#836EF9', // Monad Purple
           // "secondary":         "#A0055D", // Monad Berry
-          "secondary":         "#EB6876", // FastLane Orange
-          "secondary-content": "#090a0f", // Dark blue (hover button bg)
-          "base-content": '#c59f60', // coffee yellow secondary text
+          secondary: '#EB6876', // FastLane Orange
+          'secondary-content': '#090a0f', // Dark blue (hover button bg)
+          'base-content': '#c59f60', // coffee yellow secondary text
         },
         dark: {
           ...require('daisyui/src/theming/themes')['dark'],
