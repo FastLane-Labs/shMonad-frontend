@@ -19,7 +19,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .btn-navbar {
-  @apply bg-[#0d0e15] h-10 shadow-black rounded-xl !important;
+  @apply bg-[#0d0e15] opacity-85 h-10 shadow-black rounded-xl !important;
 }
 
 .btn-explorer {
@@ -48,7 +48,7 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 .max-button {
-  @apply px-[5px] bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent outline-none
+  @apply px-[5px] bg-gradient-to-tr from-accent to-secondary bg-clip-text text-transparent outline-none
    hover:from-secondary hover:to-primary hover:bg-clip-text;
 }
 

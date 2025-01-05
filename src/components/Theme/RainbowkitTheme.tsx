@@ -9,7 +9,7 @@ const myCustomTheme: Theme = {
     actionButtonSecondaryBackground: 'hsl(0, 0%, 100%)',
     closeButton: 'hsl(226, 11%, 64%)',
     closeButtonBackground: 'hsl(228, 5%, 18%)',
-    connectButtonBackground: 'rgba(13, 14, 21, 0.5)', // Navbar Buttons: Dark Gray
+    connectButtonBackground: 'rgba(13, 14, 21, 0.55)', // Navbar Buttons: Dark Gray
     connectButtonBackgroundError: 'hsl(360,100%,64%)',
     connectButtonInnerBackground: 'hsl(225, 4%, 21%)',
     connectButtonText: 'hsl(0, 0%, 100%)',
