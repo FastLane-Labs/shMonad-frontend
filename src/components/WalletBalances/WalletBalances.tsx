@@ -9,6 +9,7 @@ import { useCurrentTokenList } from '@/hooks/useTokenList'
 import { useBalance } from '@/hooks/useBalance'
 import { Token } from '@/types'
 import { useTokenUsdPrice } from '@/hooks/useTokenUsdPrice'
+import { Connect } from '../Navbar/Connect'
 
 const WalletBalances: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
@@ -81,13 +82,17 @@ const WalletBalances: React.FC = () => {
         </div>
         <SettingsModal isVisible={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
         <div className=''>
-          <div className='pt-2'>
-            <span className='text-xs'>Available to Mint: </span>
-            <div className='text-lg font-extrabold'>
-              <TokenBalance token={sellToken || undefined} toFixed={3} />
-              <span> MONAD</span>
+          <div className='pt-2 flex justify-between item-center'>
+            <div>
+              <span className='text-xs'>Available to Mint: </span>
+              <div className='text-lg font-extrabold'>
+                <TokenBalance token={sellToken || undefined} toFixed={3} />
+                <span> MONAD</span>
+              </div>
             </div>
+            <Connect />
           </div>
+
           <div className='line-seperator-sm mt-2' />
 
           <div className='pt-2'>
