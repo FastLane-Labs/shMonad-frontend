@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react'
-import FlipButton from '@/components/Buttons/FlipButton'
-import SettingsButton from '@/components/Buttons/SettingsButton'
+import { useState } from 'react'
+import { useAccount } from 'wagmi'
 import SwapButton from '@/components/Buttons/SwapButton'
 import SettingsModal from '@/components/Modals/SettingsModal'
-import BuyComponent from '@/components/Swap/BuyComponent'
 import SellComponent from '@/components/Swap/SellComponent'
 import BackgroundGradient from '@/components/Theme/BackgroundGradient'
 import { useHandleSwap } from '@/hooks/useHandleSwap'
@@ -14,28 +12,16 @@ const SwapView: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
   const { handleSwap } = useHandleSwap()
   const { quoteLoading } = useSwapProcessManager()
+  const { isConnected } = useAccount() // Use RainbowKit's useAccount to check connection
 
   return (
     <div className='relative max-w-md mx-auto'>
       <BackgroundGradient />
       <div style={{ boxShadow: 'rgba(131, 110, 249, .1) 0px 5px 100px 4px' }} className='rounded-3xl'>
-        <WalletBalances />
-        <div
-          className='relative rounded-3xl bg-accent/30'
-          // style={{ boxShadow: 'rgba(241, 32, 116, .2) 0px 5px 90px 4px' }}
-        >
+        {isConnected && <WalletBalances />} {/* Only render when wallet is connected */}
+        <div className='relative rounded-3xl bg-primary/55'>
           <div className='gradient-bg relative max-w-md mx-auto p-4 rounded-3xl border border-accent'>
-            {/* <div className='flex justify-between items-center mb-2 space-x-2'>
-            <div className='flex w-full space-x-2'>
-            <button className='btn btn-menu !w-2/5'>Mint</button>
-            <button className='btn btn-menu !w-2/5'>Bond / Unbond</button>
-            
-            </div>
-            <SettingsButton setIsSettingsModalVisible={setIsSettingsModalVisible} />
-            </div> */}
             <SellComponent />
-            {/* <FlipButton /> */}
-            {/* <BuyComponent /> */}
             <SwapButton handleSwap={handleSwap} isLoading={quoteLoading} />
             <SettingsModal isVisible={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
           </div>

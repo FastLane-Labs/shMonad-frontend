@@ -69,7 +69,7 @@ const WalletBalances: React.FC = () => {
   }
   return (
     <div
-      className='relative rounded-t-3xl bg-base-200/30 -mb-5'
+      className='relative rounded-t-3xl bg-base-200/10 -mb-6'
       // style={{ boxShadow: 'rgba(241, 32, 116, .2) 0px 5px 90px 4px' }}
     >
       <div className='gradient-bg relative max-w-md mx-auto p-4 rounded-t-3xl pb-9 border-t border-x border-accent'>
