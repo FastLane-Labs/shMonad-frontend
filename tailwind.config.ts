@@ -25,6 +25,9 @@ const config: Config = {
           // "secondary":         "#EB6876", // FastLane Orange
           // "base-content": '#c59f60', // coffee yellow secondary text
           'base-content': '#ffffff', // coffee yellow secondary text
+          '.gradient-bg': {
+            background: 'linear-gradient(290deg, rgba(241,35,121, .05) 0%, rgba(7, 76, 255 , .1) 100%)',
+          },
         },
         shmonad2: {
           ...require('daisyui/src/theming/themes')['sunset'],
