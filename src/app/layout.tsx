@@ -61,7 +61,7 @@ export default function RootLayout(props: PropsWithChildren) {
   return (
     <html lang='en' className='bg-[#0f0f0f]'>
       <head>
-        <title>Rocketboost</title>
+        <title>shMonad</title>
         <meta charSet='UTF-8' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <meta
