@@ -4,7 +4,7 @@ import Image from 'next/image'
 const Logo: React.FC = () => {
   return (
     <div className='flex justify-center logo-margins'>
-      <Image src='/FL-logo-WHT.svg' alt='RocketBoost Logo' width={220} height={220} />
+      <Image src='/shmonad_prpl.png' alt='RocketBoost Logo' width={220} height={220} />
     </div>
   )
 }
