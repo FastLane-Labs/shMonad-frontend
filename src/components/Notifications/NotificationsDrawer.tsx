@@ -35,7 +35,7 @@ export function NotificationsDrawer() {
     <div className='drawer drawer-end'>
       <input id='notification-drawer' type='checkbox' className='drawer-toggle' />
       <div className='drawer-content'>
-        <label htmlFor='notification-drawer' className='btn btn-navbar btn-ghost btn-sm drawer-button'>
+        <label htmlFor='notification-drawer' className='btn btn-navbar btn-sm drawer-button'>
           <ChevronDoubleRightIcon className='h-5 w-5' />
         </label>
       </div>
