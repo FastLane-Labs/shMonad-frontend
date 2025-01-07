@@ -63,11 +63,11 @@ const WalletBalances: React.FC = () => {
 
   return (
     <div
-      className='relative rounded-t-3xl bg-base-200/10 -mb-14'
+      className='relative rounded-t-3xl bg-base-200/10 -mb-16'
       // style={{ boxShadow: 'rgba(241, 32, 116, .2) 0px 5px 90px 4px' }}
     >
-      <div className='gradient-bg-50 relative max-w-md mx-auto p-4 rounded-t-3xl pb-16 border-t border-x border-accent'>
-        <div className='flex justify-between items-center mb-2 space-x-2'>
+      <div className='gradient-bg-50 relative max-w-md mx-auto p-4 rounded-t-3xl pb-20 border-t border-x border-accent'>
+        {/* <div className='flex justify-between items-center mb-2 space-x-2'>
           <div className='flex w-full space-x-2'>
             <button className='btn btn-menu !w-32'>Mint</button>
             <div>
@@ -76,7 +76,7 @@ const WalletBalances: React.FC = () => {
             </div>
           </div>
           <SettingsButton setIsSettingsModalVisible={setIsSettingsModalVisible} />
-        </div>
+        </div> */}
         <SettingsModal isVisible={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
         <div className='text-white px-2'>
           <div className='pt-2 flex justify-between item-center'>

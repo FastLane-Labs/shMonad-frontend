@@ -30,7 +30,7 @@ const ThemeToggle = () => {
   return (
     <div className='drawer drawer-end text-gray-600'>
       <div className='drawer-content'>
-        <label className='btn btn-navbar btn-ghost btn-sm  drawer-button swap swap-rotate'>
+        <label className='btn btn-navbar btn-sm  drawer-button swap swap-rotate'>
           {/* this hidden checkbox controls the state */}
           <input type='checkbox' className='theme-controller' checked={!isDarkMode} onChange={toggleTheme} />
           {/* sun icon */}
