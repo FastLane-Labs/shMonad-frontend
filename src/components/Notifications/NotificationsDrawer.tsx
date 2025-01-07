@@ -40,7 +40,7 @@ export function NotificationsDrawer() {
         </label>
       </div>
 
-      <div className='drawer-side z-[1]'>
+      <div className='drawer-side z-[2]'>
         <label htmlFor='notification-drawer' className='drawer-overlay'></label>
         <aside className='w-full md:w-fit min-h-full text-gray-200 flex h-full rounded-bl-2xl rounded-tl-2xl'>
           {/* close drawer button */}
