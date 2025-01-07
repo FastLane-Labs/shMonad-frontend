@@ -26,7 +26,10 @@ const config: Config = {
           // "base-content": '#c59f60', // coffee yellow secondary text
           'base-content': '#ffffff', // coffee yellow secondary text
           '.gradient-bg': {
-            background: 'linear-gradient(290deg, rgba(241,35,121, .05) 0%, rgba(7, 76, 255 , .1) 100%)',
+            background: 'linear-gradient(270deg, rgba(241,35,121, .1) 0%, rgba(7, 76, 255 , .1) 100%)',
+          },
+          '.gradient-bg-50': {
+            background: 'linear-gradient(260deg, rgba(241,35,121, .04) 0%, rgba(7, 76, 255 , .1) 100%)',
           },
         },
         shmonad2: {

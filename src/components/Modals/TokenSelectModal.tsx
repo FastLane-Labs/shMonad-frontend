@@ -91,6 +91,7 @@ const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   }, [isOpen])
 
   const handleSelect = (token: Token) => {
+    console.log('Token selected:', token)
     if (direction === 'sell') {
       if (token.address === toToken?.address) {
         // If selected sell token is the same as current buy token

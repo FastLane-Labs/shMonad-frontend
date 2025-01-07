@@ -61,27 +61,24 @@ const WalletBalances: React.FC = () => {
     return '0'
   }, [fetchedBalance, sellToken, balanceLoading, balanceError])
 
-  const handleSetMax = () => {
-    if (balance) {
-      setSellAmount(balance)
-      setSwapDirection('sell')
-    }
-  }
   return (
     <div
-      className='relative rounded-t-3xl bg-base-200/10 -mb-6'
+      className='relative rounded-t-3xl bg-base-200/10 -mb-14'
       // style={{ boxShadow: 'rgba(241, 32, 116, .2) 0px 5px 90px 4px' }}
     >
-      <div className='gradient-bg relative max-w-md mx-auto p-4 rounded-t-3xl pb-9 border-t border-x border-accent'>
+      <div className='gradient-bg-50 relative max-w-md mx-auto p-4 rounded-t-3xl pb-16 border-t border-x border-accent'>
         <div className='flex justify-between items-center mb-2 space-x-2'>
           <div className='flex w-full space-x-2'>
-            <button className='btn btn-menu !w-2/5'>Mint</button>
-            <button className='btn btn-menu !w-2/5'>Bond / Unbond</button>
+            <button className='btn btn-menu !w-32'>Mint</button>
+            <div>
+              <button className='btn btn-menu-left-half'>Bond </button>
+              <button className='btn btn-menu-right-half'>Unbond</button>
+            </div>
           </div>
           <SettingsButton setIsSettingsModalVisible={setIsSettingsModalVisible} />
         </div>
         <SettingsModal isVisible={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
-        <div className='text-white'>
+        <div className='text-white px-2'>
           <div className='pt-2 flex justify-between item-center'>
             <div>
               <span className='text-xs'>Available to Mint: </span>
@@ -98,7 +95,8 @@ const WalletBalances: React.FC = () => {
           <div className='pt-2'>
             <span className='text-xs'>SHMONAD Balance: </span>
             <div className='text-lg font-bold'>
-              <TokenBalance token={sellToken || undefined} toFixed={3} />
+              {/* <TokenBalance token={sellToken || undefined} toFixed={3} /> */}
+              10
               <span> SHMONAD</span>
             </div>
           </div>
