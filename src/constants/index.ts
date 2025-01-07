@@ -6,6 +6,7 @@ export * from './network'
 export enum ChainId {
   POLYGON = 137,
   ETH = 1,
+  DMON = 41454,
 }
 
 export enum Exchange {

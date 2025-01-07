@@ -89,7 +89,7 @@ const WalletBalances: React.FC = () => {
                 <span> MONAD</span>
               </div>
             </div>
-            <Connect />
+            <Connect chainStatus={'none'} />
           </div>
 
           <div className='line-seperator-sm mt-2' />
