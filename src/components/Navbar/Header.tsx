@@ -7,7 +7,7 @@ import { HeartIcon, RocketLaunchIcon, FaceSmileIcon, CodeBracketSquareIcon } fro
 export function Header() {
   return (
     <header className='navbar flex justify-between p-4'>
-      <div className='text-red-300'>
+      <div>
         <button className='btn btn-ghost !w-auto group'>
           <RocketLaunchIcon className='h-6 w-6 text-accent transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:-rotate-[15deg]' />
           <span>Mint</span>

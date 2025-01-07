@@ -10,6 +10,7 @@ import { useBalance } from '@/hooks/useBalance'
 import { Token } from '@/types'
 import { useTokenUsdPrice } from '@/hooks/useTokenUsdPrice'
 import { Connect } from '../Navbar/Connect'
+import BondUnbond from '@/components/Buttons/BondUnbond'
 
 const WalletBalances: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
@@ -77,8 +78,9 @@ const WalletBalances: React.FC = () => {
           </div>
           <SettingsButton setIsSettingsModalVisible={setIsSettingsModalVisible} />
         </div> */}
-        <SettingsModal isVisible={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
+        {/* <SettingsModal isVisible={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} /> */}
         <div className='text-white px-2'>
+          {/* <BondUnbond /> */}
           <div className='pt-2 flex justify-between item-center'>
             <div>
               <span className='text-xs'>Available to Mint: </span>
