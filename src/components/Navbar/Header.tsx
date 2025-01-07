@@ -23,7 +23,7 @@ export function Header() {
         </button>
       </div>
       <div className='flex gap-2'>
-        <Connect />
+        <Connect chainStatus='full' />
         <ThemeToggle />
         <NotificationsDrawer />
       </div>
