@@ -139,7 +139,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
     if (isConnected && !isSupportedChain) return 'Unsupported network'
     if (status === 'reconnecting') return 'Reconnecting to Wallet'
     if (!initialized) return 'Initializing'
-    if (!fromToken || !toToken) return 'Select Tokens'
+    if (!fromToken || !toToken) return 'Mint' // was 'Select Tokens', changed to 'Mint' for demo
     if (!fromAmount) return 'Enter an amount'
     if (!hasSufficientBalance) return `Insufficient ${fromToken.symbol} balance`
     if (localLoading)
@@ -195,8 +195,8 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
         onClick={handleButtonClick}
         // disabled={isDisabled}
       >
-        {/* {getButtonText()} */}
-        Mint
+        {getButtonText()}
+        {/* Mint */}
       </button>
       <SwapDetails />
       <SwapModal

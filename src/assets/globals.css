@@ -40,6 +40,15 @@ input[type='number']::-webkit-inner-spin-button {
   @apply bg-transparent border-accent rounded-2xl text-neutral-content hover:shadow-accent-content !important;
 }
 
+.btn-menu-left-half {
+  border: 1px solid !important;
+  @apply border bg-transparent border-accent rounded-r-none text-neutral-content hover:shadow-accent-content w-[75px] !important;
+}
+
+.btn-menu-right-half {
+  border: 1px solid !important;
+  @apply border bg-transparent border-accent rounded-l-none text-neutral-content hover:shadow-accent-content w-[75px] !important;
+}
 .btn-clear-activity {
   border: 1px solid !important;
   height: 2.5rem /* 32px */;
