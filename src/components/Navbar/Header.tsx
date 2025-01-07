@@ -14,7 +14,7 @@ export function Header() {
         </button>
         <button className='btn btn-ghost !w-auto group'>
           <HeartIcon className='h-6 w-6 transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:-rotate-0' />
-          <span>Bond</span>
+          <span>Bond / Unbond</span>
         </button>
         <button className='btn btn-ghost !w-auto group'>
           <CodeBracketSquareIcon className='h-6 w-6 transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:-rotate-3' />
