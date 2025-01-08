@@ -8,7 +8,6 @@ import ClientWeb3Provider from '../context/ClientWeb3Provider'
 import { NotificationProvider } from '@/context/Notifications'
 import '../assets/globals.css'
 import React from 'react'
-import GeoBlock from '@/components/GeoBlock/GeoBlock'
 import { AppStateProvider } from '@/context/AppStateContext'
 import { TokenPriceProvider } from '@/context/TokenPriceProvider'
 import dynamic from 'next/dynamic'
@@ -55,9 +54,6 @@ function AnalyticsWrapper({ children }: PropsWithChildren) {
 }
 
 export default function RootLayout(props: PropsWithChildren) {
-  let isRestricted: boolean = false
-  let country: string = 'US'
-
   return (
     <html lang='en' className='bg-[#0f0f0f]'>
       <head>
@@ -102,19 +98,15 @@ export default function RootLayout(props: PropsWithChildren) {
       <body>
         <AnalyticsProvider>
           <AnalyticsWrapper>
-            {isRestricted ? (
-              <GeoBlock country={country} />
-            ) : (
-              <ClientWeb3Provider>
-                <TokenPriceProvider>
-                  <NotificationProvider>
-                    <AppStateProvider>
-                      <Layout>{props.children}</Layout>
-                    </AppStateProvider>
-                  </NotificationProvider>
-                </TokenPriceProvider>
-              </ClientWeb3Provider>
-            )}
+            <ClientWeb3Provider>
+              <TokenPriceProvider>
+                <NotificationProvider>
+                  <AppStateProvider>
+                    <Layout>{props.children}</Layout>
+                  </AppStateProvider>
+                </NotificationProvider>
+              </TokenPriceProvider>
+            </ClientWeb3Provider>
           </AnalyticsWrapper>
         </AnalyticsProvider>
       </body>

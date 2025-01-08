@@ -12,7 +12,6 @@ export type AnalyticsEvent =
   | { type: 'SWAP_ATTEMPTED'; swapEvent: SwapEvent }
   | { type: 'SWAP_COMPLETED'; swapEvent: SwapEvent }
   | { type: 'SWAP_FAILED'; swapEvent: SwapEvent }
-  | { type: 'GEOBLOCKED'; country: string }
   | { type: 'AVERAGE_SWAP_SIZE'; size: number }
   | { type: 'FUNNEL'; step: string; details?: string }
   | { type: 'SIGNATURE_FAILED' }
