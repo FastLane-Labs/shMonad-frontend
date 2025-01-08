@@ -69,10 +69,6 @@ export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           eventName = 'swap_boosted'
           eventParams = { ...event.swapEvent, boosted_amount: event.boostedAmount }
           break
-        case 'GEOBLOCKED':
-          eventName = 'geoblocked'
-          eventParams = { country: event.country }
-          break
         default:
           console.warn('Unknown event type:', event)
           return
