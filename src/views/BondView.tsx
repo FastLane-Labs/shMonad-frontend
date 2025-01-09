@@ -8,7 +8,7 @@ import { useHandleSwap } from '@/hooks/useHandleSwap'
 import { useSwapProcessManager } from '@/hooks/useSwapProcessManager'
 import WalletBalances from '@/components/WalletBalances/WalletBalances'
 
-const SwapView: React.FC = () => {
+const BondView: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
   const { handleSwap } = useHandleSwap()
   const { quoteLoading } = useSwapProcessManager()
@@ -17,7 +17,7 @@ const SwapView: React.FC = () => {
   return (
     <div className='relative max-w-md mx-auto'>
       <BackgroundGradient />
-      SWAP
+      BOND
       <div style={{ boxShadow: 'rgba(131, 110, 249, .1) 0px 5px 100px 4px' }} className='rounded-3xl'>
         {isConnected && <WalletBalances />} {/* Only render when wallet is connected */}
         <div className='relative rounded-3xl bg-primary/45'>
@@ -32,4 +32,4 @@ const SwapView: React.FC = () => {
   )
 }
 
-export default SwapView
+export default BondView

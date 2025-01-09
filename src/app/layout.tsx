@@ -12,6 +12,7 @@ import { AppStateProvider } from '@/context/AppStateContext'
 import { TokenPriceProvider } from '@/context/TokenPriceProvider'
 import dynamic from 'next/dynamic'
 import { useAnalytics } from '@/context/AnalyticsContext'
+import { SwapStateProvider } from '@/context/SwapStateContext'
 
 const AnalyticsProvider = dynamic(() => import('@/context/AnalyticsContext').then((mod) => mod.AnalyticsProvider), {
   ssr: false,
@@ -102,7 +103,9 @@ export default function RootLayout(props: PropsWithChildren) {
               <TokenPriceProvider>
                 <NotificationProvider>
                   <AppStateProvider>
-                    <Layout>{props.children}</Layout>
+                    <SwapStateProvider>
+                      <Layout>{props.children}</Layout>
+                    </SwapStateProvider>
                   </AppStateProvider>
                 </NotificationProvider>
               </TokenPriceProvider>
