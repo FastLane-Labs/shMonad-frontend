@@ -6,7 +6,7 @@ import SellComponent from '@/components/Swap/SellComponent'
 import BackgroundGradient from '@/components/Theme/BackgroundGradient'
 import { useHandleSwap } from '@/hooks/useHandleSwap'
 import { useSwapProcessManager } from '@/hooks/useSwapProcessManager'
-import WalletBalances from '@/components/WalletBalances/WalletBalances'
+import BondBalances from '@/components/WalletBalances/BondBalances'
 
 const BondView: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
@@ -19,7 +19,7 @@ const BondView: React.FC = () => {
       <BackgroundGradient />
       BOND
       <div style={{ boxShadow: 'rgba(131, 110, 249, .1) 0px 5px 100px 4px' }} className='rounded-3xl'>
-        {isConnected && <WalletBalances />} {/* Only render when wallet is connected */}
+        {isConnected && <BondBalances />} {/* Only render when wallet is connected */}
         <div className='relative rounded-3xl bg-primary/45'>
           <div className='gradient-bg relative max-w-md mx-auto p-4 rounded-3xl border border-accent'>
             <SellComponent />
