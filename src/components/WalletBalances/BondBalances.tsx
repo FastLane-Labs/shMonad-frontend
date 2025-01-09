@@ -1,7 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { ethers } from 'ethers'
-import SettingsButton from '@/components/Buttons/SettingsButton'
-import SettingsModal from '@/components/Modals/SettingsModal'
 import { TokenBalance } from '@/components/TokenBalance/TokenBalance'
 import { useSwapStateContext } from '@/context/SwapStateContext'
 import { useAccount } from 'wagmi'
@@ -12,7 +10,7 @@ import { useTokenUsdPrice } from '@/hooks/useTokenUsdPrice'
 import { Connect } from '../Navbar/Connect'
 import BondUnbond from '@/components/Buttons/BondUnbond'
 
-const WalletBalances: React.FC = () => {
+const MintBalances: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
 
   const {
@@ -63,24 +61,10 @@ const WalletBalances: React.FC = () => {
   }, [fetchedBalance, sellToken, balanceLoading, balanceError])
 
   return (
-    <div
-      className='relative rounded-t-3xl bg-base-200/10 -mb-16'
-      // style={{ boxShadow: 'rgba(241, 32, 116, .2) 0px 5px 90px 4px' }}
-    >
+    <div className='relative rounded-t-3xl bg-base-200/10 -mb-16'>
       <div className='gradient-bg-50 relative max-w-md mx-auto p-4 rounded-t-3xl pb-20 border-t border-x border-accent'>
-        {/* <div className='flex justify-between items-center mb-2 space-x-2'>
-          <div className='flex w-full space-x-2'>
-            <button className='btn btn-menu !w-32'>Mint</button>
-            <div>
-              <button className='btn btn-menu-left-half'>Bond </button>
-              <button className='btn btn-menu-right-half'>Unbond</button>
-            </div>
-          </div>
-          <SettingsButton setIsSettingsModalVisible={setIsSettingsModalVisible} />
-        </div> */}
-        {/* <SettingsModal isVisible={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} /> */}
         <div className='text-white px-2'>
-          {/* <BondUnbond /> */}
+          <BondUnbond />
           <div className='pt-2 flex justify-between item-center'>
             <div>
               <span className='text-xs'>Available to Mint: </span>
@@ -108,4 +92,4 @@ const WalletBalances: React.FC = () => {
   )
 }
 
-export default WalletBalances
+export default MintBalances
