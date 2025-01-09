@@ -1,7 +1,7 @@
 'use client'
 import { useEffect } from 'react'
 import { useAnalytics } from '@/context/AnalyticsContext'
-import MintView from '@/views/MintView'
+import BondView from '@/views/BondView'
 
 export default function Home() {
   const { trackPageView } = useAnalytics()
@@ -12,7 +12,7 @@ export default function Home() {
 
   return (
     <>
-      <MintView />
+      <BondView />
     </>
   )
 }

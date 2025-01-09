@@ -1,4 +1,7 @@
 import React, { PropsWithChildren } from 'react'
+import Logo from '@/components/Logo/Logo'
+import { Header } from '@/components/Navbar/Header'
+import { Footer } from '@/components/Footer/Footer'
 
 export function Layout(props: PropsWithChildren) {
   return (
@@ -9,7 +12,10 @@ export function Layout(props: PropsWithChildren) {
         backgroundSize: '200px 100px',
         backgroundPosition: 'center',
       }}>
+      <Header />
+      <Logo />
       <main className='flex flex-grow h-full flex-col'>{props.children}</main>
+      <Footer />
     </div>
   )
 }
