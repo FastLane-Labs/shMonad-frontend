@@ -13,22 +13,37 @@ interface PoliciesDropdownProps {
 const PoliciesDropdown: React.FC<PoliciesDropdownProps> = ({ selectedPolicy, setSelectedPolicy }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
-  // Close dropdown if the user clicks outside
+  // Close dropdown if the user clicks outside or presses "Esc"
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false)
       }
     }
+
+    const handleEscKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+        buttonRef.current?.blur() // Remove focus from the button to prevent highlighting on "esc"
+      }
+    }
+
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscKeyPress)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscKeyPress)
+    }
   }, [])
 
   return (
     <div ref={dropdownRef} className='relative flex w-full justify-center mb-6 z-[1] font-medium text-sm'>
       {/* Dropdown Button */}
       <button
+        ref={buttonRef}
         className='flex items-center justify-between w-64 p-3 bg-neutral/60 text-white rounded-2xl transition-all duration-300 ease-in-out'
         onClick={() => setIsOpen((prev) => !prev)}>
         {/* Conditional Rendering for Placeholder */}
