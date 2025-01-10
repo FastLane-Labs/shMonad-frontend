@@ -8,7 +8,7 @@ import { useBalance } from '@/hooks/useBalance'
 import { Token } from '@/types'
 import { useTokenUsdPrice } from '@/hooks/useTokenUsdPrice'
 import { Connect } from '../Navbar/Connect'
-import BondUnbond from '@/components/Buttons/BondUnbond'
+import BondUnbondButton from '@/components/Buttons/BondUnbondButton'
 
 const MintBalances: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
@@ -60,11 +60,13 @@ const MintBalances: React.FC = () => {
     return '0'
   }, [fetchedBalance, sellToken, balanceLoading, balanceError])
 
+  const [isBonding, setIsBonding] = useState<boolean>(true) // State to toggle between bond and unbond
+
   return (
     <div className='relative rounded-t-3xl bg-base-200/10 -mb-16'>
       <div className='gradient-bg-50 relative max-w-md mx-auto p-4 rounded-t-3xl pb-20 border-t border-x border-accent'>
         <div className='text-white px-2'>
-          <BondUnbond />
+          {/* <BondUnbondButton isBonding={false} setIsBonding={setIsBonding} /> */}
           <div className='pt-2 flex justify-between item-center'>
             <div>
               <span className='text-xs'>Available to Mint: </span>
