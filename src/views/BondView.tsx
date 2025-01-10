@@ -1,28 +1,30 @@
-import { useState } from 'react'
-import { useAccount } from 'wagmi'
+'use client'
+
+import React, { useState } from 'react'
+import BondBalances from '@/components/WalletBalances/BondBalances'
+import SellComponent from '@/components/Swap/SellComponent'
 import SwapButton from '@/components/Buttons/SwapButton'
 import SettingsModal from '@/components/Modals/SettingsModal'
-import SellComponent from '@/components/Swap/SellComponent'
 import BackgroundGradient from '@/components/Theme/BackgroundGradient'
 import { useHandleSwap } from '@/hooks/useHandleSwap'
 import { useSwapProcessManager } from '@/hooks/useSwapProcessManager'
-import BondBalances from '@/components/WalletBalances/BondBalances'
+import BondUnbondButton from '@/components/Buttons/BondUnbondButton'
 
-const BondView: React.FC = () => {
+const BondingView: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
+  const [isBonding, setIsBonding] = useState<boolean>(true)
   const { handleSwap } = useHandleSwap()
   const { quoteLoading } = useSwapProcessManager()
-  const { isConnected } = useAccount() // Use RainbowKit's useAccount to check connection
 
   return (
     <div className='relative max-w-md mx-auto'>
       <BackgroundGradient />
-      BOND
+      <BondUnbondButton isBonding={isBonding} setIsBonding={setIsBonding} />
       <div style={{ boxShadow: 'rgba(131, 110, 249, .1) 0px 5px 100px 4px' }} className='rounded-3xl'>
-        {isConnected && <BondBalances />} {/* Only render when wallet is connected */}
+        {<BondBalances />}
         <div className='relative rounded-3xl bg-primary/45'>
           <div className='gradient-bg relative max-w-md mx-auto p-4 rounded-3xl border border-accent'>
-            <SellComponent />
+            {isBonding ? <SellComponent /> : <SellComponent />} {/* Render based on state */}
             <SwapButton handleSwap={handleSwap} isLoading={quoteLoading} />
             <SettingsModal isVisible={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
           </div>
@@ -32,4 +34,4 @@ const BondView: React.FC = () => {
   )
 }
 
-export default BondView
+export default BondingView

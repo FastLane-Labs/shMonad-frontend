@@ -175,6 +175,7 @@ select {
   xl:mt-0 xl:mb-5
   2xl:mt-12 2xl:mb-10;
 }
+
 /* 2 xl screens */
 @media (min-width: 1300px) and (max-width: 1535px) {
   .logo-margins {
