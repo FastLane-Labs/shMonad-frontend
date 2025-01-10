@@ -7,7 +7,7 @@ interface BondUnbondButtonProps {
 
 const BondUnbondButton: React.FC<BondUnbondButtonProps> = ({ isBonding, setIsBonding }) => {
   return (
-    <div className='flex w-full justify-center mb-6 -mt-2 z-[1] relative font-medium text-sm'>
+    <div className='flex w-full justify-center mb-4 -mt-2 z-[1] relative font-medium text-sm'>
       <div className='flex items-center justify-center w-fit px-0.5 bg-neutral/60 rounded-2xl relative overflow-hidden'>
         {/* Sliding Background with Padding */}
         <div

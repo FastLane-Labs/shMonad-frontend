@@ -9,10 +9,14 @@ import { useHandleSwap } from '@/hooks/useHandleSwap'
 import { useSwapProcessManager } from '@/hooks/useSwapProcessManager'
 import BondUnbondButton from '@/components/Buttons/BondUnbondButton'
 import MonadBalances from '@/components/WalletBalances/MonadBalances'
+import PoliciesDropdown from '@/components/Buttons/PoliciesDropdown'
 
 const BondingView: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
   const [isBonding, setIsBonding] = useState<boolean>(true)
+  const [selectedPolicy, setSelectedPolicy] = useState<'Task Scheduler' | 'Atlas' | '4337 Bundling' | 'MEV Bundles'>(
+    'Task Scheduler'
+  )
   const { handleSwap } = useHandleSwap()
   const { quoteLoading } = useSwapProcessManager()
 
@@ -20,6 +24,7 @@ const BondingView: React.FC = () => {
     <div className='relative max-w-md mx-auto'>
       <BackgroundGradient />
       <BondUnbondButton isBonding={isBonding} setIsBonding={setIsBonding} />
+      <PoliciesDropdown selectedPolicy={selectedPolicy} setSelectedPolicy={setSelectedPolicy} />
       <div style={{ boxShadow: 'rgba(131, 110, 249, .1) 0px 5px 100px 4px' }} className='rounded-3xl'>
         {isBonding ? <MonadBalances state='Bond' /> : <MonadBalances state='Unbond' />}
         <div className='relative rounded-3xl bg-primary/45'>
