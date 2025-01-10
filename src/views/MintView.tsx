@@ -6,7 +6,7 @@ import SellComponent from '@/components/Swap/SellComponent'
 import BackgroundGradient from '@/components/Theme/BackgroundGradient'
 import { useHandleSwap } from '@/hooks/useHandleSwap'
 import { useSwapProcessManager } from '@/hooks/useSwapProcessManager'
-import WalletBalances from '@/components/WalletBalances/MintBalances'
+import MonadBalances from '@/components/WalletBalances/MonadBalances'
 
 const MintView: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
@@ -17,9 +17,8 @@ const MintView: React.FC = () => {
   return (
     <div className='relative max-w-md mx-auto'>
       <BackgroundGradient />
-      MINT
       <div style={{ boxShadow: 'rgba(131, 110, 249, .1) 0px 5px 100px 4px' }} className='rounded-3xl'>
-        {isConnected && <WalletBalances />} {/* Only render when wallet is connected */}
+        {isConnected && <MonadBalances state='Mint' />} {/* Only render when wallet is connected */}
         <div className='relative rounded-3xl bg-primary/45'>
           <div className='gradient-bg relative max-w-md mx-auto p-4 rounded-3xl border border-accent'>
             <SellComponent />
