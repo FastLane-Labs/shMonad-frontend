@@ -1,3 +1,4 @@
+import React from 'react'
 import { useState, useEffect, useMemo } from 'react'
 import { ethers } from 'ethers'
 import { TokenBalance } from '@/components/TokenBalance/TokenBalance'
@@ -8,9 +9,12 @@ import { useBalance } from '@/hooks/useBalance'
 import { Token } from '@/types'
 import { useTokenUsdPrice } from '@/hooks/useTokenUsdPrice'
 import { Connect } from '../Navbar/Connect'
-import BondUnbondButton from '@/components/Buttons/BondUnbondButton'
 
-const MintBalances: React.FC = () => {
+interface MonadBalancesProps {
+  state: 'Bond' | 'Mint' | 'Unbond'
+}
+
+const MonadBalances: React.FC<MonadBalancesProps> = ({ state }) => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
 
   const {
@@ -60,16 +64,13 @@ const MintBalances: React.FC = () => {
     return '0'
   }, [fetchedBalance, sellToken, balanceLoading, balanceError])
 
-  const [isBonding, setIsBonding] = useState<boolean>(true) // State to toggle between bond and unbond
-
   return (
     <div className='relative rounded-t-3xl bg-base-200/10 -mb-16'>
       <div className='gradient-bg-50 relative max-w-md mx-auto p-4 rounded-t-3xl pb-20 border-t border-x border-accent'>
         <div className='text-white px-2'>
-          {/* <BondUnbondButton isBonding={false} setIsBonding={setIsBonding} /> */}
           <div className='pt-2 flex justify-between item-center'>
             <div>
-              <span className='text-xs'>Available to Mint: </span>
+              <span className='text-xs'>Available to {state}: </span>
               <div className='text-lg font-bold'>
                 <TokenBalance token={sellToken || undefined} toFixed={3} />
                 <span> MONAD</span>
@@ -94,4 +95,4 @@ const MintBalances: React.FC = () => {
   )
 }
 
-export default MintBalances
+export default MonadBalances

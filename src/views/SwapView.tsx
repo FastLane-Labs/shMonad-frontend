@@ -6,7 +6,7 @@ import SellComponent from '@/components/Swap/SellComponent'
 import BackgroundGradient from '@/components/Theme/BackgroundGradient'
 import { useHandleSwap } from '@/hooks/useHandleSwap'
 import { useSwapProcessManager } from '@/hooks/useSwapProcessManager'
-import WalletBalances from '@/components/WalletBalances/MintBalances'
+import WalletBalances from '@/components/WalletBalances/MonadBalances'
 
 const SwapView: React.FC = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
