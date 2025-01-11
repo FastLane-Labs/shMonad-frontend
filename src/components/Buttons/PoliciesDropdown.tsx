@@ -5,6 +5,15 @@ import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon'
 const POLICIES = ['Task Scheduler', 'Atlas', '4337 Bundling', 'MEV Bundles'] as const
 type Policy = (typeof POLICIES)[number] | '' // Added empty string for placeholder support
 
+// Tooltip mapping for each policy
+const TOOLTIP_TEXTS: Record<Policy, string> = {
+  'Task Scheduler': 'Tooltip example text 1',
+  Atlas: 'Tooltip example text 2',
+  '4337 Bundling': 'Tooltip example text 3',
+  'MEV Bundles': 'Tooltip example text 4',
+  '': '', // For the placeholder state
+}
+
 interface PoliciesDropdownProps {
   selectedPolicy: Policy
   setSelectedPolicy: (policy: Policy) => void
@@ -62,8 +71,9 @@ const PoliciesDropdown: React.FC<PoliciesDropdownProps> = ({ selectedPolicy, set
         {POLICIES.map((policy) => (
           <button
             key={policy}
-            className={`block w-full text-left px-4 py-3 hover:bg-gray-400/10 hover:text-gray-200 rounded-xl
+            className={`block w-full text-left px-4 py-3 hover:bg-gray-400/10 hover:text-gray-200 rounded-xl custom-tooltip md:tooltip md:tooltip-right
             ${selectedPolicy === policy ? 'bg-gray-400/10 text-white' : 'text-gray-400'}`}
+            data-tip={TOOLTIP_TEXTS[policy]}
             onClick={() => {
               setSelectedPolicy(policy)
               setIsOpen(false)
