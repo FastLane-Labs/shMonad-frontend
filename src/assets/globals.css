@@ -154,19 +154,11 @@ select {
 }
 
 .custom-tooltip::before {
-  background-color: transparent !important;
-  color: #a19898 !important;
-  border: 1px solid #706b6b !important;
-  border-radius: 0.5rem !important;
-  padding: 0.5rem 0.75rem !important;
-  font-size: 0.875rem !important;
-  line-height: 1.25rem !important;
-  max-width: 20rem !important;
-  white-space: normal !important;
+  @apply bg-neutral/75 text-[#a19898] border border-[#706b6b] rounded-xl text-sm leading-5 max-w-80 whitespace-normal px-2 py-3 !important;
 }
 
 .custom-tooltip::after {
-  border-color: #706b6b transparent transparent transparent !important;
+  border-color: #706b6b transparent !important;
 }
 
 .logo-margins {
