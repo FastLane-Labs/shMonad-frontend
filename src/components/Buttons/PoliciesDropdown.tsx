@@ -1,5 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon'
+import {
+  ArrowUpRightIcon,
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  ExclamationTriangleIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/24/outline'
 
 // Define a constant array for policies
 const POLICIES = ['Task Scheduler', 'Atlas', '4337 Bundling', 'MEV Bundles'] as const
@@ -56,7 +63,16 @@ const PoliciesDropdown: React.FC<PoliciesDropdownProps> = ({ selectedPolicy, set
         className='flex items-center justify-between w-64 p-3 bg-neutral/60 text-white rounded-2xl transition-all duration-300 ease-in-out'
         onClick={() => setIsOpen((prev) => !prev)}>
         {/* Conditional Rendering for Placeholder */}
-        {selectedPolicy === '' ? <span className='text-gray-400'>Select Policy</span> : selectedPolicy}
+        {selectedPolicy === '' ? (
+          <div className='flex item-center justify-center gap-1 w-full text-gray-400 pl-5'>
+            <span>Select Policy</span>
+            {/* <div className='custom-tooltip md:tooltip' data-tip='Explanation of policy select here.'>
+              <InformationCircleIcon className='w-5 h-5 ' />
+            </div> */}
+          </div>
+        ) : (
+          <div className='flex item-center justify-center w-full pl-5'>{selectedPolicy}</div>
+        )}
         <span className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
           <ChevronDownIcon className='w-5 h-5' />
         </span>
