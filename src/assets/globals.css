@@ -94,7 +94,7 @@ select {
 }
 
 .modal-box {
-  @apply w-full max-w-md min-h-96 justify-between;
+  @apply w-full max-w-md min-h-96 justify-start;
 }
 
 .gradient-1-geoblock {

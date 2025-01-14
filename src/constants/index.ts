@@ -50,6 +50,22 @@ export const CONTRACT_ADDRRESSES: IContractAddresses = {
       router: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
     },
   },
+  [ChainId.MONAD_DEVNET]: {
+    [Exchange.UNISWAPV3]: {
+      // UniswapV3 on Polygon
+      quoter: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e', // QuoterV2
+      factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984', // UniswapV3Factory
+      router: '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45', // SwapRouter02
+    },
+    [Exchange.UNISWAPV2]: {
+      // QuickswapV2 on Polygon
+      router: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff', // QuickSwapV2Router
+      factory: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32', // QuickSwapV2Factory
+    },
+    [Exchange.NativeWrapper]: {
+      router: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
+    },
+  },
 }
 
 type ITokenAddresses = {
@@ -62,6 +78,11 @@ type ITokenAddresses = {
 
 export const TOKEN_ADDRESSES: ITokenAddresses = {
   [ChainId.POLYGON]: {
+    wrappedNative: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
+    bestGateway: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC
+    usdc: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', // USDC
+  },
+  [ChainId.MONAD_DEVNET]: {
     wrappedNative: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
     bestGateway: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC
     usdc: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', // USDC
