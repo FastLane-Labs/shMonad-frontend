@@ -31,6 +31,10 @@ export const NETWORK_COLORS = {
     color: 'orange',
     bgVariant: 'bg-orange-600',
   },
+  monad: {
+    color: 'purple',
+    bgVariant: 'bg-accent',
+  },
   other: {
     color: 'gray',
     bgVariant: 'bg-gray-600',
@@ -47,6 +51,7 @@ export function GetNetworkColor(chain?: string, type: 'color' | 'bgVariant' = 'c
   if (chain?.includes('optimism') || chain?.startsWith('op')) return NETWORK_COLORS.optimism[type]
   if (chain?.includes('scroll')) return NETWORK_COLORS.scroll[type]
   if (chain?.includes('sepolia')) return NETWORK_COLORS.sepolia[type]
+  if (chain?.includes('monad')) return NETWORK_COLORS.monad[type]
 
   return NETWORK_COLORS.other[type]
 }
