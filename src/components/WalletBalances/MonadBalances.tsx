@@ -73,7 +73,7 @@ const MonadBalances: React.FC<MonadBalancesProps> = ({ state }) => {
               <span className='text-xs'>Available to {state}: </span>
               <div className='text-lg font-bold'>
                 <TokenBalance token={sellToken || undefined} toFixed={3} />
-                <span> MONAD</span>
+                <span> DMON</span>
               </div>
             </div>
             <Connect chainStatus={'none'} />
@@ -86,7 +86,7 @@ const MonadBalances: React.FC<MonadBalancesProps> = ({ state }) => {
             <div className='text-lg font-bold'>
               {/* <TokenBalance token={sellToken || undefined} toFixed={3} /> */}
               10
-              <span> SHMONAD</span>
+              <span> SHMON</span>
             </div>
           </div>
         </div>

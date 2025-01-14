@@ -6,7 +6,7 @@ import { toBigInt } from '@/utils/format'
 import useDebounce from '@/hooks/useDebounce'
 import { useAllowanceManager } from './useAllowanceManager'
 import { nativeEvmTokenAddress } from '@/constants'
-import { useFastLaneAddresses } from './useFastLaneAddresses'
+// import { useFastLaneAddresses } from './useFastLaneAddresses'
 
 export interface SwapState {
   // Token States
@@ -76,7 +76,7 @@ export const useSwapState = (): SwapState => {
   // External hooks and derived values
   const { chainId, address: userAddress } = useAccount()
   const { tokens } = useCurrentTokenList()
-  const { atlasAddress } = useFastLaneAddresses()
+  // const { atlasAddress } = useFastLaneAddresses()
   const allowanceManager = useAllowanceManager()
 
   // Derived token values
@@ -130,7 +130,7 @@ export const useSwapState = (): SwapState => {
 
   useEffect(() => {
     const checkAllowance = async () => {
-      if (!fromToken || !userAddress || !atlasAddress || !debouncedFromAmount || !quote) {
+      if (!fromToken || !userAddress || !debouncedFromAmount || !quote) {
         setHasSufficientAllowance(false)
         return
       }
@@ -145,7 +145,7 @@ export const useSwapState = (): SwapState => {
         spenderAddress = quote.swapRoute.swapSteps[0].tokenIn.address
         tokenToCheck = toToken!
       } else {
-        spenderAddress = atlasAddress
+        // spenderAddress = atlasAddress
         tokenToCheck = fromToken
       }
 
@@ -170,7 +170,7 @@ export const useSwapState = (): SwapState => {
     fromToken,
     toToken,
     userAddress,
-    atlasAddress,
+    // atlasAddress,
     quote,
     debouncedFromAmount,
     allowanceManager,

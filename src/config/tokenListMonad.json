@@ -1,0 +1,11 @@
+[
+  {
+    "chainId": 20143,
+    "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    "decimals": 18,
+    "name": "Dev Monad",
+    "symbol": "DMON",
+    "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/30495.png",
+    "tags": ["native", "popular", "default"]
+  }
+]
