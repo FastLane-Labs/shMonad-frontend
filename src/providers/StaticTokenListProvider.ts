@@ -1,5 +1,6 @@
 import { ITokenProvider, Token } from '@/types'
 import polygonTokens from '@/config/tokenListPolygon.json'
+import monadTokens from '@/config/tokenListMonad.json'
 
 export class StaticTokenListProvider implements ITokenProvider {
   private static instance: StaticTokenListProvider
@@ -18,6 +19,7 @@ export class StaticTokenListProvider implements ITokenProvider {
 
   private loadTokenLists() {
     this.tokenLists.set(137, polygonTokens as Token[])
+    this.tokenLists.set(20143, monadTokens as Token[])
     // Add other chain IDs and their token lists here
   }
 
