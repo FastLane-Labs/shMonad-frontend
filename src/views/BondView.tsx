@@ -11,6 +11,7 @@ import BondUnbondButton from '@/components/Buttons/BondUnbondButton'
 import MonadBalances from '@/components/WalletBalances/MonadBalances'
 import PoliciesDropdown from '@/components/Buttons/PoliciesDropdown'
 import { useSwapStateContext } from '@/context/SwapStateContext'
+import { useAccount } from 'wagmi'
 
 type Policy = 'Task Scheduler' | 'Atlas' | '4337 Bundling' | 'MEV Bundles' | ''
 
@@ -20,6 +21,7 @@ const BondingView: React.FC = () => {
   const [selectedPolicy, setSelectedPolicy] = useState<Policy>('')
   const { handleSwap } = useHandleSwap()
   const { quoteLoading } = useSwapProcessManager()
+  const { isConnected } = useAccount() // Use RainbowKit's useAccount to check connection
 
   const handleAction = () => {
     if (!selectedPolicy) {
@@ -39,10 +41,10 @@ const BondingView: React.FC = () => {
       <BondUnbondButton />
       <PoliciesDropdown selectedPolicy={selectedPolicy} setSelectedPolicy={setSelectedPolicy} />
       <div style={{ boxShadow: 'rgba(131, 110, 249, .1) 0px 5px 100px 4px' }} className='rounded-3xl'>
-        <MonadBalances />
+        {isConnected && <MonadBalances />} {/* Only render when wallet is connected */}
         <div className='relative rounded-3xl bg-primary/45'>
           <div className='gradient-bg relative max-w-md mx-auto p-4 rounded-3xl border border-accent'>
-            {appState === 'Bond' ? <SellComponent /> : <SellComponent />}
+            <SellComponent />
             <SwapButton handleSwap={handleSwap} isLoading={quoteLoading} />
             <SettingsModal isVisible={isSettingsModalVisible} onClose={() => setIsSettingsModalVisible(false)} />
           </div>
