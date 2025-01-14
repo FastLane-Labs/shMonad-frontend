@@ -20,7 +20,7 @@ const SwapView: React.FC = () => {
       <BackgroundGradient />
       SWAP
       <div style={{ boxShadow: 'rgba(131, 110, 249, .1) 0px 5px 100px 4px' }} className='rounded-3xl'>
-        {isConnected && <MonadBalances state='Bond' />} {/* Only render when wallet is connected */}
+        {isConnected && <MonadBalances />} {/* Only render when wallet is connected */}
         <div className='relative rounded-3xl bg-primary/45'>
           <div className='gradient-bg relative max-w-md mx-auto p-4 rounded-3xl border border-accent'>
             <SellComponent />
