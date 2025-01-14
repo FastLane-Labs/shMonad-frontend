@@ -12,11 +12,7 @@ import { Connect } from '../Navbar/Connect'
 import SettingsButton from '../Buttons/SettingsButton'
 import SettingsModal from '../Modals/SettingsModal'
 
-interface MonadBalancesProps {
-  state: 'Bond' | 'Mint' | 'Unbond'
-}
-
-const MonadBalances: React.FC<MonadBalancesProps> = ({ state }) => {
+const MonadBalances: React.FC = () => {
   const {
     fromToken: sellToken,
     setFromToken: setSellToken,
@@ -25,6 +21,7 @@ const MonadBalances: React.FC<MonadBalancesProps> = ({ state }) => {
     setFromAmount: setSellAmount,
     setSwapDirection,
     isQuoteing,
+    appState,
   } = useSwapStateContext()
 
   const { address, chainId } = useAccount()
@@ -70,7 +67,7 @@ const MonadBalances: React.FC<MonadBalancesProps> = ({ state }) => {
         <div className='text-white px-2'>
           <div className='pt-2 flex justify-between item-center'>
             <div>
-              <span className='text-xs'>Available to {state}: </span>
+              <span className='text-xs'>Available to {appState}: </span>
               <div className='text-lg font-bold'>
                 <TokenBalance token={sellToken || undefined} toFixed={3} />
                 <span> DMON</span>

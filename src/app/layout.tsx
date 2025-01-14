@@ -3,7 +3,7 @@
 import '@rainbow-me/rainbowkit/styles.css'
 import type { Viewport } from 'next'
 import { Fragment, PropsWithChildren, useEffect } from 'react'
-import { Layout } from '@/components/Layout'
+import { Layout } from '@/components/UILayout'
 import ClientWeb3Provider from '../context/ClientWeb3Provider'
 import { NotificationProvider } from '@/context/Notifications'
 import '../assets/globals.css'
