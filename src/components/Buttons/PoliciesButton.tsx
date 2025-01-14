@@ -1,3 +1,7 @@
+/////////////////////////////
+// NOT USED IN THE PROJECT //
+/////////////////////////////
+
 import React from 'react'
 
 // Define policy names

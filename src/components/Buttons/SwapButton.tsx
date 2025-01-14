@@ -33,6 +33,8 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
     updateAllowance,
     checkAllowance,
     swapMode,
+    appState,
+    selectedPolicy,
   } = useSwapStateContext()
   const { address: userAddress, status, isConnected, chainId } = useAccount()
   const [isSupportedChain, setIsSupportedChain] = useState(false)
@@ -101,8 +103,8 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
   }, [balance, fromToken, fromAmount])
 
   const isMissingUserInput = useMemo(() => {
-    return !fromToken || !toToken || !fromAmount || !hasSufficientBalance
-  }, [fromToken, toToken, fromAmount, hasSufficientBalance])
+    return !fromToken || !fromAmount || !hasSufficientBalance
+  }, [fromToken, fromAmount, hasSufficientBalance])
 
   const isMissingSwapData = useMemo(() => {
     const result = swapData === null || swapData === undefined
@@ -126,12 +128,22 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
       if (!hasSufficientBalance) {
         return true
       }
-      if (isMissingSwapData) {
+      if ((appState === 'Bond' || appState === 'Unbond') && !selectedPolicy) {
         return true
       }
     }
     return false
-  }, [status, initialized, isSupportedChain, isMissingUserInput, hasSufficientBalance, isMissingSwapData, userBlocked])
+  }, [
+    status,
+    initialized,
+    isSupportedChain,
+    isMissingUserInput,
+    hasSufficientBalance,
+    isMissingSwapData,
+    userBlocked,
+    appState,
+    selectedPolicy,
+  ])
 
   const getButtonText = useCallback(() => {
     if (userBlocked) return 'You are not allowed to use this app'
@@ -142,6 +154,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
     if (!fromToken) return 'Select Tokens' // was 'Select Tokens', changed to 'Mint' for demo
     if (!fromAmount) return 'Enter an amount'
     if (!hasSufficientBalance) return `Insufficient ${fromToken.symbol} balance`
+    if ((appState === 'Bond' || appState === 'Unbond') && !selectedPolicy) return 'Select a policy'
     if (localLoading)
       return (
         <>
@@ -162,6 +175,8 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
     hasSufficientBalance,
     localLoading,
     swapMode,
+    appState,
+    selectedPolicy,
   ])
 
   const handleButtonClick = useCallback(() => {
@@ -190,11 +205,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
 
   return (
     <>
-      <button
-        className='btn'
-        onClick={handleButtonClick}
-        // disabled={isDisabled}
-      >
+      <button className='btn' onClick={handleButtonClick} disabled={isDisabled}>
         {getButtonText()}
         {/* Mint */}
       </button>

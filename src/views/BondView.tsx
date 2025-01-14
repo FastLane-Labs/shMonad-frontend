@@ -18,18 +18,9 @@ type Policy = 'Task Scheduler' | 'Atlas' | '4337 Bundling' | 'MEV Bundles' | ''
 const BondingView: React.FC = () => {
   const { appState, setAppState } = useSwapStateContext()
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
-  const [selectedPolicy, setSelectedPolicy] = useState<Policy>('')
   const { handleSwap } = useHandleSwap()
   const { quoteLoading } = useSwapProcessManager()
   const { isConnected } = useAccount() // Use RainbowKit's useAccount to check connection
-
-  const handleAction = () => {
-    if (!selectedPolicy) {
-      alert('Please select a policy before proceeding.')
-      return
-    }
-    handleSwap()
-  }
 
   useEffect(() => {
     setAppState('Bond')
@@ -39,7 +30,7 @@ const BondingView: React.FC = () => {
     <div className='relative max-w-md mx-auto'>
       <BackgroundGradient />
       <BondUnbondButton />
-      <PoliciesDropdown selectedPolicy={selectedPolicy} setSelectedPolicy={setSelectedPolicy} />
+      <PoliciesDropdown />
       <div style={{ boxShadow: 'rgba(131, 110, 249, .1) 0px 5px 100px 4px' }} className='rounded-3xl'>
         {isConnected && <MonadBalances />} {/* Only render when wallet is connected */}
         <div className='relative rounded-3xl bg-primary/45'>
