@@ -9,6 +9,11 @@ import { nativeEvmTokenAddress } from '@/constants'
 import { useFastLaneAddresses } from './useFastLaneAddresses'
 
 export interface SwapState {
+  // App State
+  isBonding: boolean
+  isMinting: boolean
+  appState: string
+
   // Token States
   fromToken: Token | null
   toToken: Token | null
@@ -32,7 +37,7 @@ export interface SwapState {
   // Swap Data
   swapData: SwapCallData | null
   swapResult: SwapResult | null
-  swapMode: SwapMode | 'swap'
+  swapMode: SwapMode | 'swap' | 'mint' | 'bond' | 'unbond'
 
   // Allowance State
   hasSufficientAllowance: boolean
@@ -44,6 +49,9 @@ export interface SwapState {
   hasUserOperationSignature: boolean
 
   // State Setters
+  setIsBonding: (isBonding: boolean) => void
+  setIsMinting: (isMinting: boolean) => void
+  setAppState: (appState: 'Mint' | 'Bond' | 'Unbond') => void
   setFromToken: (token: Token | null) => void
   setToToken: (token: Token | null) => void
   setFromAmount: (amount: string) => void
@@ -73,6 +81,11 @@ export interface SwapState {
 }
 
 export const useSwapState = (): SwapState => {
+  //  App State
+  const [isBonding, setIsBonding] = useState<boolean>(false)
+  const [isMinting, setIsMinting] = useState<boolean>(true)
+  const [appState, setAppState] = useState<'Mint' | 'Bond' | 'Unbond'>('Mint')
+
   // External hooks and derived values
   const { chainId, address: userAddress } = useAccount()
   const { tokens } = useCurrentTokenList()
@@ -125,8 +138,8 @@ export const useSwapState = (): SwapState => {
     } else if (quote?.swapType === 'UNWRAP') {
       return 'unwrap'
     }
-    return 'swap'
-  }, [quote?.swapType])
+    return appState.toLowerCase() as SwapMode
+  }, [appState])
 
   useEffect(() => {
     const checkAllowance = async () => {
@@ -239,6 +252,14 @@ export const useSwapState = (): SwapState => {
   )
 
   return {
+    // App State
+    isBonding,
+    setIsBonding,
+    isMinting,
+    setIsMinting,
+    appState,
+    setAppState,
+
     // Token and Amount States
     fromToken,
     toToken,
