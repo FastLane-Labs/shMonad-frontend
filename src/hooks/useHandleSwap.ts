@@ -313,7 +313,7 @@ export const useHandleSwap = () => {
       const gas = SWAP_GAS_ESTIMATE // Adjust this if wrap requires different gas
 
       transactionParams = {
-        routeType: swapMode,
+        routeType: 'swap', // was swapMode (testing)
         chainId: chainId,
         txHash: '',
         fromToken: fromToken,
