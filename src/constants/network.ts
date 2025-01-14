@@ -1,5 +1,5 @@
 import { polygon, mainnet } from 'viem/chains'
-import { monadDevnet } from './customChains/monadDevnet'
+import { monadDevnet } from '../config/monadDevnet'
 import { Chain } from 'viem/chains'
 
 export const SUPPORTED_CHAINS = [polygon, mainnet, monadDevnet] as [Chain, ...Chain[]]

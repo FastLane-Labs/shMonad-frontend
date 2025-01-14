@@ -9,14 +9,14 @@ import { useBalance } from '@/hooks/useBalance'
 import { Token } from '@/types'
 import { useTokenUsdPrice } from '@/hooks/useTokenUsdPrice'
 import { Connect } from '../Navbar/Connect'
+import SettingsButton from '../Buttons/SettingsButton'
+import SettingsModal from '../Modals/SettingsModal'
 
 interface MonadBalancesProps {
   state: 'Bond' | 'Mint' | 'Unbond'
 }
 
 const MonadBalances: React.FC<MonadBalancesProps> = ({ state }) => {
-  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState<boolean>(false)
-
   const {
     fromToken: sellToken,
     setFromToken: setSellToken,
