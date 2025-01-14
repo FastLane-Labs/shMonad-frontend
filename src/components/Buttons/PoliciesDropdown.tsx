@@ -1,12 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon'
-import {
-  ArrowUpRightIcon,
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  ExclamationTriangleIcon,
-  InformationCircleIcon,
-} from '@heroicons/react/24/outline'
+import { useSwapStateContext } from '@/context/SwapStateContext'
 
 // Define a constant array for policies
 const POLICIES = ['Task Scheduler', 'Atlas', '4337 Bundling', 'MEV Bundles'] as const
@@ -21,12 +15,8 @@ const TOOLTIP_TEXTS: Record<Policy, string> = {
   '': '', // For the placeholder state
 }
 
-interface PoliciesDropdownProps {
-  selectedPolicy: Policy
-  setSelectedPolicy: (policy: Policy) => void
-}
-
-const PoliciesDropdown: React.FC<PoliciesDropdownProps> = ({ selectedPolicy, setSelectedPolicy }) => {
+const PoliciesDropdown: React.FC = () => {
+  const { selectedPolicy, setSelectedPolicy } = useSwapStateContext()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)

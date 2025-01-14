@@ -10,9 +10,10 @@ import { useFastLaneAddresses } from './useFastLaneAddresses'
 
 export interface SwapState {
   // App State
-  isBonding: boolean
-  isMinting: boolean
   appState: string
+
+  // SHMONAD Policy
+  selectedPolicy: string
 
   // Token States
   fromToken: Token | null
@@ -49,9 +50,8 @@ export interface SwapState {
   hasUserOperationSignature: boolean
 
   // State Setters
-  setIsBonding: (isBonding: boolean) => void
-  setIsMinting: (isMinting: boolean) => void
   setAppState: (appState: 'Mint' | 'Bond' | 'Unbond') => void
+  setSelectedPolicy: (selectedPolicy: string) => void
   setFromToken: (token: Token | null) => void
   setToToken: (token: Token | null) => void
   setFromAmount: (amount: string) => void
@@ -82,9 +82,10 @@ export interface SwapState {
 
 export const useSwapState = (): SwapState => {
   //  App State
-  const [isBonding, setIsBonding] = useState<boolean>(false)
-  const [isMinting, setIsMinting] = useState<boolean>(true)
   const [appState, setAppState] = useState<'Mint' | 'Bond' | 'Unbond'>('Mint')
+
+  // SHMONAD Policy
+  const [selectedPolicy, setSelectedPolicy] = useState<string>('')
 
   // External hooks and derived values
   const { chainId, address: userAddress } = useAccount()
@@ -253,12 +254,12 @@ export const useSwapState = (): SwapState => {
 
   return {
     // App State
-    isBonding,
-    setIsBonding,
-    isMinting,
-    setIsMinting,
     appState,
     setAppState,
+
+    // SHMONAD Policy
+    selectedPolicy,
+    setSelectedPolicy,
 
     // Token and Amount States
     fromToken,
