@@ -14,12 +14,12 @@ export function Layout(props: PropsWithChildren) {
         backgroundPosition: 'center',
       }}>
       <Navbar />
-      <section className='block md:hidden'>
+      <section className='block lg:hidden'>
         <MobileNav />
       </section>
       <Logo />
       <main className='flex flex-grow h-full flex-col'>{props.children}</main>
-      <section className='md:block hidden'>
+      <section className='lg:block hidden'>
         <Footer />
       </section>
     </div>
