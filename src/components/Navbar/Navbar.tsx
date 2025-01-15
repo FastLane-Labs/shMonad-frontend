@@ -19,8 +19,8 @@ export function Navbar() {
   const getTextStyle = (route: string) => (pathname === route ? 'text-gray-100' : 'text-gray-400')
 
   return (
-    <header className='navbar flex justify-end md:justify-between p-4'>
-      <section className='md:flex hidden'>
+    <header className='navbar flex justify-end lg:justify-between p-4'>
+      <section className='lg:flex hidden'>
         {/* Mint Link */}
         <Link href='/' className='btn btn-ghost !w-auto group flex items-center gap-2'>
           <RocketLaunchIcon
