@@ -76,7 +76,7 @@ export default function RootLayout(props: PropsWithChildren) {
           name='twitter:description'
           content='shmonad.xyz is a decentralized application enabling users to mint, bond, unbond, and manage shMONAD tokens by interacting with smart contracts directly on the blockchain.'
         />
-        <meta property='og:image' content='https://sh-monad-frontend-54n68ur5w-fastlane.vercel.app/og/shmonad-og.png' />
+        <meta property='og:image' content='https://i.imgur.com/16tK4qx.png' />
         <meta property='og:title' content='shMonad' />
         <meta
           property='og:description'
@@ -84,7 +84,7 @@ export default function RootLayout(props: PropsWithChildren) {
         />
         <meta property='og:type' content='website' />
         <meta property='og:url' content='https://shmonad.xyz' />
-        <meta property='og:image' content='https://sh-monad-frontend-54n68ur5w-fastlane.vercel.app/og/shmonad-og.png' />
+        <meta property='og:image' content='https://i.imgur.com/16tK4qx.png' />
         <meta property='og:image:alt' content='shmonad OG' />
         <meta property='og:site_name' content='shMonad' />
         <meta property='og:locale' content='en_US' />
