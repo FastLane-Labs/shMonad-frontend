@@ -7,6 +7,7 @@ import { Connect } from './Connect'
 import { NotificationsDrawer } from '../Notifications/NotificationsDrawer'
 import ThemeToggle from '@/components/Theme/ThemeToggle'
 import { HeartIcon, RocketLaunchIcon, CodeBracketSquareIcon } from '@heroicons/react/24/outline'
+import MobileNav from './MobileNav'
 
 export function Navbar() {
   const pathname = usePathname() // Get the current route
@@ -18,8 +19,8 @@ export function Navbar() {
   const getTextStyle = (route: string) => (pathname === route ? 'text-gray-100' : 'text-gray-400')
 
   return (
-    <header className='navbar flex justify-between p-4'>
-      <div>
+    <header className='navbar flex justify-end md:justify-between p-4'>
+      <section className='md:flex hidden'>
         {/* Mint Link */}
         <Link href='/' className='btn btn-ghost !w-auto group flex items-center gap-2'>
           <RocketLaunchIcon
@@ -43,13 +44,13 @@ export function Navbar() {
           />
           <span className={`${getTextStyle('/else')}`}>Something Else</span>
         </Link>
-      </div>
+      </section>
 
-      <div className='flex gap-2'>
+      <section className='flex gap-2'>
         <Connect chainStatus='full' />
         <ThemeToggle />
         <NotificationsDrawer />
-      </div>
+      </section>
     </header>
   )
 }

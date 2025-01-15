@@ -23,7 +23,9 @@ const BondingView: React.FC = () => {
   const { isConnected } = useAccount() // Use RainbowKit's useAccount to check connection
 
   useEffect(() => {
-    setAppState('Bond')
+    if (appState !== 'Unbond') {
+      setAppState('Bond')
+    }
   }, [])
 
   return (
