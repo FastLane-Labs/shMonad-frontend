@@ -62,20 +62,20 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
     setUserBlocked(SANCTIONED_ADDRESSES.includes(userAddress!))
   }, [userAddress])
 
-  const handleApprove = useCallback(async () => {
-    if (!fromToken || !userAddress || !spenderAddress) return false
-    try {
-      const amount = toBigInt(fromAmount, fromToken.decimals)
-      const success = await updateAllowance(fromToken, spenderAddress, amount)
-      if (success) {
-        await checkAllowance(fromToken, userAddress, spenderAddress)
-      }
-      return success
-    } catch (error) {
-      console.error('Approval Error:', error)
-      return false
-    }
-  }, [fromToken, userAddress, spenderAddress, fromAmount, updateAllowance, checkAllowance])
+  // const handleApprove = useCallback(async () => {
+  //   if (!fromToken || !userAddress || !spenderAddress) return false
+  //   try {
+  //     const amount = toBigInt(fromAmount, fromToken.decimals)
+  //     const success = await updateAllowance(fromToken, spenderAddress, amount)
+  //     if (success) {
+  //       await checkAllowance(fromToken, userAddress, spenderAddress)
+  //     }
+  //     return success
+  //   } catch (error) {
+  //     console.error('Approval Error:', error)
+  //     return false
+  //   }
+  // }, [fromToken, userAddress, spenderAddress, fromAmount, updateAllowance, checkAllowance])
 
   const handleSign = useCallback(async () => {
     try {
@@ -207,7 +207,6 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
     <>
       <button className='btn' onClick={handleButtonClick} disabled={isDisabled}>
         {getButtonText()}
-        {/* Mint */}
       </button>
       <SwapDetails />
       <SwapModal
@@ -215,7 +214,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ handleSwap, isLoading }) => {
         onClose={handleSwapModalClose}
         onSwap={handleSwapConfirm}
         onSign={handleSign}
-        onApprove={handleApprove}
+        // onApprove={handleApprove}
       />
     </>
   )

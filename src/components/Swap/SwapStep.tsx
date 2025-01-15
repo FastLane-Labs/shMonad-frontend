@@ -13,11 +13,11 @@ import { useAppStore } from '@/store/useAppStore'
 import { capitalize } from '@/utils/helpers/formatTools'
 
 interface SwapStepProps {
-  step: 'approve' | 'sign' | 'swap' | 'success'
-  onAction: (action: 'approve' | 'sign' | 'swap') => Promise<boolean>
+  step: 'sign' | 'swap' | 'success'
+  onAction: (action: 'sign' | 'swap') => Promise<boolean>
   isLoading: boolean
   error: Error | null
-  setStep: React.Dispatch<React.SetStateAction<'approve' | 'sign' | 'swap' | 'success'>>
+  setStep: React.Dispatch<React.SetStateAction<'sign' | 'swap' | 'success'>>
   txBlockExplorerUrl?: string
 }
 
@@ -67,9 +67,7 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
   }
 
   useEffect(() => {
-    if (!hasSufficientAllowance) {
-      setStep('approve')
-    } else if (swapMode === 'wrap' || swapMode === 'unwrap') {
+    if (swapMode === 'wrap' || swapMode === 'unwrap') {
       setStep('swap')
     } else if (!hasUserOperationSignature) {
       setStep('sign')
@@ -209,27 +207,11 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
 
   const renderButton = () => {
     let buttonText: string | JSX.Element = ''
-    let action: 'approve' | 'sign' | 'swap' = 'approve'
+    let action: 'sign' | 'swap'
     let isDisabled = isLoading || isSwapping
 
     if (isSwapping) {
       buttonText = 'Proceed in your wallet'
-    } else if (step === 'approve' && !hasSufficientAllowance) {
-      buttonText = isLoading ? (
-        <span className='flex items-center justify-center'>
-          <svg className='animate-spin h-5 w-5 mr-3' viewBox='0 0 24 24'>
-            <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-            <path
-              className='opacity-75'
-              fill='currentColor'
-              d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-          </svg>
-          Approving...
-        </span>
-      ) : (
-        `Approve ${fromToken?.symbol} for spending`
-      )
-      action = 'approve'
     } else if (step === 'sign' && swapMode !== 'wrap') {
       buttonText = isLoading ? (
         <span className='flex items-center justify-center'>
@@ -279,15 +261,6 @@ const SwapStep: React.FC<SwapStepProps> = ({ step, onAction, isLoading, error, s
               <h2 className='text-lg font-semibold'>Confirm {capitalize(swapMode)}</h2>
             </div>
             {renderSwapDetailsCompact()}
-          </div>
-        </>
-      )
-    } else if (step === 'approve' && !hasSufficientAllowance) {
-      return (
-        <>
-          <h2 className='text-lg font-semibold mb-4 text-center'>Approve Token</h2>
-          <div className='flex flex-grow flex-col w-full h-full justify-center items-center'>
-            <div className='text-center mb-2'>{renderTokenInfo(fromToken, fromAmount, '')}</div>
           </div>
         </>
       )
