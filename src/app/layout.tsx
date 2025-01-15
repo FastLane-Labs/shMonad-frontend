@@ -63,18 +63,18 @@ export default function RootLayout(props: PropsWithChildren) {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <meta
           name='description'
-          content='Rocketboost Swaps are powered by the DRFQ Atlas module built by FastLane Labs, which hosts a fully onchain request-for-quote auction for your swaps. Atlas is a generalized execution abstraction protocol for the EVM used for building intent and MEV auctions.'
+          content='shMONAD.xyz is a decentralized application enabling users to mint, bond, unbond, and manage shMONAD tokens by interacting with smart contracts directly on the blockchain. Atlas is a generalized execution abstraction protocol for the EVM used for building intent and MEV auctions.'
         />
-        <meta name='keywords' content='Atlas, Swap, DRFQ, MEV, Polygon, FastLane Labs' />
+        <meta name='keywords' content='SHMONAD, Atlas, Monad, MEV, FastLane Labs' />
         <meta name='author' content='FastLane Labs' />
         <meta name='robots' content='index, follow' />
         <meta name='googlebot' content='index, follow' />
         <meta name='twitter:card' content='summary_large_image' />
-        <meta name='twitter:site' content='@atlasevm' />
-        <meta name='twitter:title' content='Rocketboost' />
+        <meta name='twitter:site' content='@0xFastLane' />
+        <meta name='twitter:title' content='shMonad' />
         <meta
           name='twitter:description'
-          content='Rocketboost Swaps are powered by the DRFQ Atlas module built by FastLane Labs.'
+          content='shMONAD.xyz is a decentralized application enabling users to mint, bond, unbond, and manage shMONAD tokens by interacting with smart contracts directly on the blockchain.'
         />
         <meta property='og:image' content='https://blocked-custom-page.vercel.app/rocketboost-beta-og.png' />
         <meta property='og:title' content='Rocketboost' />
