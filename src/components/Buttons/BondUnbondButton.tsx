@@ -16,7 +16,7 @@ const BondUnbondButton: React.FC = () => {
         {/* Bond Button */}
         <button
           className={`relative w-20 text-center transition-all duration-300 py-3 ease-in-out
-          ${appState === 'Bond' ? 'text-white' : 'text-gray-400'}`} // Update here
+          ${appState === 'Bond' ? 'text-white' : 'text-gray-400'}`}
           onClick={() => setAppState('Bond')}>
           Bond
         </button>
@@ -24,7 +24,7 @@ const BondUnbondButton: React.FC = () => {
         {/* Unbond Button */}
         <button
           className={`relative w-20 text-center transition-all duration-300 py-3 ease-in-out
-          ${appState === 'Bond' ? 'text-white' : 'text-gray-400'}`} // Update here
+          ${appState === 'Unbond' ? 'text-white' : 'text-gray-400'}`}
           onClick={() => setAppState('Unbond')}>
           Unbond
         </button>

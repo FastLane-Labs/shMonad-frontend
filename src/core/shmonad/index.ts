@@ -1,7 +1,7 @@
 import { AbstractSigner, ethers } from 'ethers'
 import { Address } from 'viem'
 
-// Placeholder ABI for now, replace when we receive the actual SC ABI
+// Placeholder ABI for now, will replace when we receive the actual SC ABI
 const placeholderAbi = [
   {
     inputs: [],

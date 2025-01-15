@@ -8,12 +8,11 @@ interface SwapModalProps {
   isVisible: boolean
   onClose: () => void
   onSwap: () => Promise<boolean>
-  onApprove: () => Promise<boolean>
   onSign: () => Promise<boolean>
 }
 
-const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApprove, onSign }) => {
-  const [step, setStep] = useState<'approve' | 'sign' | 'swap' | 'success'>('approve')
+const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onSign }) => {
+  const [step, setStep] = useState<'sign' | 'swap' | 'success'>('sign')
   const [error, setError] = useState<Error | null>(null)
   const [txBlockExplorerUrl, setTxBlockExplorerUrl] = useState<string | undefined>(undefined)
 
@@ -39,16 +38,11 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
   }, [swapResult])
 
   const handleAction = useCallback(
-    async (action: 'approve' | 'sign' | 'swap') => {
+    async (action: 'sign' | 'swap') => {
       setError(null)
       let success = false
       try {
         switch (action) {
-          case 'approve':
-            setIsApproving(true)
-            success = await onApprove()
-            if (success) setStep('sign')
-            break
           case 'sign':
             setIsSigning(true)
             success = await onSign()
@@ -71,12 +65,12 @@ const SwapModal: React.FC<SwapModalProps> = ({ isVisible, onClose, onSwap, onApp
       }
       return success
     },
-    [onApprove, onSign, onSwap, setIsApproving, setIsSigning, setIsSwapping]
+    [onSign, onSwap, setIsApproving, setIsSigning, setIsSwapping]
   )
 
   const handleClose = useCallback(() => {
     if (step === 'success') {
-      setStep('approve')
+      setStep('sign')
       setSwapData(null)
       setError(null)
       setHasUserOperationSignature(false)
