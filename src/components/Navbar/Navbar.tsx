@@ -8,7 +8,7 @@ import { NotificationsDrawer } from '../Notifications/NotificationsDrawer'
 import ThemeToggle from '@/components/Theme/ThemeToggle'
 import { HeartIcon, RocketLaunchIcon, CodeBracketSquareIcon } from '@heroicons/react/24/outline'
 
-export function Header() {
+export function Navbar() {
   const pathname = usePathname() // Get the current route
 
   // Helper function to determine active icon color
