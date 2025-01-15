@@ -2,6 +2,7 @@ import React, { PropsWithChildren } from 'react'
 import Logo from '@/components/Logo/Logo'
 import { Navbar } from '@/components/Navbar/Navbar'
 import { Footer } from '@/components/Footer/Footer'
+import MobileNav from './Navbar/MobileNav'
 
 export function Layout(props: PropsWithChildren) {
   return (
@@ -13,6 +14,9 @@ export function Layout(props: PropsWithChildren) {
         backgroundPosition: 'center',
       }}>
       <Navbar />
+      <section className='block md:hidden'>
+        <MobileNav />
+      </section>
       <Logo />
       <main className='flex flex-grow h-full flex-col'>{props.children}</main>
       <section className='md:block hidden'>
