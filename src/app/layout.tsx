@@ -63,7 +63,7 @@ export default function RootLayout(props: PropsWithChildren) {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <meta
           name='description'
-          content='shMONAD.xyz is a decentralized application enabling users to mint, bond, unbond, and manage shMONAD tokens by interacting with smart contracts directly on the blockchain. Atlas is a generalized execution abstraction protocol for the EVM used for building intent and MEV auctions.'
+          content='shmonad.xyz is a decentralized application enabling users to mint, bond, unbond, and manage shMONAD tokens by interacting with smart contracts directly on the blockchain. Atlas is a generalized execution abstraction protocol for the EVM used for building intent and MEV auctions.'
         />
         <meta name='keywords' content='SHMONAD, Atlas, Monad, MEV, FastLane Labs' />
         <meta name='author' content='FastLane Labs' />
@@ -74,27 +74,25 @@ export default function RootLayout(props: PropsWithChildren) {
         <meta name='twitter:title' content='shMonad' />
         <meta
           name='twitter:description'
-          content='shMONAD.xyz is a decentralized application enabling users to mint, bond, unbond, and manage shMONAD tokens by interacting with smart contracts directly on the blockchain.'
+          content='shmonad.xyz is a decentralized application enabling users to mint, bond, unbond, and manage shMONAD tokens by interacting with smart contracts directly on the blockchain.'
         />
-        <meta property='og:image' content='https://blocked-custom-page.vercel.app/rocketboost-beta-og.png' />
-        <meta property='og:title' content='Rocketboost' />
+        <meta property='og:image' content='https://sh-monad-frontend-54n68ur5w-fastlane.vercel.app/og/shmonad-og.png' />
+        <meta property='og:title' content='shMonad' />
         <meta
           property='og:description'
-          content='Rocketboost Swaps are powered by the DRFQ Atlas module built by FastLane Labs.'
+          content='shmonad.xyz is a decentralized application enabling users to mint, bond, unbond, and manage shMONAD tokens by interacting with smart contracts directly on the blockchain.'
         />
         <meta property='og:type' content='website' />
-        <meta property='og:url' content='https://rocketboost.me' />
-        <meta property='og:image' content='https://blocked-custom-page.vercel.app/rocketboost-beta-og.png' />
-        <meta property='og:image:alt' content='Rocketboost beta' />
-        <meta property='og:site_name' content='Rocketboost' />
+        <meta property='og:url' content='https://shmonad.xyz' />
+        <meta property='og:image' content='https://sh-monad-frontend-54n68ur5w-fastlane.vercel.app/og/shmonad-og.png' />
+        <meta property='og:image:alt' content='shmonad OG' />
+        <meta property='og:site_name' content='shMonad' />
         <meta property='og:locale' content='en_US' />
         <link rel='apple-touch-icon' sizes='180x180' href='favicons/apple-touch-icon.png' />
-        <link rel='icon' type='image/png' sizes='32x32' href='favicons/favicon-32x32.png' />
-        <link rel='icon' type='image/png' sizes='16x16' href='favicons/favicon-16x16.png' />
+        <link rel='icon' type='image/png' sizes='96x96' href='favicons/favicon-96x96.png' />
         <link rel='manifest' href='favicons/site.webmanifest' />
         <link rel='mask-icon' href='favicons/safari-pinned-tab.svg' color='#5bbad5' />
-        <meta name='msapplication-TileColor' content='#da532c' />
-        <meta name='theme-color' content='#F12379' />
+        <meta name='theme-color' content='#836EF9' />
       </head>
       <body>
         <AnalyticsProvider>
